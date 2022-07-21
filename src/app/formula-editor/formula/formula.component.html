@@ -1,0 +1,4 @@
+<div class="wrapper">
+  <input class="input" #inp (keyup)="onChange(inp.value)" onClick="this.select();" [value]="this.graph.configuration.formula" [disabled]="!this.graph.configuration.editable">
+  <button class="delete" (click)="delete()"><span class="material-symbols-outlined">delete</span></button>
+</div>

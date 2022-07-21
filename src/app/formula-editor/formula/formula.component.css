@@ -1,0 +1,65 @@
+.wrapper {
+  padding: 15px;
+  border-bottom: 1px solid #ccc;
+  background: #fcfcfc;
+  --buttonSize: 46px;
+  --margin: 16px;
+}
+
+.input {
+  --padding: 7px;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: calc(100% - 2 * var(--padding) - var(--buttonSize) - var(--margin));
+  height: 30px;
+  font-size: 14pt;
+  font-family: "Cambria Math", Cambria, serif;
+  padding: var(--padding);
+  display: block;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  outline: none;
+  background: #eee;
+  transition: 0.1s all ease-in-out;
+  color: #555;
+}
+
+.input:hover {
+  background: #ddd;
+}
+
+.input:focus {
+  background: white;
+  border: 1px solid #d9d9d9;
+  color: black;
+}
+
+.delete {
+  float: right;
+  width: var(--buttonSize);
+  height: var(--buttonSize);
+  margin-top: calc(-1 * var(--buttonSize));
+  color: red;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  transition: 0.1s all ease-in-out;
+  background: transparent;
+}
+
+.delete:hover {
+  background: #eee;
+}
+
+.delete:active {
+  background: #ddd;
+}
+
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 48
+}

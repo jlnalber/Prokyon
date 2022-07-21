@@ -1,0 +1,17 @@
+.canvas {
+  padding: 0;
+  margin: 0;
+}
+
+.barWrapper {
+  width: 30%;
+  min-width: min(100%, 500px);
+  position: absolute;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.barWrapper * {
+  pointer-events: all;
+}

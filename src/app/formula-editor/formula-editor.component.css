@@ -1,0 +1,35 @@
+.addDiv {
+  height: 62px;
+  background: #fcfcfc;
+  transition: 0.1s all ease-in-out;
+  line-height: 62px;
+}
+
+.addDiv:hover {
+  background: #eee;
+}
+
+.addDiv:active {
+  background: #ddd;
+}
+
+p {
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  display: inline-block;
+  font-family: 'Segoe UI', Calibri, 'sans-serif';
+  font-size: 13pt;
+}
+
+.material-symbols-outlined {
+  transform: translate(-5px, 6px);
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 48
+}
