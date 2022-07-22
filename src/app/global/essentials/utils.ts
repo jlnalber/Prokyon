@@ -77,6 +77,16 @@ export function indexOf<T>(ts: T[], ...searchValues: T[]): number {
   return -1;
 }
 
+export function lastIndexOf<T>(ts: T[], ...searchValues: T[]): number {
+  for (let i = ts.length - 1; i >= 0; i--) {
+    let c = ts[i];
+    if (searchValues.indexOf(c) != -1) {
+      return i;
+    }
+  }
+  return -1;
+}
+
 export function contains<T>(ts: T[], ...searchValues: T[]): boolean {
   return indexOf(ts, ...searchValues) != -1;
 }

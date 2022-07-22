@@ -1,5 +1,5 @@
 import {Operation} from "./operations/operation";
-import {contains, indexOf, replaceAll, tryParseNumber} from "../../essentials/utils";
+import {contains, indexOf, lastIndexOf, replaceAll, tryParseNumber} from "../../essentials/utils";
 import {Constant} from "./operations/constant";
 import {Addition} from "./operations/elementaryOperations/addition";
 import {Variable} from "./operations/variable";
@@ -9,6 +9,20 @@ import {Division} from "./operations/elementaryOperations/division";
 import {Pow} from "./operations/elementaryOperations/pow";
 import {Brackets} from "./operations/brackets";
 import {Modulo} from "./operations/elementaryOperations/modulo";
+import {Sinus} from "./operations/trigonometry/sinus";
+import {Cosinus} from "./operations/trigonometry/cosinus";
+import {Tangens} from "./operations/trigonometry/tangens";
+import {Secans} from "./operations/trigonometry/secans";
+import {Cosecans} from "./operations/trigonometry/cosecans";
+import {Cotangens} from "./operations/trigonometry/cotangens";
+import {Arcussinus} from "./operations/trigonometry/arcussinus";
+import {Arcuscosinus} from "./operations/trigonometry/arcuscosinus";
+import {Arcustangens} from "./operations/trigonometry/arcustangens";
+import {Arcussecans} from "./operations/trigonometry/arcussecans";
+import {Arcuscosecans} from "./operations/trigonometry/arcuscosecans";
+import {Arcuscotangens} from "./operations/trigonometry/arcuscotangens";
+import {Root} from "./operations/elementaryOperations/root";
+import {NaturalLogarithm} from "./operations/naturalLogarithm";
 
 const powerOperators = [
   '^'
@@ -38,6 +52,25 @@ const closingBrackets = [
   ']'
 ]
 const brackets = [ ...openingBrackets, ...closingBrackets ];
+const trigonometryFunctions = [
+  'sin',
+  'asin',
+  'cos',
+  'acos',
+  'tan',
+  'atan',
+  'sec',
+  'asec',
+  'csc',
+  'acsc',
+  'cot',
+  'acot'
+];
+const otherFunctions = [
+  'ln',
+  'sqrt'
+];
+const functions = [ ...trigonometryFunctions, ...otherFunctions ];
 const notNumbersOrVariables = [ ...whitespaces, ...operations, ...brackets ];
 
 const parseErrorMessage = 'syntax error';
@@ -54,6 +87,12 @@ export class OperationsCompiler {
   public formatString(): string {
     if (!this.formattedString) {
       this.formattedString = replaceAll(this.str.trim(), '**', '^');
+      this.formattedString = replaceAll(this.formattedString, 'arcsin', 'asin');
+      this.formattedString = replaceAll(this.formattedString, 'arccos', 'acos');
+      this.formattedString = replaceAll(this.formattedString, 'arctan', 'atan');
+      this.formattedString = replaceAll(this.formattedString, 'arcsec', 'asec');
+      this.formattedString = replaceAll(this.formattedString, 'arccsc', 'acsc');
+      this.formattedString = replaceAll(this.formattedString, 'arccot', 'acot');
     }
 
     return this.formattedString;
@@ -92,19 +131,25 @@ export class OperationsCompiler {
         // check whether additional elements have to be inserted
         for (let i = 0; i < this.stringSplit.length - 1; i++) {
           // first multiplication
-          if (!(contains(openingBrackets, this.stringSplit[i]) || contains(closingBrackets, this.stringSplit[i + 1]) || contains(operations, this.stringSplit[i]) || contains(operations, this.stringSplit[i + 1]) || tryParseNumber(this.stringSplit[i + 1]))) {
+          if (!(contains(openingBrackets, this.stringSplit[i])
+            || contains(closingBrackets, this.stringSplit[i + 1])
+            || contains(operations, this.stringSplit[i])
+            || contains(operations, this.stringSplit[i + 1])
+            || tryParseNumber(this.stringSplit[i + 1])
+            || contains(functions, this.stringSplit[i]))) {
             this.stringSplit.splice(i + 1, 0, '*');
             i--;
           }
 
           // then minus
-          else if (this.stringSplit[i] == '-' && (i == 0 || contains(openingBrackets, this.stringSplit[i - 1]))) {
+          else if (this.stringSplit[i] == '-' && (i == 0 || contains([ ...openingBrackets, ...functions ], this.stringSplit[i - 1]))) {
             this.stringSplit.splice(i, 1);
             if (tryParseNumber(this.stringSplit[i])) {
               this.stringSplit[i] = `-${this.stringSplit[i]}`;
             }
             else {
-              this.stringSplit.splice(i, 0, '-1', '*');
+              this.stringSplit.splice(i + 1, 0, ')')
+              this.stringSplit.splice(i, 0, '(', '-1', '*');
             }
             i--;
           }
@@ -122,7 +167,7 @@ export class OperationsCompiler {
     }
 
     // return the result
-    //console.log(this.stringSplit);
+    console.log(this.stringSplit);
     return this.stringSplit;
   }
 
@@ -196,6 +241,25 @@ export class OperationsCompiler {
               }
             }
 
+            // then, read in the functions
+            while (contains(parseArray, ...functions)) {
+              let startIndex = lastIndexOf(parseArray, ...functions);
+
+              if (startIndex == parseArray.length - 1) throw parseErrorMessage;
+
+              let func = parseArray[startIndex] as string;
+              let param = parseArray[startIndex + 1];
+
+              if (contains(brackets, param)) throw parseErrorMessage;
+              if (contains(operations, param)) throw parseErrorMessage;
+
+              // remove elements from array
+              parseArray.splice(startIndex, 2, {
+                value: func,
+                first: arrToTree([ param ])
+              });
+            }
+
             // then, read in Powers, Points, Lines (ltr)
             for (let priority of [ powerOperators, pointOperators, lineOperators ]) {
               while (contains(parseArray, ...priority)) {
@@ -235,7 +299,7 @@ export class OperationsCompiler {
     }
 
     // return the result
-    //console.log(this.parseTree);
+    console.log(this.parseTree);
     return this.parseTree;
   }
 
@@ -268,6 +332,53 @@ export class OperationsCompiler {
           else if (tree.value == '' && tree.first != undefined) {
             return new Brackets(treeToOperation(tree.first));
           }
+
+          // functions
+          // trigonometry
+          else if (tree.value == 'sin' && tree.first != undefined) {
+            return new Sinus(treeToOperation(tree.first));
+          }
+          else if (tree.value == 'asin' && tree.first != undefined) {
+            return new Arcussinus(treeToOperation(tree.first));
+          }
+          else if (tree.value == 'cos' && tree.first != undefined) {
+            return new Cosinus(treeToOperation(tree.first));
+          }
+          else if (tree.value == 'acos' && tree.first != undefined) {
+            return new Arcuscosinus(treeToOperation(tree.first));
+          }
+          else if (tree.value == 'tan' && tree.first != undefined) {
+            return new Tangens(treeToOperation(tree.first));
+          }
+          else if (tree.value == 'atan' && tree.first != undefined) {
+            return new Arcustangens(treeToOperation(tree.first));
+          }
+          else if (tree.value == 'sec' && tree.first != undefined) {
+            return new Secans(treeToOperation(tree.first));
+          }
+          else if (tree.value == 'asec' && tree.first != undefined) {
+            return new Arcussecans(treeToOperation(tree.first));
+          }
+          else if (tree.value == 'csc' && tree.first != undefined) {
+            return new Cosecans(treeToOperation(tree.first));
+          }
+          else if (tree.value == 'acsc' && tree.first != undefined) {
+            return new Arcuscosecans(treeToOperation(tree.first));
+          }
+          else if (tree.value == 'cot' && tree.first != undefined) {
+            return new Cotangens(treeToOperation(tree.first));
+          }
+          else if (tree.value == 'acot' && tree.first != undefined) {
+            return new Arcuscotangens(treeToOperation(tree.first));
+          }
+          // other functions
+          else if (tree.value == 'ln' && tree.first != undefined) {
+            return new NaturalLogarithm(treeToOperation(tree.first));
+          }
+          else if (tree.value == 'sqrt' && tree.first != undefined) {
+            return new Root(treeToOperation(tree.first), new Constant(2));
+          }
+
           else {
             return new Variable(tree.value);
           }
@@ -283,7 +394,7 @@ export class OperationsCompiler {
     }
 
     // return the operation
-    //console.log(this.operation);
+    console.log(this.operation);
     return this.operation;
   }
 
