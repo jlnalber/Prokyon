@@ -32,4 +32,10 @@ export class FormulaEditorComponent implements OnInit {
     graph.configuration.editable = true;
     this.drawerService.addCanvasElement(graph);
   }
+
+  keyboardAdd(event: KeyboardEvent) {
+    if (event.key == 'Enter' || event.key == ' ') {
+      this.addClick();
+    }
+  }
 }

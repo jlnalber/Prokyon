@@ -80,3 +80,9 @@ export function indexOf<T>(ts: T[], ...searchValues: T[]): number {
 export function contains<T>(ts: T[], ...searchValues: T[]): boolean {
   return indexOf(ts, ...searchValues) != -1;
 }
+
+export function clamp(min: number, val: number, max: number): number {
+  if (min > val) return min;
+  if (max < val) return max;
+  return val;
+}

@@ -46,6 +46,11 @@ export class TabGroupComponent implements OnInit, AfterViewInit {
     }
   }
 
+  onTabKeyboard(event: KeyboardEvent, tab: Tab) {
+    if (event.key == 'Enter' || event.key == ' ') {
+      this.onTabClick(tab);
+    }
+  }
 }
 
 export interface Tab {

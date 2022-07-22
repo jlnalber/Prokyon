@@ -1,7 +1,7 @@
 <div class="wrapper" [ngClass]="{ 'empty': this.currentTab == undefined }">
   <div class="table">
     <div class="tabHeaders">
-      <div class="tabHeader" *ngFor="let tab of this.tabs" (click)="this.onTabClick(tab)" [title]="tab.title" [ngClass]="{ 'active': this.currentTab == tab }">
+      <div class="tabHeader" *ngFor="let tab of this.tabs" (click)="this.onTabClick(tab)" tabindex="0" (keydown)="this.onTabKeyboard($event, tab)" [title]="tab.title" [ngClass]="{ 'active': this.currentTab == tab }">
         <p *ngIf="!tab.icon">{{tab.title}}</p>
         <span class="material-symbols-outlined" *ngIf="tab.icon">{{tab.icon}}</span>
       </div>

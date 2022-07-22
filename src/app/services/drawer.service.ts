@@ -6,6 +6,8 @@ import {Event} from "../global/classes/event";
 import {RenderingContext} from "../global/classes/renderingContext";
 import {Transformations} from "../global/interfaces/transformations";
 import {Point, Vector} from "../global/interfaces/point";
+import { CanvasDrawer } from '../global/classes/canvasDrawer';
+import {Grid} from "../global/classes/grid";
 
 @Injectable({
   providedIn: 'root'
@@ -43,6 +45,24 @@ export class DrawerService {
   }
   public get canvasElements(): CanvasElement[] {
     return this._canvasElements.slice();
+  }
+
+  private _metaDrawers: CanvasDrawer[] = [];
+  public addMetaDrawer(canvasElement: CanvasDrawer): void {
+    this._metaDrawers.push(canvasElement);
+    this.onMetaDrawersChanged.emit(canvasElement);
+  }
+  public removeMetaDrawer(canvasElement: CanvasDrawer): boolean {
+    const index = this._metaDrawers.indexOf(canvasElement);
+    if (index >= 0) {
+      this._metaDrawers.splice(index, 1);
+      this.onMetaDrawersChanged.emit(canvasElement);
+      return true;
+    }
+    return false;
+  }
+  public get metaDrawers(): CanvasDrawer[] {
+    return this._metaDrawers.slice();
   }
 
   private _transformations: Transformations = {
@@ -86,6 +106,7 @@ export class DrawerService {
   // Events
   public readonly onBackgroundColorChanged: Event<Color> = new Event<Color>();
   public readonly onCanvasElementsChanged: Event<CanvasElement> = new Event<CanvasElement>();
+  public readonly onMetaDrawersChanged: Event<CanvasDrawer> = new Event<CanvasDrawer>();
   public readonly onTransformationsChanged: Event<number> = new Event<number>();
 
   private redrawListener = () => {
@@ -95,9 +116,12 @@ export class DrawerService {
   public canvas?: CanvasComponent;
 
   constructor() {
+    this.addMetaDrawer(new Grid());
+
     this.onBackgroundColorChanged.addListener(this.redrawListener);
     this.onCanvasElementsChanged.addListener(this.redrawListener);
     this.onTransformationsChanged.addListener(this.redrawListener);
+    this.onMetaDrawersChanged.addListener(this.redrawListener);
   }
 
   public get renderingContext(): RenderingContext {
@@ -115,8 +139,11 @@ export class DrawerService {
       this.canvas.ctx.fillStyle = getColorAsRgbaFunction(this.backgroundColor);
       this.canvas.ctx.fillRect(0, 0, this.canvas.canvasEl.width, this.canvas.canvasEl.height);
 
-      // then: draw the CanvasElements
+      // then: draw the elements (first metaDrawers, then canvasElements)
       let renderingContext = this.renderingContext;
+      for (let metaDrawer of this._metaDrawers) {
+        metaDrawer.draw(renderingContext);
+      }
       for (let canvasElement of this._canvasElements) {
         canvasElement.draw(renderingContext);
       }

@@ -86,4 +86,29 @@ export class RenderingContext {
       this.ctx.closePath();
     }
   }
+
+  public drawLine(from: Point, to: Point, lineWidth: number, stroke: Color): void {
+    this.drawPath([ from, to ], lineWidth, stroke);
+  }
+
+  public drawText(text: string, p: Point,
+                  font: string = '10px sans-serif',
+                  textAlign: CanvasTextAlign = 'start',
+                  textBaseline: CanvasTextBaseline = 'alphabetic',
+                  direction: CanvasDirection = 'inherit',
+                  color: Color = { r: 0, g: 0, b: 0 },
+                  maxWidth?: number): void {
+    let realP = this.transformPointFromFieldToCanvas(p);
+
+    // set the ctx up
+    let ctx = this.ctx;
+    ctx.font = font;
+    ctx.textAlign = textAlign;
+    ctx.textBaseline = textBaseline;
+    ctx.direction = direction;
+    ctx.fillStyle = getColorAsRgbaFunction(color);
+
+    // draw the text
+    ctx.fillText(text, realP.x, realP.y, maxWidth);
+  }
 }
