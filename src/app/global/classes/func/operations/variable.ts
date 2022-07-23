@@ -1,4 +1,5 @@
 import {Operation} from "./operation";
+import {Constant} from "./constants/constant";
 
 export class Variable extends Operation {
   public evaluate(dict: any): number {
@@ -9,7 +10,15 @@ export class Variable extends Operation {
     throw 'no number found';
   }
 
+  public derive(): Operation {
+    return new Constant(1);
+  }
+
   constructor(private readonly key: string) {
     super();
+  }
+
+  public override toString(): string {
+    return this.key;
   }
 }

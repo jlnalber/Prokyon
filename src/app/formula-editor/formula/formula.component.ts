@@ -2,8 +2,9 @@ import {Component, Input, OnInit} from '@angular/core';
 import {Func} from "../../global/classes/func/func";
 import {OperationsCompiler} from "../../global/classes/func/operationsCompiler";
 import {Graph} from "../../global/classes/graph";
-import {Constant} from "../../global/classes/func/operations/constant";
+import {Constant} from "../../global/classes/func/operations/constants/constant";
 import {DrawerService} from "../../services/drawer.service";
+import {ContextMenu} from "../../contextMenu/context-menu.directive";
 
 @Component({
   selector: 'app-formula',
@@ -42,5 +43,48 @@ export class FormulaComponent implements OnInit {
 
   delete() {
     this.drawerService.removeCanvasElement(this.graph);
+  }
+
+  derive() {
+    try {
+      let derivedGraph = new Graph(this.graph.func.derive().simplify());
+      derivedGraph.configuration.editable = true;
+      derivedGraph.configuration.formula = derivedGraph.func.operationAsString;
+      this.drawerService.addCanvasElement(derivedGraph);
+    }
+    catch (e: any) {
+      console.log(e);
+    }
+  }
+
+  canDerive(): boolean {
+    try {
+      this.graph.func.derive();
+      return true;
+    }
+    catch {
+      return false;
+    }
+  }
+
+  public get contextMenu(): ContextMenu {
+    return {
+      elements: [{
+        header: 'Ableiten',
+        click: () => {
+          this.derive();
+        },
+        disabled: !this.canDerive(),
+        icon: 'south_east'
+      },
+      {
+        header: 'Löschen',
+        color: 'red',
+        click: () => {
+          this.delete();
+        },
+        icon: 'delete'
+      }]
+    }
   }
 }

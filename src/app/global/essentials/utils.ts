@@ -96,3 +96,27 @@ export function clamp(min: number, val: number, max: number): number {
   if (max < val) return max;
   return val;
 }
+
+export function hasWhereApplies<T>(ts: T[], func: (t: T) => boolean): boolean {
+  for (let t of ts) {
+    if (func(t)) return true;
+  }
+  return false;
+}
+
+export function indexUntil<T>(arr: T[], addition: T[], subtraction: T[], startIndex?: number, errorMessage?: string, step: number = 1): number {
+  let value = 0;
+  for (let i = startIndex ?? 0; i >= 0 && i < arr.length; i += step) {
+    let el = arr[i];
+    if (contains(addition, el)) value++;
+    if (contains(subtraction, el)) value--;
+
+    if (value == 0) {
+      return i;
+    }
+  }
+  if (value == 0) {
+    return startIndex ?? 0;
+  }
+  throw errorMessage;
+}

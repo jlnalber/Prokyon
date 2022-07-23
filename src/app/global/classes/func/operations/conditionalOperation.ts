@@ -14,10 +14,22 @@ export class ConditionalOperation extends Operation {
     throw 'no condition matched';
   }
 
+  public derive(): Operation {
+    return new ConditionalOperation(...this.conditionsWithOperations.map((cO: ConditionWithOperation): ConditionWithOperation => {
+      return [ cO[0], cO[1].derive() ];
+    }));
+  }
+
   private readonly conditionsWithOperations: ConditionWithOperation[];
 
   constructor(...conditionsWithOperations: ConditionWithOperation[]) {
     super();
     this.conditionsWithOperations = conditionsWithOperations;
+  }
+
+  public override simplify(): Operation {
+    return new ConditionalOperation(...this.conditionsWithOperations.map((c0: ConditionWithOperation): ConditionWithOperation => {
+      return [ c0[0], c0[1].simplify() ];
+    }))
   }
 }

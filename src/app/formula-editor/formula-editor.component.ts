@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {DrawerService} from "../services/drawer.service";
 import {Graph} from "../global/classes/graph";
-import {Constant} from "../global/classes/func/operations/constant";
+import {Constant} from "../global/classes/func/operations/constants/constant";
 import {Func} from "../global/classes/func/func";
 
 @Component({

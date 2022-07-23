@@ -1,13 +1,12 @@
 import {Operation} from "./operations/operation";
-import {contains, indexOf, lastIndexOf, replaceAll, tryParseNumber} from "../../essentials/utils";
-import {Constant} from "./operations/constant";
+import {contains, indexOf, indexUntil, lastIndexOf, replaceAll, tryParseNumber} from "../../essentials/utils";
+import {Constant} from "./operations/constants/constant";
 import {Addition} from "./operations/elementaryOperations/addition";
 import {Variable} from "./operations/variable";
 import {Subtraction} from "./operations/elementaryOperations/subtraction";
 import {Multiplication} from "./operations/elementaryOperations/multiplication";
 import {Division} from "./operations/elementaryOperations/division";
 import {Pow} from "./operations/elementaryOperations/pow";
-import {Brackets} from "./operations/brackets";
 import {Modulo} from "./operations/elementaryOperations/modulo";
 import {Sinus} from "./operations/trigonometry/sinus";
 import {Cosinus} from "./operations/trigonometry/cosinus";
@@ -23,6 +22,8 @@ import {Arcuscosecans} from "./operations/trigonometry/arcuscosecans";
 import {Arcuscotangens} from "./operations/trigonometry/arcuscotangens";
 import {Root} from "./operations/elementaryOperations/root";
 import {NaturalLogarithm} from "./operations/naturalLogarithm";
+import {PiConstant} from "./operations/constants/pi";
+import {EConstant} from "./operations/constants/e";
 
 const powerOperators = [
   '^'
@@ -93,6 +94,7 @@ export class OperationsCompiler {
       this.formattedString = replaceAll(this.formattedString, 'arcsec', 'asec');
       this.formattedString = replaceAll(this.formattedString, 'arccsc', 'acsc');
       this.formattedString = replaceAll(this.formattedString, 'arccot', 'acot');
+      this.formattedString = replaceAll(this.formattedString, 'π', 'pi');
     }
 
     return this.formattedString;
@@ -128,6 +130,25 @@ export class OperationsCompiler {
           this.stringSplit.push(str);
         }
 
+        // helper function
+        let fromPowToEndOfExponent = (index: number): number => {
+          try {
+            if (this.stringSplit && contains(functions, this.stringSplit[index + 1])) {
+              return indexUntil(this.stringSplit, openingBrackets, closingBrackets, index + 2, parseErrorMessage);
+            }
+            else if (this.stringSplit && contains(openingBrackets, this.stringSplit[index + 1])) {
+              return indexUntil(this.stringSplit, openingBrackets, closingBrackets, index + 1, parseErrorMessage);
+            }
+            else {
+              return index + 1;
+            }
+          }
+          catch {
+            throw parseErrorMessage;
+          }
+          throw parseErrorMessage;
+        }
+
         // check whether additional elements have to be inserted
         for (let i = 0; i < this.stringSplit.length - 1; i++) {
           // first multiplication
@@ -137,28 +158,80 @@ export class OperationsCompiler {
             || contains(operations, this.stringSplit[i + 1])
             || tryParseNumber(this.stringSplit[i + 1])
             || contains(functions, this.stringSplit[i]))) {
-            this.stringSplit.splice(i + 1, 0, '*');
+
+            if (contains(closingBrackets, this.stringSplit[i]) && contains(openingBrackets, this.stringSplit[i + 1])) {
+              this.stringSplit.splice(i + 1, 0, '*');
+            }
+            else {
+              this.stringSplit.splice(indexUntil(this.stringSplit, openingBrackets, closingBrackets, i + 1, parseErrorMessage) + 1, 0, ')');
+              this.stringSplit.splice(i + 1, 0, '*');
+              this.stringSplit.splice(indexUntil(this.stringSplit, closingBrackets, openingBrackets, i, parseErrorMessage, -1), 0, '(');
+            }
             i--;
           }
 
           // then minus
-          else if (this.stringSplit[i] == '-' && (i == 0 || contains([ ...openingBrackets, ...functions ], this.stringSplit[i - 1]))) {
-            this.stringSplit.splice(i, 1);
-            if (tryParseNumber(this.stringSplit[i])) {
+          /*else if (this.stringSplit[i] == '-' && (i == 0 || contains([ ...openingBrackets, ...functions ], this.stringSplit[i - 1]))) {
+            if (tryParseNumber(this.stringSplit[i + 1])) {
+              this.stringSplit.splice(i, 1);
               this.stringSplit[i] = `-${this.stringSplit[i]}`;
+              i--;
             }
-            else {
+            else if (!contains([ ...functions, ...openingBrackets ], this.stringSplit[i + 1])) {
+              this.stringSplit.splice(i, 1);
               this.stringSplit.splice(i + 1, 0, ')')
               this.stringSplit.splice(i, 0, '(', '-1', '*');
+              i--;
             }
-            i--;
-          }
+          }*/
 
           // then plus
           else if (this.stringSplit[i] == '+' && (i == 0 || contains(openingBrackets, this.stringSplit[i - 1]))) {
             this.stringSplit.splice(i, 1);
             i--;
           }
+        }
+        // go over it for a second time (backwards)
+        for (let i = this.stringSplit.length - 1; i >= 0; i--) {
+          // do the minus again
+          if (this.stringSplit[i] == '-') {
+            // first when at start or after openingBrackets
+            if (i == 0 || contains(openingBrackets, this.stringSplit[i - 1])) {
+              this.stringSplit.splice(i, 1, '-1', '*');
+              i += 2;
+            }
+            else if (contains(functions, this.stringSplit[i - 1])) {
+              let endIndex = indexUntil(this.stringSplit, openingBrackets, closingBrackets, i + 1, parseErrorMessage);
+              if (endIndex < this.stringSplit.length - 1 && this.stringSplit[endIndex + 1] == '^') {
+                let endExponentIndex = fromPowToEndOfExponent(endIndex + 1);
+                this.stringSplit.splice(endExponentIndex + 1, 0, ')', ')');
+                this.stringSplit.splice(i, 1, '(', '-1', '*', '(')
+              }
+              else {
+                this.stringSplit.splice(i, 1);
+                this.stringSplit.splice(endIndex + 1, 0, ')');
+                this.stringSplit.splice(i, 0, '(', '-1', '*');
+                i += 3;
+              }
+            }
+          }
+          /*
+          if (this.stringSplit[i] == '-' && (i == 0 || contains([ ...openingBrackets, ...functions ], this.stringSplit[i - 1]))) {
+            if (contains(functions, this.stringSplit[i + 1])) {
+              this.stringSplit.splice(i, 1);
+              this.stringSplit.splice(indexUntil(this.stringSplit, openingBrackets, closingBrackets, i + 1, parseErrorMessage) + 1, 0, ')')
+              this.stringSplit.splice(i, 0, '(', '-1', '*');
+              i--;
+            }
+            else if (contains(openingBrackets, this.stringSplit[i + 1])) {
+              let indexTilEnd = indexUntil(this.stringSplit, openingBrackets, closingBrackets, i + 1, parseErrorMessage) + 1;
+              if ((i == 0 || contains(openingBrackets, this.stringSplit[i - 1])) && (indexTilEnd ))
+              this.stringSplit.splice(i, 1);
+              this.stringSplit.splice(indexUntil(this.stringSplit, openingBrackets, closingBrackets, i, parseErrorMessage) + 1, 0, ')')
+              this.stringSplit.splice(i, 0, '(', '-1', '*');
+              i--;
+            }
+          }*/
         }
       }
       else {
@@ -167,7 +240,7 @@ export class OperationsCompiler {
     }
 
     // return the result
-    console.log(this.stringSplit);
+    // console.log(this.stringSplit);
     return this.stringSplit;
   }
 
@@ -189,7 +262,7 @@ export class OperationsCompiler {
             }
             return el;
           }
-          else if (arr.length == 3) {
+          /*else if (arr.length == 3) {
             let el0 = arr[0];
             let el1 = arr[1];
             let el2 = arr[2];
@@ -211,34 +284,19 @@ export class OperationsCompiler {
             else {
               throw parseErrorMessage;
             }
-          }
+          }*/
           else {
             let parseArray: (string | BinaryTree<string>)[] = [ ...arr ]
 
             // first, read in the brackets
             while (contains(parseArray, ...openingBrackets)) {
+              // get the indexes of the brackets
               let startIndex = indexOf(parseArray, ...openingBrackets);
-              let bracketsOpened = 1;
-              let index = startIndex + 1;
-              for (; bracketsOpened > 0 && index < parseArray.length; index++) {
-                let el = parseArray[index];
-                if (typeof el == 'string') {
-                  if (openingBrackets.indexOf(el) != -1) {
-                    bracketsOpened++;
-                  }
-                  if (closingBrackets.indexOf(el) != -1) {
-                    bracketsOpened--;
-                  }
-                }
-              }
+              let index = indexUntil(parseArray, openingBrackets, closingBrackets, startIndex, parseErrorMessage) + 1;
 
-              if (bracketsOpened == 0) {
-                let removedElements = parseArray.splice(startIndex, index - startIndex);
-                parseArray.splice(startIndex, 0, arrToTree(removedElements.splice(1, index - startIndex - 2)));
-              }
-              else {
-                throw parseErrorMessage;
-              }
+              // remove the elements and process them, then add
+              let removedElements = parseArray.splice(startIndex, index - startIndex);
+              parseArray.splice(startIndex, 0, arrToTree(removedElements.splice(1, index - startIndex - 2)));
             }
 
             // then, read in the functions
@@ -299,7 +357,7 @@ export class OperationsCompiler {
     }
 
     // return the result
-    console.log(this.parseTree);
+    // console.log(this.parseTree);
     return this.parseTree;
   }
 
@@ -328,9 +386,6 @@ export class OperationsCompiler {
           }
           else if (tree.value == '^' && tree.first != undefined && tree.second != undefined) {
             return new Pow(treeToOperation(tree.first), treeToOperation(tree.second));
-          }
-          else if (tree.value == '' && tree.first != undefined) {
-            return new Brackets(treeToOperation(tree.first));
           }
 
           // functions
@@ -379,6 +434,15 @@ export class OperationsCompiler {
             return new Root(treeToOperation(tree.first), new Constant(2));
           }
 
+          // constants
+          else if (tree.value == 'pi') {
+            return new PiConstant();
+          }
+          else if (tree.value == 'e') {
+            return new EConstant();
+          }
+
+          // else default to a variable
           else {
             return new Variable(tree.value);
           }
@@ -394,7 +458,7 @@ export class OperationsCompiler {
     }
 
     // return the operation
-    console.log(this.operation);
+    // console.log(this.operation);
     return this.operation;
   }
 

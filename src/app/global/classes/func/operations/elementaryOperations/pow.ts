@@ -1,4 +1,9 @@
 import {Operation} from "../operation";
+import {Constant} from "../constants/constant";
+import {Multiplication} from "./multiplication";
+import {Addition} from "./addition";
+import {NaturalLogarithm} from "../naturalLogarithm";
+import {Division} from "./division";
 
 export class Pow extends Operation {
 
@@ -6,7 +11,39 @@ export class Pow extends Operation {
     return this.base.evaluate(dict) ** this.exponent.evaluate(dict);
   }
 
+  public derive(): Operation {
+    return new Multiplication(new Pow(this.base, this.exponent),
+                              new Addition(new Multiplication(this.exponent.derive(), new NaturalLogarithm(this.base)),
+                                            new Multiplication(this.exponent, new Division(this.base.derive(), this.base))));
+  }
+
   constructor(private readonly base: Operation, private readonly exponent: Operation) {
     super();
+  }
+
+  public override toString(): string {
+    return `((${this.base.toString()}) ^ (${this.exponent.toString()}))`;
+  }
+
+  public override simplify(): Operation {
+    let newBase = this.base.simplify();
+    let newExponent = this.exponent.simplify();
+
+    // check for the exponent
+    if (newExponent instanceof Constant) {
+      if (newExponent.constant == 1) {
+        return newBase;
+      }
+      else if (newExponent.constant == 0) {
+        return new Constant(1);
+      }
+    }
+
+    // check the base
+    if (newBase instanceof Constant && newBase.constant == 1) {
+      return new Constant(1);
+    }
+
+    return new Pow(newBase, newExponent);
   }
 }

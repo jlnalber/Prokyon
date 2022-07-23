@@ -12,7 +12,7 @@
   right: 0;
   top: 0;
   bottom: 0;
-  width: calc(100% - 2 * var(--padding) - var(--buttonSize) - var(--margin));
+  width: calc(100% - 2 * var(--padding) - 0 * 2 * var(--buttonSize) - 0 * 2 * var(--margin));
   height: 30px;
   font-size: 14pt;
   font-family: "Cambria Math", Cambria, serif;
@@ -36,23 +36,31 @@
   color: black;
 }
 
-.delete {
+.delete, .derive {
   float: right;
   width: var(--buttonSize);
   height: var(--buttonSize);
   margin-top: calc(-1 * var(--buttonSize));
-  color: red;
   border: 1px solid transparent;
   border-radius: 50%;
   transition: 0.1s all ease-in-out;
   background: transparent;
+  user-select: none;
 }
 
-.delete:hover {
+.delete {
+  color: red;
+}
+
+.derive {
+  margin-right: calc(var(--buttonSize) + var(--margin));
+}
+
+.delete:hover, .derive:hover {
   background: #eee;
 }
 
-.delete:active {
+.delete:active, .derive:active {
   background: #ddd;
 }
 

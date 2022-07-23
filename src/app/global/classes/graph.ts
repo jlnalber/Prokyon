@@ -37,7 +37,6 @@ export class Graph extends CanvasElement {
       // get possible points
       let lastElevation: number | undefined;
       let lastPoint: Point | undefined;
-      console.log(rangeRect.x + rangeRect.width);
       for (let x = rangeRect.x; x < rangeRect.x + rangeRect.width; x += curStep) {
         let split = false;
         try {
@@ -88,7 +87,6 @@ export class Graph extends CanvasElement {
           }
         }
         catch {
-          console.log(x, this.func)
           split = true;
         }
 
@@ -100,8 +98,6 @@ export class Graph extends CanvasElement {
       if (curPath.length != 0) {
         paths.push(curPath);
       }
-
-      console.log(paths);
 
       // then draw all paths
       for (let path of paths) {

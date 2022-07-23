@@ -1,4 +1,5 @@
-<div class="wrapper">
+<div class="wrapper" [appContextMenu]="this.contextMenu">
   <input class="input" #inp (keyup)="onChange(inp.value)" onClick="this.select();" [value]="this.graph.configuration.formula" [disabled]="!this.graph.configuration.editable">
-  <button class="delete" (click)="delete()"><span class="material-symbols-outlined">delete</span></button>
+  <!--<button class="delete" (click)="delete()"><span class="material-symbols-outlined">delete</span></button>
+  <button class="derive" (click)="derive()"><span class="material-symbols-outlined">south_east</span></button>-->
 </div>
