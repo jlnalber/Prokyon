@@ -3,6 +3,46 @@ import {DrawerService} from "../services/drawer.service";
 import {Graph} from "../global/classes/graph";
 import {Constant} from "../global/classes/func/operations/constants/constant";
 import {Func} from "../global/classes/func/func";
+import {Color} from "../global/interfaces/color";
+import {getNew, sameColors} from "../global/essentials/utils";
+
+const colors: Color[] = [
+  {
+    r: 18,
+    g: 128,
+    b: 234
+  },
+  {
+    r: 214,
+    g: 78,
+    b: 78
+  },
+  {
+    r: 78,
+    g: 194,
+    b: 98
+  },
+  {
+    r: 88,
+    g: 88,
+    b: 224
+  },
+  {
+    r: 234,
+    g: 234,
+    b: 38
+  },
+  {
+    r: 224,
+    g: 48,
+    b: 224
+  },
+  {
+    r: 48,
+    g: 224,
+    b: 224
+  }
+]
 
 @Component({
   selector: 'app-formula-editor',
@@ -27,7 +67,7 @@ export class FormulaEditorComponent implements OnInit {
   }
 
   addClick() {
-    let graph = new Graph(new Func(new Constant(0)));
+    let graph = new Graph(new Func(new Constant(0)), getNew(colors, this.graphs.map(g => g.color), (c1, c2) => { return sameColors(c1, c2) }));
     graph.configuration.formula = '0';
     graph.configuration.editable = true;
     this.drawerService.addCanvasElement(graph);

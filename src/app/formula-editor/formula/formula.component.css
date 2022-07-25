@@ -12,7 +12,8 @@
   right: 0;
   top: 0;
   bottom: 0;
-  width: calc(100% - 2 * var(--padding) - 0 * 2 * var(--buttonSize) - 0 * 2 * var(--margin));
+  width: calc(100% - 2 * var(--padding) - var(--buttonSize) - var(--margin));
+  margin-left: calc(var(--margin) + var(--buttonSize));
   height: 30px;
   font-size: 14pt;
   font-family: "Cambria Math", Cambria, serif;
@@ -70,4 +71,17 @@
     'wght' 400,
     'GRAD' 0,
     'opsz' 48
+}
+
+.colorPicker {
+  --borderThickness: 2px;
+  float: left;
+  width: calc(var(--buttonSize) - 2 * var(--borderThickness));
+  height: calc(var(--buttonSize) - 2 * var(--borderThickness));
+  border: var(--borderThickness) solid;
+  border-radius: 100%;
+}
+
+.colorPicker.notVisible {
+  background: transparent !important;
 }

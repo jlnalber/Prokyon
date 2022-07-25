@@ -250,7 +250,7 @@ export class OperationsCompiler {
     }
 
     // return the result
-    console.log(this.stringSplit);
+    // console.log(this.stringSplit);
     return this.stringSplit;
   }
 

@@ -5,6 +5,7 @@ import {Graph} from "../../global/classes/graph";
 import {Constant} from "../../global/classes/func/operations/constants/constant";
 import {DrawerService} from "../../services/drawer.service";
 import {ContextMenu} from "../../contextMenu/context-menu.directive";
+import {getColorAsRgbaFunction} from "../../global/interfaces/color";
 
 @Component({
   selector: 'app-formula',
@@ -13,11 +14,14 @@ import {ContextMenu} from "../../contextMenu/context-menu.directive";
 })
 export class FormulaComponent implements OnInit {
 
+  private canCompile: boolean = false;
+
   private _graph: Graph;
   @Input() set graph(value: Graph) {
     if (!value.configuration.formula) {
       value.configuration.formula = '';
     }
+    this.canCompile = true;
     this._graph = value;
   }
   get graph(): Graph {
@@ -37,8 +41,11 @@ export class FormulaComponent implements OnInit {
       let operation = new OperationsCompiler(value).compile();
       this.graph.func = new Func(operation)
       this.graph.configuration.formula = value;
+      this.canCompile = true;
     }
-    catch { }
+    catch {
+      this.canCompile = false;
+    }
   }
 
   delete() {
@@ -55,6 +62,21 @@ export class FormulaComponent implements OnInit {
     catch (e: any) {
       console.log(e);
     }
+  }
+
+  duplicate() {
+    try {
+      let operation = this.graph.configuration.formula;
+      if (operation) {
+        let newFunc = new Func(new OperationsCompiler(operation).compile());
+        let newGraph = new Graph(newFunc, this.graph.color, this.graph.visible, this.graph.lineWidth);
+        newGraph.configuration = {
+          formula: operation,
+          editable: this.graph.configuration.editable ?? false
+        }
+        this.drawerService.addCanvasElement(newGraph);
+      }
+    } catch { }
   }
 
   canDerive(): boolean {
@@ -78,6 +100,14 @@ export class FormulaComponent implements OnInit {
         icon: 'south_east'
       },
       {
+        header: 'Duplizieren',
+        icon: 'content_copy',
+        disabled: !this.canCompile,
+        click: () => {
+          this.duplicate();
+        }
+      },
+      {
         header: 'Löschen',
         color: 'red',
         click: () => {
@@ -86,5 +116,14 @@ export class FormulaComponent implements OnInit {
         icon: 'delete'
       }]
     }
+  }
+
+  public get color(): string {
+    return getColorAsRgbaFunction(this.graph.color);
+  }
+
+  changeVisibility() {
+    this.graph.visible = !this.graph.visible;
+    this.drawerService.redraw();
   }
 }

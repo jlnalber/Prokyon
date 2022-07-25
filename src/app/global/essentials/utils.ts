@@ -1,5 +1,6 @@
 import {Rect} from "../interfaces/rect";
 import {Point} from "../interfaces/point";
+import {Color} from "../interfaces/color";
 
 export function isIn(point: Point, rect: Rect): boolean {
   let firstP = rect as Point;
@@ -104,6 +105,13 @@ export function hasWhereApplies<T>(ts: T[], func: (t: T) => boolean): boolean {
   return false;
 }
 
+export function indexWhereApplies<T>(ts: T[], func: (t: T) => boolean): number{
+  for (let i = 0; i < ts.length; i++) {
+    if (func(ts[i])) return i;
+  }
+  return -1;
+}
+
 export function indexUntil<T>(arr: T[], addition: T[], subtraction: T[], startIndex?: number, errorMessage?: string, step: number = 1): number {
   let value = 0;
   for (let i = startIndex ?? 0; i >= 0 && i < arr.length; i += step) {
@@ -119,4 +127,22 @@ export function indexUntil<T>(arr: T[], addition: T[], subtraction: T[], startIn
     return startIndex ?? 0;
   }
   throw errorMessage;
+}
+
+export function sameColors(color1: Color, color2: Color): boolean {
+  return (color1.r == color2.r) && (color1.g == color2.g) && (color1.b == color2.b)
+        && (color1.a == color2.a || (!color1.a && !color2.a));
+}
+
+export function getNew<T>(pool: T[], arr: T[], compare: (t1: T, t2: T) => boolean): T {
+  let newArr = arr.slice();
+  let index = 0;
+  let func = (t: T) => {
+    return compare(pool[index % pool.length], t);
+  };
+  for (; hasWhereApplies(newArr, func); index++) {
+    const indexInNewArr = indexWhereApplies(newArr, func);
+    newArr.splice(indexInNewArr, 1);
+  }
+  return pool[index % pool.length];
 }
