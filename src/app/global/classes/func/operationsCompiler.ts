@@ -134,7 +134,16 @@ export class OperationsCompiler {
         let fromPowToEndOfExponent = (index: number): number => {
           try {
             if (this.stringSplit && contains(functions, this.stringSplit[index + 1])) {
-              return indexUntil(this.stringSplit, openingBrackets, closingBrackets, index + 2, parseErrorMessage);
+              let nextEl = this.stringSplit[index + 2];
+              if (contains(openingBrackets, nextEl)) {
+                return indexUntil(this.stringSplit, openingBrackets, closingBrackets, index + 2, parseErrorMessage);
+              }
+              else if (contains(functions, nextEl)) {
+                return fromPowToEndOfExponent(index + 1);
+              }
+              else {
+                return index + 2;
+              }
             }
             else if (this.stringSplit && contains(openingBrackets, this.stringSplit[index + 1])) {
               return indexUntil(this.stringSplit, openingBrackets, closingBrackets, index + 1, parseErrorMessage);
@@ -202,17 +211,18 @@ export class OperationsCompiler {
             }
             else if (contains(functions, this.stringSplit[i - 1])) {
               let endIndex = indexUntil(this.stringSplit, openingBrackets, closingBrackets, i + 1, parseErrorMessage);
-              if (endIndex < this.stringSplit.length - 1 && this.stringSplit[endIndex + 1] == '^') {
+              /*if (endIndex < this.stringSplit.length - 1 && this.stringSplit[endIndex + 1] == '^') {
                 let endExponentIndex = fromPowToEndOfExponent(endIndex + 1);
                 this.stringSplit.splice(endExponentIndex + 1, 0, ')', ')');
                 this.stringSplit.splice(i, 1, '(', '-1', '*', '(')
+                i += 6;
               }
-              else {
+              else {*/
                 this.stringSplit.splice(i, 1);
-                this.stringSplit.splice(endIndex + 1, 0, ')');
+                this.stringSplit.splice(endIndex, 0, ')');
                 this.stringSplit.splice(i, 0, '(', '-1', '*');
                 i += 3;
-              }
+              //}
             }
           }
           /*
@@ -240,7 +250,7 @@ export class OperationsCompiler {
     }
 
     // return the result
-    // console.log(this.stringSplit);
+    console.log(this.stringSplit);
     return this.stringSplit;
   }
 
