@@ -1,0 +1,19 @@
+@keyframes start {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.wrapper {
+  --borderRadius: 5px;
+  background: white;
+  position: fixed;
+  padding: 5px;
+  border-radius: var(--borderRadius);
+  border: 1px solid #ccc;
+  animation: 0.1s start ease-in-out;
+  z-index: 1;
+}

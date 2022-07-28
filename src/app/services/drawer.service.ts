@@ -8,6 +8,9 @@ import {Transformations} from "../global/interfaces/transformations";
 import {Point, Vector} from "../global/interfaces/point";
 import { CanvasDrawer } from '../global/classes/canvasDrawer';
 import {Grid} from "../global/classes/grid";
+import {Graph} from "../global/classes/graph";
+import {getNew, sameColors} from "../global/essentials/utils";
+import {colors} from "../formula-editor/formula-editor.component";
 
 @Injectable({
   providedIn: 'root'
@@ -45,6 +48,20 @@ export class DrawerService {
   }
   public get canvasElements(): CanvasElement[] {
     return this._canvasElements.slice();
+  }
+
+  public get graphs(): Graph[] {
+    let graphs = [];
+    for (let cEl of this.canvasElements) {
+      if (cEl instanceof Graph) {
+        graphs.push(cEl);
+      }
+    }
+    return graphs;
+  }
+
+  public getNewColorForGraph(): Color {
+    return getNew(colors, this.graphs.map(g => g.color), (c1, c2) => { return sameColors(c1, c2) })
   }
 
   private _metaDrawers: CanvasDrawer[] = [];

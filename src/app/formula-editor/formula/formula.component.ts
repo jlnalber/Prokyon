@@ -1,11 +1,14 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, Type} from '@angular/core';
 import {Func} from "../../global/classes/func/func";
 import {OperationsCompiler} from "../../global/classes/func/operationsCompiler";
 import {Graph} from "../../global/classes/graph";
 import {Constant} from "../../global/classes/func/operations/constants/constant";
 import {DrawerService} from "../../services/drawer.service";
 import {ContextMenu} from "../../contextMenu/context-menu.directive";
-import {getColorAsRgbaFunction} from "../../global/interfaces/color";
+import {Color, getColorAsRgbaFunction} from "../../global/interfaces/color";
+import {TabGroupComponent} from "../../tab-group/tab-group.component";
+import {HoverConfiguration} from "../../hover-menu/hover-menu.directive";
+import {ColorPickerComponent} from "../../color-picker/color-picker.component";
 
 @Component({
   selector: 'app-formula',
@@ -54,7 +57,7 @@ export class FormulaComponent implements OnInit {
 
   derive() {
     try {
-      let derivedGraph = new Graph(this.graph.func.derive().simplify());
+      let derivedGraph = new Graph(this.graph.func.derive().simplify(), this.drawerService.getNewColorForGraph());
       derivedGraph.configuration.editable = true;
       derivedGraph.configuration.formula = derivedGraph.func.operationAsString;
       this.drawerService.addCanvasElement(derivedGraph);
@@ -116,6 +119,21 @@ export class FormulaComponent implements OnInit {
         icon: 'delete'
       }]
     }
+  }
+
+  public get hoverMenu(): HoverConfiguration {
+    return {
+      component: ColorPickerComponent,
+      data: {
+        getter: () => {
+          return this.graph.color;
+        },
+        setter: (c: Color) => {
+          this.graph.color = c;
+          this.drawerService.redraw();
+        }
+      }
+    };
   }
 
   public get color(): string {

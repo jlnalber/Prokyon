@@ -1,0 +1,33 @@
+.wrapper {
+  --width: 100px;
+  width: var(--width);
+}
+
+.preview {
+  --size: 40px;
+  width: var(--width);
+  height: var(--size);
+  border-radius: 5px;
+}
+
+.inp {
+  --padding: 5px;
+  --border: 1px;
+  width: calc(var(--width) - 2 * (var(--padding) + var(--border)));
+  padding: var(--padding);
+  margin-top: 7px;
+  border-radius: 5px;
+  border: var(--border) solid #ddd;
+  transition: all 0.1s ease-in-out;
+  outline: none;
+  font-size: 10pt;
+  font-family: 'Segoe UI', Calibri, 'sans-serif';
+}
+
+.inp:hover {
+  border: var(--border) solid #999;
+}
+
+.inp:active, .inp:focus {
+  border: var(--border) solid #555;
+}

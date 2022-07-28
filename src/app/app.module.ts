@@ -8,6 +8,10 @@ import { FormulaEditorComponent } from './formula-editor/formula-editor.componen
 import { FormulaComponent } from './formula-editor/formula/formula.component';
 import { ContextMenuDirective } from './contextMenu/context-menu.directive';
 import { ContextMenuComponent } from './contextMenu/context-menu/context-menu.component';
+import { HoverMenuDirective } from './hover-menu/hover-menu.directive';
+import { HoverMenuComponent } from './hover-menu/hover-menu/hover-menu.component';
+import { ColorPickerComponent } from './color-picker/color-picker.component';
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -17,10 +21,14 @@ import { ContextMenuComponent } from './contextMenu/context-menu/context-menu.co
     FormulaEditorComponent,
     FormulaComponent,
     ContextMenuDirective,
-    ContextMenuComponent
+    ContextMenuComponent,
+    HoverMenuDirective,
+    HoverMenuComponent,
+    ColorPickerComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

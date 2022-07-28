@@ -2,13 +2,13 @@ import {Rect} from "../interfaces/rect";
 import {Point} from "../interfaces/point";
 import {Color} from "../interfaces/color";
 
-export function isIn(point: Point, rect: Rect): boolean {
+export function isIn(point: Point, rect: Rect, tolerance: number = 0): boolean {
   let firstP = rect as Point;
   let secondP: Point = {
     x:  firstP.x + rect.width,
     y: firstP.y + rect.height
   };
-  return isInRange(point.x, firstP.x, secondP.x) && isInRange(point.y, firstP.y, secondP.y);
+  return isInRange(point.x - tolerance, firstP.x, secondP.x + tolerance) && isInRange(point.y - tolerance, firstP.y, secondP.y + tolerance);
 }
 export function expandRectBy(rect: Rect, factor: number): Rect {
   let addX = rect.width * factor;
@@ -38,6 +38,15 @@ export function getPosFromPointerEvent(e: PointerEvent, el: Element): Point {
 }
 
 export function getPosFromWheelEvent(e: WheelEvent, el: Element): Point {
+  const rect = el.getBoundingClientRect();
+
+  return {
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top
+  }
+}
+
+export function getPosFromMouseEvent(e: MouseEvent, el: Element): Point {
   const rect = el.getBoundingClientRect();
 
   return {

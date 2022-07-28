@@ -1,12 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, Type} from '@angular/core';
 import {DrawerService} from "../services/drawer.service";
 import {Graph} from "../global/classes/graph";
 import {Constant} from "../global/classes/func/operations/constants/constant";
 import {Func} from "../global/classes/func/func";
 import {Color} from "../global/interfaces/color";
 import {getNew, sameColors} from "../global/essentials/utils";
+import {TabGroupComponent} from "../tab-group/tab-group.component";
 
-const colors: Color[] = [
+export const colors: Color[] = [
   {
     r: 18,
     g: 128,
@@ -67,7 +68,7 @@ export class FormulaEditorComponent implements OnInit {
   }
 
   addClick() {
-    let graph = new Graph(new Func(new Constant(0)), getNew(colors, this.graphs.map(g => g.color), (c1, c2) => { return sameColors(c1, c2) }));
+    let graph = new Graph(new Func(new Constant(0)), this.drawerService.getNewColorForGraph());
     graph.configuration.formula = '0';
     graph.configuration.editable = true;
     this.drawerService.addCanvasElement(graph);

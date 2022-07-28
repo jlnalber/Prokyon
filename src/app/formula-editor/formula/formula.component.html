@@ -1,4 +1,4 @@
 <div class="wrapper" [appContextMenu]="this.contextMenu">
-  <div class="colorPicker" [ngStyle]="{'border-color': this.color, 'background': this.color}" [ngClass]="{'notVisible': !this.graph.visible}" (click)="changeVisibility()"></div>
+  <div class="colorPicker" [appHoverMenu]="hoverMenu" [ngStyle]="{'border-color': this.color, 'background': this.color}" [ngClass]="{'notVisible': !this.graph.visible}" (click)="changeVisibility()"></div>
   <input class="input" #inp (keyup)="onChange(inp.value)" onClick="this.select();" [value]="this.graph.configuration.formula" [disabled]="!this.graph.configuration.editable">
 </div>

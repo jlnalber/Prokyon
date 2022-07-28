@@ -1,0 +1,6 @@
+<div class="wrapper">
+  <div class="preview" [ngStyle]="{'background': this.colorStr}"></div>
+  <input type="number" title="Rot" min="0" max="255" class="inp r" [(ngModel)]="this.r" (input)="this.input()">
+  <input type="number" title="Grün" min="0" max="255" class="inp g" [(ngModel)]="this.g" (input)="this.input()">
+  <input type="number" title="Blau" min="0" max="255" class="inp b" [(ngModel)]="this.b" (input)="this.input()">
+</div>
