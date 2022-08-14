@@ -3,8 +3,15 @@ import {Point} from "../interfaces/point";
 import {Rect} from "../interfaces/rect";
 import {Color, getColorAsRgbaFunction} from "../interfaces/color";
 
+export interface Config {
+  showGrid?: boolean,
+  gridColor?: Color,
+  showNumbers?: boolean,
+  numbersBase?: number
+}
+
 export class RenderingContext {
-  constructor (private readonly ctx: CanvasRenderingContext2D, private readonly transformations: Transformations) { }
+  constructor (private readonly ctx: CanvasRenderingContext2D, private readonly transformations: Transformations, public readonly config?: Config) { }
 
   public transformPointFromCanvasToField(p: Point): Point {
     return {

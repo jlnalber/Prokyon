@@ -2,6 +2,8 @@ import {Event} from "./event";
 import {CanvasDrawer} from "./canvasDrawer";
 
 export interface CanvasElementConfiguration {
+  label?: string,
+  name?: string,
   formula?: string,
   editable?: boolean
 }

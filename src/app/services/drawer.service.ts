@@ -11,6 +11,7 @@ import {Grid} from "../global/classes/grid";
 import {Graph} from "../global/classes/graph";
 import {getNew, sameColors} from "../global/essentials/utils";
 import {colors} from "../formula-editor/formula-editor.component";
+import {Config as CanvasConfig} from "../global/classes/renderingContext";
 
 @Injectable({
   providedIn: 'root'
@@ -119,12 +120,35 @@ export class DrawerService {
     this.zoom *= factor;
   }
 
+  private _showGrid: boolean = true;
+  public get showGrid(): boolean {
+    return this._showGrid;
+  }
+  public set showGrid(value: boolean) {
+    this._showGrid = value;
+    this.onCanvasConfigChanged.emit(this.canvasConfig);
+  }
+  private _showGridNumbers: boolean = true;
+  public get showGridNumbers(): boolean {
+    return this._showGridNumbers;
+  }
+  public set showGridNumbers(value: boolean) {
+    this._showGridNumbers = value;
+    this.onCanvasConfigChanged.emit(this.canvasConfig);
+  }
+  private get canvasConfig(): CanvasConfig {
+    return {
+      showNumbers: this.showGridNumbers,
+      showGrid: this.showGrid
+    }
+  }
 
   // Events
   public readonly onBackgroundColorChanged: Event<Color> = new Event<Color>();
   public readonly onCanvasElementsChanged: Event<CanvasElement> = new Event<CanvasElement>();
   public readonly onMetaDrawersChanged: Event<CanvasDrawer> = new Event<CanvasDrawer>();
   public readonly onTransformationsChanged: Event<number> = new Event<number>();
+  public readonly onCanvasConfigChanged: Event<CanvasConfig> = new Event<CanvasConfig>();
 
   private redrawListener = () => {
     this.redraw();
@@ -139,10 +163,11 @@ export class DrawerService {
     this.onCanvasElementsChanged.addListener(this.redrawListener);
     this.onTransformationsChanged.addListener(this.redrawListener);
     this.onMetaDrawersChanged.addListener(this.redrawListener);
+    this.onCanvasConfigChanged.addListener(this.redrawListener);
   }
 
   public get renderingContext(): RenderingContext {
-    return new RenderingContext(this.canvas?.ctx as CanvasRenderingContext2D, this._transformations);
+    return new RenderingContext(this.canvas?.ctx as CanvasRenderingContext2D, this._transformations, this.canvasConfig);
   }
 
   public redraw(): void {

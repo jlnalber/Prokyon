@@ -1,14 +1,13 @@
-import {Component, Input, OnInit, Type} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {Func} from "../../global/classes/func/func";
-import {OperationsCompiler} from "../../global/classes/func/operationsCompiler";
 import {Graph} from "../../global/classes/graph";
 import {Constant} from "../../global/classes/func/operations/constants/constant";
 import {DrawerService} from "../../services/drawer.service";
 import {ContextMenu} from "../../contextMenu/context-menu.directive";
 import {Color, getColorAsRgbaFunction} from "../../global/interfaces/color";
-import {TabGroupComponent} from "../../tab-group/tab-group.component";
 import {HoverConfiguration} from "../../hover-menu/hover-menu.directive";
 import {ColorPickerComponent} from "../../color-picker/color-picker.component";
+import {FuncParser} from "../../global/classes/func/funcParser";
 
 @Component({
   selector: 'app-formula',
@@ -41,8 +40,8 @@ export class FormulaComponent implements OnInit {
 
   onChange(value: string) {
     try {
-      let operation = new OperationsCompiler(value).compile();
-      this.graph.func = new Func(operation)
+      let func = new FuncParser(value).parse();
+      this.graph.func = func;
       this.graph.configuration.formula = value;
       this.canCompile = true;
     }
@@ -69,12 +68,12 @@ export class FormulaComponent implements OnInit {
 
   duplicate() {
     try {
-      let operation = this.graph.configuration.formula;
-      if (operation) {
-        let newFunc = new Func(new OperationsCompiler(operation).compile());
+      let formula = this.graph.configuration.formula;
+      if (formula) {
+        let newFunc = new FuncParser(formula).parse();
         let newGraph = new Graph(newFunc, this.graph.color, this.graph.visible, this.graph.lineWidth);
         newGraph.configuration = {
-          formula: operation,
+          formula: formula,
           editable: this.graph.configuration.editable ?? false
         }
         this.drawerService.addCanvasElement(newGraph);

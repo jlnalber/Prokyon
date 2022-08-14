@@ -10,7 +10,8 @@ export class Division extends Operation {
   }
 
   public derive(): Operation {
-    return new Division(new Subtraction(new Multiplication(this.dividend.derive(), this.divisor), new Multiplication(this.dividend, this.divisor.derive())), new Pow(this.divisor, new Constant(2)));
+    return new Division(new Subtraction(new Multiplication(this.dividend.derive(), this.divisor), new Multiplication(this.dividend, this.divisor.derive())),
+                                      new Pow(this.divisor, new Constant(2)));
   }
 
   constructor(private readonly dividend: Operation, private readonly divisor: Operation) {

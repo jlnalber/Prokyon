@@ -87,6 +87,26 @@ export function indexOf<T>(ts: T[], ...searchValues: T[]): number {
   return -1;
 }
 
+export function strIndexOf(str: string, ...searchValues: string[]): number {
+  let pos = searchValues.map(s => {
+    return str.indexOf(s);
+  }).filter(n => {
+    return n != -1;
+  });
+
+  if (pos.length == 0) {
+    return -1;
+  }
+
+  let minIndex = pos[0];
+  for (let i = 1; i < pos.length; i++) {
+    if (pos[i] < minIndex) {
+      minIndex = pos[i];
+    }
+  }
+  return minIndex;
+}
+
 export function lastIndexOf<T>(ts: T[], ...searchValues: T[]): number {
   for (let i = ts.length - 1; i >= 0; i--) {
     let c = ts[i];
@@ -99,6 +119,10 @@ export function lastIndexOf<T>(ts: T[], ...searchValues: T[]): number {
 
 export function contains<T>(ts: T[], ...searchValues: T[]): boolean {
   return indexOf(ts, ...searchValues) != -1;
+}
+
+export function strContains(str: string, ...searchValues: string[]): boolean {
+  return strIndexOf(str, ...searchValues) != -1;
 }
 
 export function clamp(min: number, val: number, max: number): number {

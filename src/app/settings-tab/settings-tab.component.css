@@ -1,0 +1,14 @@
+.wrapper {
+  padding: 16px;
+  font-family: 'Segoe UI', Calibri, 'sans-serif';
+  font-size: 11pt;
+  user-select: none;
+}
+
+.settingsContainer {
+  margin-bottom: 7px;
+}
+
+.settingsContainer label {
+  padding-left: 7px;
+}

@@ -12,6 +12,7 @@ import { HoverMenuDirective } from './hover-menu/hover-menu.directive';
 import { HoverMenuComponent } from './hover-menu/hover-menu/hover-menu.component';
 import { ColorPickerComponent } from './color-picker/color-picker.component';
 import {FormsModule} from "@angular/forms";
+import { SettingsTabComponent } from './settings-tab/settings-tab.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import {FormsModule} from "@angular/forms";
     ContextMenuComponent,
     HoverMenuDirective,
     HoverMenuComponent,
-    ColorPickerComponent
+    ColorPickerComponent,
+    SettingsTabComponent
   ],
   imports: [
     BrowserModule,

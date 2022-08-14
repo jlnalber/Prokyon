@@ -1,0 +1,10 @@
+<div class="wrapper">
+  <div class="showGrid settingsContainer">
+    <input type="checkbox" [(ngModel)]="drawerService.showGrid" id="showGrid">
+    <label for="showGrid">Koordinatengitter anzeigen</label>
+  </div>
+  <div class="showGridNumbers settingsContainer">
+    <input type="checkbox" [(ngModel)]="drawerService.showGridNumbers" id="showGridNumbers" [disabled]="!drawerService.showGrid">
+    <label for="showGridNumbers">Achsenbeschriftung anzeigen</label>
+  </div>
+</div>

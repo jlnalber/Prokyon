@@ -1,29 +1,29 @@
-import {Operation} from "./operations/operation";
-import {contains, indexOf, indexUntil, lastIndexOf, replaceAll, tryParseNumber} from "../../essentials/utils";
-import {Constant} from "./operations/constants/constant";
-import {Addition} from "./operations/elementaryOperations/addition";
-import {Variable} from "./operations/variable";
-import {Subtraction} from "./operations/elementaryOperations/subtraction";
-import {Multiplication} from "./operations/elementaryOperations/multiplication";
-import {Division} from "./operations/elementaryOperations/division";
-import {Pow} from "./operations/elementaryOperations/pow";
-import {Modulo} from "./operations/elementaryOperations/modulo";
-import {Sinus} from "./operations/trigonometry/sinus";
-import {Cosinus} from "./operations/trigonometry/cosinus";
-import {Tangens} from "./operations/trigonometry/tangens";
-import {Secans} from "./operations/trigonometry/secans";
-import {Cosecans} from "./operations/trigonometry/cosecans";
-import {Cotangens} from "./operations/trigonometry/cotangens";
-import {Arcussinus} from "./operations/trigonometry/arcussinus";
-import {Arcuscosinus} from "./operations/trigonometry/arcuscosinus";
-import {Arcustangens} from "./operations/trigonometry/arcustangens";
-import {Arcussecans} from "./operations/trigonometry/arcussecans";
-import {Arcuscosecans} from "./operations/trigonometry/arcuscosecans";
-import {Arcuscotangens} from "./operations/trigonometry/arcuscotangens";
-import {Root} from "./operations/elementaryOperations/root";
-import {NaturalLogarithm} from "./operations/naturalLogarithm";
-import {PiConstant} from "./operations/constants/pi";
-import {EConstant} from "./operations/constants/e";
+import {Operation} from "./operation";
+import {contains, indexOf, indexUntil, lastIndexOf, replaceAll, tryParseNumber} from "../../../essentials/utils";
+import {Constant} from "./constants/constant";
+import {Addition} from "./elementaryOperations/addition";
+import {Variable} from "./variable";
+import {Subtraction} from "./elementaryOperations/subtraction";
+import {Multiplication} from "./elementaryOperations/multiplication";
+import {Division} from "./elementaryOperations/division";
+import {Pow} from "./elementaryOperations/pow";
+import {Modulo} from "./elementaryOperations/modulo";
+import {Sinus} from "./trigonometry/sinus";
+import {Cosinus} from "./trigonometry/cosinus";
+import {Tangens} from "./trigonometry/tangens";
+import {Secans} from "./trigonometry/secans";
+import {Cosecans} from "./trigonometry/cosecans";
+import {Cotangens} from "./trigonometry/cotangens";
+import {Arcussinus} from "./trigonometry/arcussinus";
+import {Arcuscosinus} from "./trigonometry/arcuscosinus";
+import {Arcustangens} from "./trigonometry/arcustangens";
+import {Arcussecans} from "./trigonometry/arcussecans";
+import {Arcuscosecans} from "./trigonometry/arcuscosecans";
+import {Arcuscotangens} from "./trigonometry/arcuscotangens";
+import {Root} from "./elementaryOperations/root";
+import {NaturalLogarithm} from "./naturalLogarithm";
+import {PiConstant} from "./constants/pi";
+import {EConstant} from "./constants/e";
 
 const powerOperators = [
   '^'
@@ -38,7 +38,7 @@ const lineOperators = [
   '-'
 ]
 const operations = [ ...powerOperators, ...lineOperators, ...pointOperators ]
-const whitespaces = [
+export const whitespaces = [
   ' ',
   '\t',
   '\r',
@@ -76,7 +76,7 @@ const notNumbersOrVariables = [ ...whitespaces, ...operations, ...brackets ];
 
 const parseErrorMessage = 'syntax error';
 
-export class OperationsCompiler {
+export class OperationsParser {
 
   constructor(private readonly str: string) { }
 
@@ -159,7 +159,10 @@ export class OperationsCompiler {
         }
 
         // check whether additional elements have to be inserted
-        for (let i = 0; i < this.stringSplit.length - 1; i++) {
+        for (let i = this.stringSplit.length - 2; i >= 0; i--) {
+
+          // TODO: 5x^2 is interpreted as (5x)^2, --> problem: you can't just insert a *, example: sin 5x^2 should be (sin (5x))^2
+
           // first multiplication
           if (!(contains(openingBrackets, this.stringSplit[i])
             || contains(closingBrackets, this.stringSplit[i + 1])
@@ -168,15 +171,19 @@ export class OperationsCompiler {
             || tryParseNumber(this.stringSplit[i + 1])
             || contains(functions, this.stringSplit[i]))) {
 
+            // end index is needed for special cases like 5x^2 --> when you have a power
+            let endIndex = indexUntil(this.stringSplit, openingBrackets, closingBrackets, i + 1, parseErrorMessage);
+
             if (contains(closingBrackets, this.stringSplit[i]) && contains(openingBrackets, this.stringSplit[i + 1])) {
               this.stringSplit.splice(i + 1, 0, '*');
             }
+            // else if (!contains(functions, this.stringSplit[i]) && this.stringSplit.length >= i + 3 && this.s)
             else {
               this.stringSplit.splice(indexUntil(this.stringSplit, openingBrackets, closingBrackets, i + 1, parseErrorMessage) + 1, 0, ')');
               this.stringSplit.splice(i + 1, 0, '*');
               this.stringSplit.splice(indexUntil(this.stringSplit, closingBrackets, openingBrackets, i, parseErrorMessage, -1), 0, '(');
             }
-            i--;
+            i++;
           }
 
           // then minus
@@ -197,7 +204,7 @@ export class OperationsCompiler {
           // then plus
           else if (this.stringSplit[i] == '+' && (i == 0 || contains(openingBrackets, this.stringSplit[i - 1]))) {
             this.stringSplit.splice(i, 1);
-            i--;
+            i++;
           }
         }
         // go over it for a second time (backwards)
@@ -472,7 +479,7 @@ export class OperationsCompiler {
     return this.operation;
   }
 
-  public compile(): Operation {
+  public parse(): Operation {
     // do all the operations after each other
     this.formatString();
     this.splitString();
