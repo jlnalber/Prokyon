@@ -130,34 +130,6 @@ export class OperationsParser {
           this.stringSplit.push(str);
         }
 
-        // helper function
-        let fromPowToEndOfExponent = (index: number): number => {
-          try {
-            if (this.stringSplit && contains(functions, this.stringSplit[index + 1])) {
-              let nextEl = this.stringSplit[index + 2];
-              if (contains(openingBrackets, nextEl)) {
-                return indexUntil(this.stringSplit, openingBrackets, closingBrackets, index + 2, parseErrorMessage);
-              }
-              else if (contains(functions, nextEl)) {
-                return fromPowToEndOfExponent(index + 1);
-              }
-              else {
-                return index + 2;
-              }
-            }
-            else if (this.stringSplit && contains(openingBrackets, this.stringSplit[index + 1])) {
-              return indexUntil(this.stringSplit, openingBrackets, closingBrackets, index + 1, parseErrorMessage);
-            }
-            else {
-              return index + 1;
-            }
-          }
-          catch {
-            throw parseErrorMessage;
-          }
-          throw parseErrorMessage;
-        }
-
         // check whether additional elements have to be inserted
         for (let i = 0; i < this.stringSplit.length - 1; i++) {
 
