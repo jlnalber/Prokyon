@@ -159,96 +159,35 @@ export class OperationsParser {
         }
 
         // check whether additional elements have to be inserted
-        for (let i = this.stringSplit.length - 2; i >= 0; i--) {
+        for (let i = 0; i < this.stringSplit.length - 1; i++) {
 
-          // TODO: 5x^2 is interpreted as (5x)^2, --> problem: you can't just insert a *, example: sin 5x^2 should be (sin (5x))^2
+          //check for functions that don't use brackets
+          if (contains(functions, this.stringSplit[i]) && !contains(openingBrackets, this.stringSplit[i + 1])) {
+            throw parseErrorMessage;
+          }
 
           // first multiplication
-          if (!(contains(openingBrackets, this.stringSplit[i])
+          if (!(i + 1 == this.stringSplit.length
+            || contains(openingBrackets, this.stringSplit[i])
             || contains(closingBrackets, this.stringSplit[i + 1])
             || contains(operations, this.stringSplit[i])
             || contains(operations, this.stringSplit[i + 1])
             || tryParseNumber(this.stringSplit[i + 1])
             || contains(functions, this.stringSplit[i]))) {
 
-            // end index is needed for special cases like 5x^2 --> when you have a power
-            let endIndex = indexUntil(this.stringSplit, openingBrackets, closingBrackets, i + 1, parseErrorMessage);
-
-            if (contains(closingBrackets, this.stringSplit[i]) && contains(openingBrackets, this.stringSplit[i + 1])) {
-              this.stringSplit.splice(i + 1, 0, '*');
-            }
-            // else if (!contains(functions, this.stringSplit[i]) && this.stringSplit.length >= i + 3 && this.s)
-            else {
-              this.stringSplit.splice(indexUntil(this.stringSplit, openingBrackets, closingBrackets, i + 1, parseErrorMessage) + 1, 0, ')');
-              this.stringSplit.splice(i + 1, 0, '*');
-              this.stringSplit.splice(indexUntil(this.stringSplit, closingBrackets, openingBrackets, i, parseErrorMessage, -1), 0, '(');
-            }
-            i++;
+            this.stringSplit.splice(i + 1, 0, '*');
           }
-
-          // then minus
-          /*else if (this.stringSplit[i] == '-' && (i == 0 || contains([ ...openingBrackets, ...functions ], this.stringSplit[i - 1]))) {
-            if (tryParseNumber(this.stringSplit[i + 1])) {
-              this.stringSplit.splice(i, 1);
-              this.stringSplit[i] = `-${this.stringSplit[i]}`;
-              i--;
-            }
-            else if (!contains([ ...functions, ...openingBrackets ], this.stringSplit[i + 1])) {
-              this.stringSplit.splice(i, 1);
-              this.stringSplit.splice(i + 1, 0, ')')
-              this.stringSplit.splice(i, 0, '(', '-1', '*');
-              i--;
-            }
-          }*/
 
           // then plus
           else if (this.stringSplit[i] == '+' && (i == 0 || contains(openingBrackets, this.stringSplit[i - 1]))) {
             this.stringSplit.splice(i, 1);
-            i++;
+            i--;
           }
-        }
-        // go over it for a second time (backwards)
-        for (let i = this.stringSplit.length - 1; i >= 0; i--) {
-          // do the minus again
-          if (this.stringSplit[i] == '-') {
-            // first when at start or after openingBrackets
-            if (i == 0 || contains(openingBrackets, this.stringSplit[i - 1])) {
-              this.stringSplit.splice(i, 1, '-1', '*');
-              i += 2;
-            }
-            else if (contains(functions, this.stringSplit[i - 1])) {
-              let endIndex = indexUntil(this.stringSplit, openingBrackets, closingBrackets, i + 1, parseErrorMessage);
-              /*if (endIndex < this.stringSplit.length - 1 && this.stringSplit[endIndex + 1] == '^') {
-                let endExponentIndex = fromPowToEndOfExponent(endIndex + 1);
-                this.stringSplit.splice(endExponentIndex + 1, 0, ')', ')');
-                this.stringSplit.splice(i, 1, '(', '-1', '*', '(')
-                i += 6;
-              }
-              else {*/
-                this.stringSplit.splice(i, 1);
-                this.stringSplit.splice(endIndex, 0, ')');
-                this.stringSplit.splice(i, 0, '(', '-1', '*');
-                i += 3;
-              //}
-            }
+
+          // then minus
+          else if (this.stringSplit[i] == '-' && (i == 0 || contains(openingBrackets, this.stringSplit[i - 1]))) {
+            this.stringSplit.splice(i, 1, '-1', '*');
           }
-          /*
-          if (this.stringSplit[i] == '-' && (i == 0 || contains([ ...openingBrackets, ...functions ], this.stringSplit[i - 1]))) {
-            if (contains(functions, this.stringSplit[i + 1])) {
-              this.stringSplit.splice(i, 1);
-              this.stringSplit.splice(indexUntil(this.stringSplit, openingBrackets, closingBrackets, i + 1, parseErrorMessage) + 1, 0, ')')
-              this.stringSplit.splice(i, 0, '(', '-1', '*');
-              i--;
-            }
-            else if (contains(openingBrackets, this.stringSplit[i + 1])) {
-              let indexTilEnd = indexUntil(this.stringSplit, openingBrackets, closingBrackets, i + 1, parseErrorMessage) + 1;
-              if ((i == 0 || contains(openingBrackets, this.stringSplit[i - 1])) && (indexTilEnd ))
-              this.stringSplit.splice(i, 1);
-              this.stringSplit.splice(indexUntil(this.stringSplit, openingBrackets, closingBrackets, i, parseErrorMessage) + 1, 0, ')')
-              this.stringSplit.splice(i, 0, '(', '-1', '*');
-              i--;
-            }
-          }*/
         }
       }
       else {
@@ -279,29 +218,6 @@ export class OperationsParser {
             }
             return el;
           }
-          /*else if (arr.length == 3) {
-            let el0 = arr[0];
-            let el1 = arr[1];
-            let el2 = arr[2];
-            if (typeof el0 == 'string' && openingBrackets.indexOf(el0) != -1 && (typeof el1 != 'string' || notNumbersOrVariables.indexOf(el1) == -1) && typeof el2 == 'string' && closingBrackets.indexOf(el2) != -1) {
-              if (typeof el1 == 'string') {
-                return {
-                  value: el1
-                };
-              }
-              return el1;
-            }
-            else if ((typeof el0 != 'string' || notNumbersOrVariables.indexOf(el0) == -1) && typeof el1 == 'string' && operations.indexOf(el1) != -1 && (typeof el2 != 'string' || notNumbersOrVariables.indexOf(el2) == -1)) {
-              return {
-                value: el1,
-                first: arrToTree([ arr[0] ]),
-                second: arrToTree([ arr[2] ])
-              };
-            }
-            else {
-              throw parseErrorMessage;
-            }
-          }*/
           else {
             let parseArray: (string | BinaryTree<string>)[] = [ ...arr ]
 
