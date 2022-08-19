@@ -1,11 +1,14 @@
 import {Operation} from "./operations/operation";
 
 export class Func {
-  constructor(private readonly operation: Operation, public readonly name?: string, private readonly variable?: string) { }
+  constructor(public readonly operation: Operation, public readonly name?: string, private readonly variable?: string) { }
 
-  public evaluate(x: number): number {
+  public evaluate(x: number, dict?: any): number {
+    if (this.stopEvaluation) {
+      throw 'evaluation stopped'
+    }
     let variable = this.variable ?? 'x';
-    let dict: any = {};
+    dict = dict ?? {};
     dict[variable] = x;
     return this.operation.evaluate(dict);
   }
@@ -15,7 +18,7 @@ export class Func {
     if (this.name) {
       name = this.name + '\'';
     }
-    return new Func(this.operation.derive(), name, this.variable);
+    return new Func(this.operation.derive(), name, this.variable).simplify();
   }
 
   public simplify(): Func {
@@ -28,4 +31,6 @@ export class Func {
     }
     return this.operation.toString();
   }
+
+  public stopEvaluation: boolean = false;
 }

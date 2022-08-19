@@ -13,6 +13,7 @@ export class Subtraction extends Operation {
 
   constructor(private readonly minuend: Operation, private readonly subtrahend: Operation) {
     super();
+    this.childOperations.push(this.minuend, this.subtrahend);
   }
 
   public override toString(): string {

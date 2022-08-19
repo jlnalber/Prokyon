@@ -16,6 +16,7 @@ export class Division extends Operation {
 
   constructor(private readonly dividend: Operation, private readonly divisor: Operation) {
     super();
+    this.childOperations.push(this.dividend, this.divisor);
   }
 
   public override toString(): string {

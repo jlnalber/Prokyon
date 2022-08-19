@@ -14,7 +14,7 @@ export class Variable extends Operation {
     return new Constant(1);
   }
 
-  constructor(private readonly key: string) {
+  constructor(public readonly key: string) {
     super();
   }
 

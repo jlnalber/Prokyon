@@ -1,6 +1,7 @@
 import {Func} from "./func";
 import {OperationsParser, whitespaces} from "./operations/operationsParser";
 import {strContains, strIndexOf} from "../../essentials/utils";
+import {FuncProvider} from "./operations/externalFunction";
 
 interface FuncMetaData {
   name?: string,
@@ -15,7 +16,7 @@ const splitChars = [
 
 export class FuncParser {
 
-  constructor(private readonly str: string) { }
+  constructor(private readonly str: string, private readonly funcProvider: FuncProvider) { }
 
   private funcMetaData: FuncMetaData | undefined;
   private funcOperation: string | undefined;
@@ -73,7 +74,7 @@ export class FuncParser {
     // parse the operation, then put it in a func and return it
     if (this.funcOperation && this.funcMetaData) {
       if (!this.func) {
-        let opParser = new OperationsParser(this.funcOperation);
+        let opParser = new OperationsParser(this.funcOperation, this.funcProvider);
         let operation = opParser.parse();
         this.func = new Func(operation, this.funcMetaData.name, this.funcMetaData.variable);
       }

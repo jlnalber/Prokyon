@@ -1,5 +1,13 @@
 import {Operation} from "./operation";
-import {contains, indexOf, indexUntil, lastIndexOf, replaceAll, tryParseNumber} from "../../../essentials/utils";
+import {
+  contains,
+  containsCombination,
+  indexOf,
+  indexUntil,
+  lastIndexOf, lastIndexOfCombination,
+  replaceAll,
+  tryParseNumber
+} from "../../../essentials/utils";
 import {Constant} from "./constants/constant";
 import {Addition} from "./elementaryOperations/addition";
 import {Variable} from "./variable";
@@ -24,6 +32,7 @@ import {Root} from "./elementaryOperations/root";
 import {NaturalLogarithm} from "./naturalLogarithm";
 import {PiConstant} from "./constants/pi";
 import {EConstant} from "./constants/e";
+import {ExternalFunction, FuncProvider} from "./externalFunction";
 
 const powerOperators = [
   '^'
@@ -72,13 +81,13 @@ const otherFunctions = [
   'sqrt'
 ];
 const functions = [ ...trigonometryFunctions, ...otherFunctions ];
-const notNumbersOrVariables = [ ...whitespaces, ...operations, ...brackets ];
+const notNumbersVariablesOrFunctions = [ ...whitespaces, ...operations, ...brackets ];
 
 const parseErrorMessage = 'syntax error';
 
 export class OperationsParser {
 
-  constructor(private readonly str: string) { }
+  constructor(private readonly str: string, private readonly funcProvider: FuncProvider) { }
 
   private formattedString: string | undefined;
   private stringSplit: string[] | undefined;
@@ -142,6 +151,7 @@ export class OperationsParser {
           if (!(i + 1 == this.stringSplit.length
             || contains(openingBrackets, this.stringSplit[i])
             || contains(closingBrackets, this.stringSplit[i + 1])
+            || (contains(openingBrackets, this.stringSplit[i + 1]) && !contains(closingBrackets, this.stringSplit[i]))
             || contains(operations, this.stringSplit[i])
             || contains(operations, this.stringSplit[i + 1])
             || tryParseNumber(this.stringSplit[i + 1])
@@ -205,8 +215,11 @@ export class OperationsParser {
             }
 
             // then, read in the functions
-            while (contains(parseArray, ...functions)) {
-              let startIndex = lastIndexOf(parseArray, ...functions);
+            let funcCond = (el1: string | BinaryTree<string>, el2: string | BinaryTree<string>): boolean => {
+              return typeof el1 === 'string' && typeof el2 !== 'string' && !contains(notNumbersVariablesOrFunctions, el1);
+            }
+            while (containsCombination(parseArray, funcCond)) {
+              let startIndex = lastIndexOfCombination(parseArray, funcCond);
 
               if (startIndex == parseArray.length - 1) throw parseErrorMessage;
 
@@ -349,7 +362,12 @@ export class OperationsParser {
 
           // else default to a variable
           else {
-            return new Variable(tree.value);
+            if (tree.first != undefined) {
+              return new ExternalFunction(tree.value, this.funcProvider, treeToOperation(tree.first));
+            }
+            else {
+              return new Variable(tree.value);
+            }
           }
 
           //throw 'didn\'t understand tree';

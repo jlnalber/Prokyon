@@ -12,6 +12,16 @@ import {Graph} from "../global/classes/graph";
 import {getNew, sameColors} from "../global/essentials/utils";
 import {colors} from "../formula-editor/formula-editor.component";
 import {Config as CanvasConfig} from "../global/classes/renderingContext";
+import {FuncProvider} from "../global/classes/func/operations/externalFunction";
+import {Func} from "../global/classes/func/func";
+import {FuncParser} from "../global/classes/func/funcParser";
+import {
+  analyse,
+  countDerivations,
+  funcNameWithoutDerivation,
+  isRecursive
+} from "../global/classes/func/operations/funcAnalyser";
+import Cache from "../global/essentials/cache";
 
 @Injectable({
   providedIn: 'root'
@@ -59,6 +69,59 @@ export class DrawerService {
       }
     }
     return graphs;
+  }
+
+  public readonly funcProvider: FuncProvider = (key: string) => {
+    // first, read from cache
+    let func = this.funcCache.getItem(key);
+    if (func) {
+      return func;
+    }
+
+    // then look up in the graphs
+    for (let graph of this.graphs) {
+      if (funcNameWithoutDerivation(key) === funcNameWithoutDerivation(graph.func.name)) {
+        let func = graph.func
+
+        // derive to the requested level
+        let deriveNow = countDerivations(func.name!);
+        let requestedDerive = countDerivations(key);
+        for (let i = 0; i < requestedDerive - deriveNow; i++) {
+          func = func.derive();
+        }
+
+        // store in cache
+        this.funcCache.setItem(key, func);
+        return func;
+      }
+    }
+    return undefined;
+  }
+
+  private readonly funcCache: Cache<string, Func> = new Cache<string, Func>();
+
+  public parseAndValidateFunc(str: string, requestConstants: boolean = true): Func | string {
+    const parserError = 'Ungültige Eingabe.';
+    const recursiveError = 'Eine Funktion darf nicht auf sich selbst verweisen.'
+    try {
+      let func = new FuncParser(str, this.funcProvider).parse();
+
+      try {
+        if (isRecursive(func)) {
+          return recursiveError;
+        }
+
+        let analyserRes = analyse(func);
+
+        return func;
+      }
+      catch (e) {
+        return parserError;
+      }
+    }
+    catch {
+      return parserError;
+    }
   }
 
   public getNewColorForGraph(): Color {
@@ -149,9 +212,15 @@ export class DrawerService {
   public readonly onMetaDrawersChanged: Event<CanvasDrawer> = new Event<CanvasDrawer>();
   public readonly onTransformationsChanged: Event<number> = new Event<number>();
   public readonly onCanvasConfigChanged: Event<CanvasConfig> = new Event<CanvasConfig>();
+  public readonly onBeforeRedraw: Event<undefined> = new Event<undefined>();
+  public readonly onAfterRedraw: Event<undefined> = new Event<undefined>();
 
   private redrawListener = () => {
     this.redraw();
+  }
+
+  private emptyCacheListener = () => {
+    this.funcCache.empty();
   }
 
   public canvas?: CanvasComponent;
@@ -164,6 +233,9 @@ export class DrawerService {
     this.onTransformationsChanged.addListener(this.redrawListener);
     this.onMetaDrawersChanged.addListener(this.redrawListener);
     this.onCanvasConfigChanged.addListener(this.redrawListener);
+
+    this.onBeforeRedraw.addListener(this.emptyCacheListener);
+    this.onAfterRedraw.addListener(this.emptyCacheListener);
   }
 
   public get renderingContext(): RenderingContext {
@@ -172,6 +244,8 @@ export class DrawerService {
 
   public redraw(): void {
     if (this.canvas && this.canvas.canvasEl && this.canvas.wrapperEl && this.canvas.ctx) {
+      this.onBeforeRedraw.emit();
+
       // resize canvas
       let boundingRect = this.canvas.wrapperEl.getBoundingClientRect();
       this.canvas.ctx.canvas.width = boundingRect.width;
@@ -189,6 +263,8 @@ export class DrawerService {
       for (let canvasElement of this._canvasElements) {
         canvasElement.draw(renderingContext);
       }
+
+      this.onAfterRedraw.emit();
     }
   }
 

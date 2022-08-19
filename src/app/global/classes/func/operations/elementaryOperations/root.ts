@@ -15,6 +15,7 @@ export class Root extends Operation {
 
   constructor(private readonly base: Operation, private readonly exponent: Operation) {
     super();
+    this.childOperations.push(this.base, this.exponent);
   }
 
   public override toString(): string {

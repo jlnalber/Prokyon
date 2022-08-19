@@ -1,8 +1,9 @@
 import {Operation} from "./operation";
 import {Division} from "./elementaryOperations/division";
 import {Constant} from "./constants/constant";
+import GeneralFunction from "./generalFunction";
 
-export class NaturalLogarithm extends Operation {
+export class NaturalLogarithm extends GeneralFunction {
 
   public evaluate(dict: any): number {
     return Math.log(this.operation.evaluate(dict));
@@ -12,8 +13,8 @@ export class NaturalLogarithm extends Operation {
     return new Division(this.operation.derive(), this.operation);
   }
 
-  constructor(private readonly operation: Operation) {
-    super();
+  constructor(operation: Operation) {
+    super(operation, 'ln');
   }
 
   public override toString(): string {

@@ -31,6 +31,7 @@ export class Multiplication extends Operation {
   constructor(...factors: Operation[]) {
     super();
     this.factors = factors;
+    this.childOperations.push(...factors);
   }
 
   public override toString(): string {

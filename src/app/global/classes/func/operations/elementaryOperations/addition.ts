@@ -21,6 +21,7 @@ export class Addition extends Operation {
   constructor(...summands: Operation[]) {
     super();
     this.summands = summands;
+    this.childOperations.push(...summands);
   }
 
   public override toString(): string {

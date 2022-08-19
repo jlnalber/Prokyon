@@ -1,6 +1,7 @@
 import {Operation} from "../operation";
+import GeneralFunction from "../generalFunction";
 
-export class Arcussecans extends Operation {
+export class Arcussecans extends GeneralFunction {
 
   public evaluate(dict: any): number {
     return Math.acos(1 / this.operation.evaluate(dict));
@@ -10,11 +11,7 @@ export class Arcussecans extends Operation {
     throw 'not implemented yet';
   }
 
-  constructor(private readonly operation: Operation) {
-    super();
-  }
-
-  public override simplify(): Operation {
-    return new Arcussecans(this.operation.simplify());
+  constructor(operation: Operation) {
+    super(operation, 'asec');
   }
 }

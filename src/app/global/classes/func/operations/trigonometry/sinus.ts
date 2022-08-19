@@ -1,8 +1,9 @@
 import {Operation} from "../operation";
 import {Multiplication} from "../elementaryOperations/multiplication";
 import {Cosinus} from "./cosinus";
+import GeneralFunction from "../generalFunction";
 
-export class Sinus extends Operation {
+export class Sinus extends GeneralFunction {
 
   public evaluate(dict: any): number {
     return Math.sin(this.operation.evaluate(dict));
@@ -12,15 +13,7 @@ export class Sinus extends Operation {
     return new Multiplication(this.operation.derive(), new Cosinus(this.operation))
   }
 
-  constructor(private readonly operation: Operation) {
-    super();
-  }
-
-  public override toString(): string {
-    return `sin(${this.operation.toString()})`
-  }
-
-  public override simplify(): Operation {
-    return new Sinus(this.operation.simplify());
+  constructor(operation: Operation) {
+    super(operation, 'sin');
   }
 }

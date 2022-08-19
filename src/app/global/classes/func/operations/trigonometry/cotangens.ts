@@ -1,6 +1,7 @@
 import {Operation} from "../operation";
+import GeneralFunction from "../generalFunction";
 
-export class Cotangens extends Operation {
+export class Cotangens extends GeneralFunction {
 
   public evaluate(dict: any): number {
     return 1 / Math.tan(this.operation.evaluate(dict));
@@ -10,11 +11,7 @@ export class Cotangens extends Operation {
     throw 'not implemented yet';
   }
 
-  constructor(private readonly operation: Operation) {
-    super();
-  }
-
-  public override simplify(): Operation {
-    return new Cotangens(this.operation.simplify());
+  constructor(operation: Operation) {
+    super(operation, 'cot');
   }
 }

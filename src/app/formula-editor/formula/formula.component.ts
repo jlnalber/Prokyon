@@ -16,14 +16,14 @@ import {FuncParser} from "../../global/classes/func/funcParser";
 })
 export class FormulaComponent implements OnInit {
 
-  private canCompile: boolean = false;
+  public errorMessage: string | undefined = undefined;
 
   private _graph: Graph;
   @Input() set graph(value: Graph) {
     if (!value.configuration.formula) {
       value.configuration.formula = '';
     }
-    this.canCompile = true;
+    this.errorMessage = undefined;
     this._graph = value;
   }
   get graph(): Graph {
@@ -39,14 +39,16 @@ export class FormulaComponent implements OnInit {
   }
 
   onChange(value: string) {
-    try {
-      let func = new FuncParser(value).parse();
-      this.graph.func = func;
+    let res = this.drawerService.parseAndValidateFunc(value);
+    if (res instanceof Func) {
+      this.errorMessage = undefined;
+      this.graph.func = res;
+      this.graph.func.stopEvaluation = false;
       this.graph.configuration.formula = value;
-      this.canCompile = true;
     }
-    catch {
-      this.canCompile = false;
+    else {
+      this.errorMessage = res;
+      this.graph.func.stopEvaluation = true;
     }
   }
 
@@ -56,7 +58,7 @@ export class FormulaComponent implements OnInit {
 
   derive() {
     try {
-      let derivedGraph = new Graph(this.graph.func.derive().simplify(), this.drawerService.getNewColorForGraph());
+      let derivedGraph = new Graph(this.graph.func.derive(), this.drawerService.getNewColorForGraph());
       derivedGraph.configuration.editable = true;
       derivedGraph.configuration.formula = derivedGraph.func.operationAsString;
       this.drawerService.addCanvasElement(derivedGraph);
@@ -70,7 +72,7 @@ export class FormulaComponent implements OnInit {
     try {
       let formula = this.graph.configuration.formula;
       if (formula) {
-        let newFunc = new FuncParser(formula).parse();
+        let newFunc = new FuncParser(formula, this.drawerService.funcProvider).parse();
         let newGraph = new Graph(newFunc, this.graph.color, this.graph.visible, this.graph.lineWidth);
         newGraph.configuration = {
           formula: formula,
@@ -104,7 +106,7 @@ export class FormulaComponent implements OnInit {
       {
         header: 'Duplizieren',
         icon: 'content_copy',
-        disabled: !this.canCompile,
+        disabled: this.errorMessage !== undefined,
         click: () => {
           this.duplicate();
         }

@@ -11,6 +11,7 @@ export class Modulo extends Operation {
 
   constructor(private readonly value: Operation, private readonly modulo: Operation) {
     super();
+    this.childOperations.push(this.value, this.modulo);
   }
 
   public override toString(): string {

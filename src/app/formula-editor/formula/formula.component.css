@@ -6,6 +6,10 @@
   --margin: 16px;
 }
 
+.wrapper.error .input {
+  background: #ffcccc !important;
+}
+
 .input {
   --padding: 7px;
   left: 0;

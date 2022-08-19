@@ -121,6 +121,28 @@ export function contains<T>(ts: T[], ...searchValues: T[]): boolean {
   return indexOf(ts, ...searchValues) != -1;
 }
 
+export function indexOfCombination<T>(ts: T[], func: (t1: T, t2: T) => boolean): number {
+  for (let i = 0; i < ts.length - 1; i++) {
+    if (func(ts[i], ts[i + 1])) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+export function lastIndexOfCombination<T>(ts: T[], func: (t1: T, t2: T) => boolean): number {
+  for (let i = ts.length - 2; i >= 0; i--) {
+    if (func(ts[i], ts[i + 1])) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+export function containsCombination<T>(ts: T[], func: (t1: T, t2: T) => boolean): boolean {
+  return indexOfCombination(ts, func) != -1;
+}
+
 export function strContains(str: string, ...searchValues: string[]): boolean {
   return strIndexOf(str, ...searchValues) != -1;
 }
@@ -178,4 +200,8 @@ export function getNew<T>(pool: T[], arr: T[], compare: (t1: T, t2: T) => boolea
     newArr.splice(indexInNewArr, 1);
   }
   return pool[index % pool.length];
+}
+
+export function clone(obj: any): any {
+  return JSON.parse(JSON.stringify(obj))
 }

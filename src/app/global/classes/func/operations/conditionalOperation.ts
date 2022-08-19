@@ -25,6 +25,7 @@ export class ConditionalOperation extends Operation {
   constructor(...conditionsWithOperations: ConditionWithOperation[]) {
     super();
     this.conditionsWithOperations = conditionsWithOperations;
+    this.childOperations.push(...conditionsWithOperations.map(item => item[1]))
   }
 
   public override simplify(): Operation {

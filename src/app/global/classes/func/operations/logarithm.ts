@@ -12,6 +12,7 @@ export class Logarithm extends Operation {
 
   constructor(private readonly operation: Operation, private readonly base: Operation) {
     super();
+    this.childOperations.push(this.operation, this.base);
   }
 
   public override simplify(): Operation {
