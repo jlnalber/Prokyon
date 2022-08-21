@@ -268,30 +268,4 @@ export class PointerController {
       }
     }
   }
-
-  private capturePinchEvents() {
-
-    this.element.addEventListener('pointerdown', this.startPinchZoomEvent);
-    this.element.addEventListener('pointermove', this.movePinchZoomEvent);
-
-    // Use same handler for pointer{up,cancel,out,leave} events since
-    // the semantics for these events - in this app - are the same.
-    this.element.addEventListener('pointerup', this.endPinchZoomEvent);
-    this.element.addEventListener('pointercancel', this.endPinchZoomEvent);
-    this.element.addEventListener('pointerout', this.endPinchZoomEvent);
-    this.element.addEventListener('pointerleave', this.endPinchZoomEvent);
-  }
-
-  private removePinchEvents() {
-
-    this.element.removeEventListener('pointerdown', this.startPinchZoomEvent);
-    this.element.removeEventListener('pointermove', this.movePinchZoomEvent);
-
-    // Use same handler for pointer{up,cancel,out,leave} events since
-    // the semantics for these events - in this app - are the same.
-    this.element.removeEventListener('pointerup', this.endPinchZoomEvent);
-    this.element.removeEventListener('pointercancel', this.endPinchZoomEvent);
-    this.element.removeEventListener('pointerout', this.endPinchZoomEvent);
-    this.element.removeEventListener('pointerleave', this.endPinchZoomEvent);
-  }
 }
