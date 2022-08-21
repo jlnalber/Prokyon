@@ -43,7 +43,10 @@ export class CanvasComponent implements OnInit, AfterViewInit {
           let factor = delta > 0 ? delta : 1 / -delta;
           this.drawerService.zoomToBy(p, factor);
         }
-      }
+      },
+      pinchZoom: (p: Point, factor: number) => {
+        this.drawerService.zoomToBy(p, factor);
+    }
     });
 
     /*this.drawerService.addCanvasElement(new Graph(new Func(new Multiplication(new Variable('x'), new Variable('x'))), {
