@@ -3,11 +3,16 @@ import {getPosFromPointerEvent, getPosFromWheelEvent} from "../essentials/utils"
 import Cache from "../essentials/cache";
 
 export interface PointerControllerEvents {
-  pointerStart?: (p: Point) => void,
-  pointerMove?: (from: Point, to: Point) => void,
-  pointerEnd?: (p: Point) => void,
+  pointerStart?: (p: Point, context: PointerContext) => void,
+  pointerMove?: (from: Point, to: Point, context: PointerContext) => void,
+  pointerEnd?: (p: Point, context: PointerContext) => void,
   scroll?: (p: Point, delta: number) => void,
   pinchZoom?: (p: Point, factor: number) => void;
+}
+
+export interface PointerContext {
+  id: number,
+  pointerCount: number
 }
 
 export class PointerController {
@@ -46,13 +51,20 @@ export class PointerController {
 
   private pointerCache: Cache<number, Point> = new Cache<number, Point>();
 
+  private getPointerContext(e: PointerEvent): PointerContext {
+    return {
+      id: e.pointerId,
+      pointerCount: this.pointerCache.size
+    }
+  }
+
   // Events for mouse (stylus, touch) movement
   private startEvent = (e: PointerEvent | Event) => {
     if (e instanceof PointerEvent) {
       let p = getPosFromPointerEvent(e, this.element);
       this.pointerCache.setItem(e.pointerId, p);
       if (this.pointerControllerEvents.pointerStart) {
-        this.pointerControllerEvents.pointerStart(p);
+        this.pointerControllerEvents.pointerStart(p, this.getPointerContext(e));
       }
     }
   }
@@ -62,7 +74,7 @@ export class PointerController {
       let p = getPosFromPointerEvent(e, this.element);
       if (this.pointerCache.hasKey(e.pointerId)) {
         if (this.pointerControllerEvents.pointerMove) {
-          this.pointerControllerEvents.pointerMove(this.pointerCache.getItem(e.pointerId)!, p);
+          this.pointerControllerEvents.pointerMove(this.pointerCache.getItem(e.pointerId)!, p, this.getPointerContext(e));
         }
         this.pointerCache.setItem(e.pointerId, p);
       }
@@ -73,7 +85,7 @@ export class PointerController {
     if (e instanceof PointerEvent) {
       let p = getPosFromPointerEvent(e, this.element);
       if (this.pointerControllerEvents.pointerEnd) {
-        this.pointerControllerEvents.pointerEnd(p);
+        this.pointerControllerEvents.pointerEnd(p, this.getPointerContext(e));
       }
       this.pointerCache.delItem(e.pointerId);
     }
@@ -123,6 +135,7 @@ export class PointerController {
       }
 
       this._active = true;
+      this.pointerCache.empty();
     }
   }
 
@@ -166,6 +179,7 @@ export class PointerController {
       }
 
       this._active = false;
+      this.pointerCache.empty();
     }
   }
 

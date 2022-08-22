@@ -60,6 +60,10 @@ export default class Cache<TKey, TValue> {
     this.dict = [];
   }
 
+  public get size(): number {
+    return this.dict.length;
+  }
+
   constructor(...keyValuePairs: [TKey, TValue][]) {
     this.dict = keyValuePairs;
   }

@@ -4,8 +4,6 @@ import {Graph} from "../global/classes/graph";
 import {Constant} from "../global/classes/func/operations/constants/constant";
 import {Func} from "../global/classes/func/func";
 import {Color} from "../global/interfaces/color";
-import {getNew, sameColors} from "../global/essentials/utils";
-import {TabGroupComponent} from "../tab-group/tab-group.component";
 
 export const colors: Color[] = [
   {

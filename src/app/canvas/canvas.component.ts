@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {DrawerService} from "../services/drawer.service";
-import {PointerController} from "../global/classes/pointerController";
+import {PointerContext, PointerController} from "../global/classes/pointerController";
 import {Point} from "../global/interfaces/point";
 
 @Component({
@@ -32,9 +32,9 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       this.drawerService.redraw();
     }).observe(this.canvasEl);
     new PointerController(this.canvasEl, {
-      pointerMove: (from: Point, to: Point) => {
-        this.drawerService.translateX += (to.x - from.x) / this.drawerService.zoom;
-        this.drawerService.translateY -= (to.y - from.y) / this.drawerService.zoom;
+      pointerMove: (from: Point, to: Point, context: PointerContext) => {
+        this.drawerService.translateX += (to.x - from.x) / this.drawerService.zoom / context.pointerCount;
+        this.drawerService.translateY -= (to.y - from.y) / this.drawerService.zoom / context.pointerCount;
       },
       scroll: (p: Point, delta: number) => {
         if (delta != 0) {
