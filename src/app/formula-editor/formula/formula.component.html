@@ -1,4 +1,0 @@
-<div class="wrapper" [appContextMenu]="this.contextMenu" [ngClass]="{ 'error': this.errorMessage !== undefined }">
-  <div class="colorPicker" [appHoverMenu]="hoverMenu" [ngStyle]="{'border-color': this.color, 'background': this.color}" [ngClass]="{'notVisible': !this.graph.visible}" (click)="changeVisibility()"></div>
-  <input class="input" #inp [title]="this.errorMessage ?? ''" (keyup)="onChange(inp.value)" onClick="this.select();" [value]="this.graph.configuration.formula" [disabled]="!this.graph.configuration.editable">
-</div>

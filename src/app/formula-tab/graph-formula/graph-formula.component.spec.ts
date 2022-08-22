@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FormulaEditorComponent } from './formula-editor.component';
+import { GraphFormulaComponent } from './graph-formula.component';
 
-describe('FormelEditorComponent', () => {
-  let component: FormulaEditorComponent;
-  let fixture: ComponentFixture<FormulaEditorComponent>;
+describe('FormelComponent', () => {
+  let component: GraphFormulaComponent;
+  let fixture: ComponentFixture<GraphFormulaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FormulaEditorComponent ]
+      declarations: [ GraphFormulaComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FormulaEditorComponent);
+    fixture = TestBed.createComponent(GraphFormulaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

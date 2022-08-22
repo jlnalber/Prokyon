@@ -4,8 +4,8 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppComponent } from './app.component';
 import { CanvasComponent } from './canvas/canvas.component';
 import { TabGroupComponent } from './tab-group/tab-group.component';
-import { FormulaEditorComponent } from './formula-editor/formula-editor.component';
-import { FormulaComponent } from './formula-editor/formula/formula.component';
+import { FormulaTabComponent } from './formula-tab/formula-tab.component';
+import { GraphFormulaComponent } from './formula-tab/graph-formula/graph-formula.component';
 import { ContextMenuDirective } from './contextMenu/context-menu.directive';
 import { ContextMenuComponent } from './contextMenu/context-menu/context-menu.component';
 import { HoverMenuDirective } from './hover-menu/hover-menu.directive';
@@ -13,20 +13,22 @@ import { HoverMenuComponent } from './hover-menu/hover-menu/hover-menu.component
 import { ColorPickerComponent } from './color-picker/color-picker.component';
 import {FormsModule} from "@angular/forms";
 import { SettingsTabComponent } from './settings-tab/settings-tab.component';
+import { FormulaElementComponent } from './formula-tab/formula-element/formula-element.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CanvasComponent,
     TabGroupComponent,
-    FormulaEditorComponent,
-    FormulaComponent,
+    FormulaTabComponent,
+    GraphFormulaComponent,
     ContextMenuDirective,
     ContextMenuComponent,
     HoverMenuDirective,
     HoverMenuComponent,
     ColorPickerComponent,
-    SettingsTabComponent
+    SettingsTabComponent,
+    FormulaElementComponent
   ],
   imports: [
     BrowserModule,

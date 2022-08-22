@@ -1,0 +1,4 @@
+<div class="wrapper" [ngClass]="{ 'error': this.errorMessage !== undefined }">
+  <div class="colorPicker" [appHoverMenu]="hoverMenu" [ngStyle]="{'border-color': this.color, 'background': this.color}" [ngClass]="{'notVisible': !this.canvasElement.visible}" (click)="changeVisibility()"></div>
+  <input class="input" #inp [title]="this.errorMessage ?? ''" (keyup)="onChange(inp.value)" onClick="this.select();" [value]="this.canvasElement.configuration.formula" [disabled]="!this.canvasElement.configuration.editable">
+</div>

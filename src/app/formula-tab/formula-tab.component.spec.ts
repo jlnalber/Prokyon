@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FormulaComponent } from './formula.component';
+import { FormulaTabComponent } from './formula-tab.component';
 
-describe('FormelComponent', () => {
-  let component: FormulaComponent;
-  let fixture: ComponentFixture<FormulaComponent>;
+describe('FormelEditorComponent', () => {
+  let component: FormulaTabComponent;
+  let fixture: ComponentFixture<FormulaTabComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FormulaComponent ]
+      declarations: [ FormulaTabComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FormulaComponent);
+    fixture = TestBed.createComponent(FormulaTabComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

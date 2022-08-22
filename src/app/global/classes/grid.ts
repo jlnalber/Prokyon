@@ -1,4 +1,4 @@
-import {CanvasDrawer} from "./canvasDrawer";
+import {CanvasDrawer} from "./abstract/canvasDrawer";
 import {RenderingContext} from "./renderingContext";
 import {Color} from "../interfaces/color";
 import {clamp} from "../essentials/utils";

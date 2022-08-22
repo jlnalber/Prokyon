@@ -1,4 +1,4 @@
-import {Component, OnInit, Type} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {DrawerService} from "../services/drawer.service";
 import {Graph} from "../global/classes/graph";
 import {Constant} from "../global/classes/func/operations/constants/constant";
@@ -44,23 +44,13 @@ export const colors: Color[] = [
 ]
 
 @Component({
-  selector: 'app-formula-editor',
-  templateUrl: './formula-editor.component.html',
-  styleUrls: ['./formula-editor.component.css']
+  selector: 'app-formula-tab',
+  templateUrl: './formula-tab.component.html',
+  styleUrls: ['./formula-tab.component.css']
 })
-export class FormulaEditorComponent implements OnInit {
+export class FormulaTabComponent implements OnInit {
 
   constructor(public readonly drawerService: DrawerService) { }
-
-  get graphs(): Graph[] {
-    let graphs = [];
-    for (let cEl of this.drawerService.canvasElements) {
-      if (cEl instanceof Graph) {
-        graphs.push(cEl);
-      }
-    }
-    return graphs;
-  }
 
   ngOnInit(): void {
   }

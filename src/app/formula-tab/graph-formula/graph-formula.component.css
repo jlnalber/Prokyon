@@ -1,7 +1,4 @@
 .wrapper {
-  padding: 15px;
-  border-bottom: 1px solid #ccc;
-  background: #fcfcfc;
   --buttonSize: 46px;
   --margin: 16px;
 }

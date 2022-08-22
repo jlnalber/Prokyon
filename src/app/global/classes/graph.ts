@@ -1,11 +1,14 @@
-import {CanvasElement} from "./canvasElement";
+import {CanvasElement} from "./abstract/canvasElement";
 import {RenderingContext} from "./renderingContext";
 import {Func} from "./func/func";
 import {Color} from "../interfaces/color";
 import {Point} from "../interfaces/point";
 import {expandRectBy, isIn} from "../essentials/utils";
+import {GraphFormulaComponent} from "../../formula-tab/graph-formula/graph-formula.component";
 
 export class Graph extends CanvasElement {
+
+  public readonly componentType = GraphFormulaComponent;
 
   private _func: Func;
   public get func(): Func {

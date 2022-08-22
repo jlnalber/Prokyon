@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import {Tab} from "./tab-group/tab-group.component";
-import {FormulaEditorComponent} from "./formula-editor/formula-editor.component";
+import {FormulaTabComponent} from "./formula-tab/formula-tab.component";
 import {SettingsTabComponent} from "./settings-tab/settings-tab.component";
 
 @Component({
@@ -14,7 +14,7 @@ export class AppComponent {
     {
       title: 'Formeln',
       icon: 'functions',
-      componentType: FormulaEditorComponent
+      componentType: FormulaTabComponent
     },
     {
       title: 'Einstellungen',
