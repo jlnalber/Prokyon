@@ -1,0 +1,5 @@
+<span class="text">{{ this.canvasElement.key }} = </span>
+<span class="span">
+  <input type="number" class="input" [(ngModel)]="this.canvasElement.value" step="any">
+</span>
+<input type="range" class="slider" [(ngModel)]="this.canvasElement.value" [min]="this.min" [max]="this.max" step="any">

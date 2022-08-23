@@ -22,6 +22,7 @@ import {
   isRecursive
 } from "../global/classes/func/operations/funcAnalyser";
 import Cache from "../global/essentials/cache";
+import VariableElement from "../global/classes/variableElement";
 
 @Injectable({
   providedIn: 'root'
@@ -113,6 +114,14 @@ export class DrawerService {
 
         let analyserRes = analyse(func);
 
+        if (requestConstants) {
+          for (let variable of analyserRes.variableNames) {
+            if (variable !== func.variable && (func.variable !== undefined || variable !== 'x') && !this.hasVariable(variable)) {
+              this.addCanvasElement(new VariableElement(variable, 0));
+            }
+          }
+        }
+
         return func;
       }
       catch (e) {
@@ -126,6 +135,27 @@ export class DrawerService {
 
   public getNewColorForGraph(): Color {
     return getNew(colors, this.graphs.map(g => g.color), (c1, c2) => { return sameColors(c1, c2) })
+  }
+
+  public getVariables(): any {
+    // collect the data about the variables
+    let res: any = {};
+    for (let canvasElement of this.canvasElements) {
+      if (canvasElement instanceof VariableElement) {
+        res[canvasElement.key] = canvasElement.value;
+      }
+    }
+    return res;
+  }
+
+  public hasVariable(key: string): boolean {
+    // loop through the canvasElements and search for variableElements
+    for (let canvasElement of this.canvasElements) {
+      if (canvasElement instanceof VariableElement && canvasElement.key === key) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private _metaDrawers: CanvasDrawer[] = [];
@@ -239,7 +269,7 @@ export class DrawerService {
   }
 
   public get renderingContext(): RenderingContext {
-    return new RenderingContext(this.canvas?.ctx as CanvasRenderingContext2D, this._transformations, this.canvasConfig);
+    return new RenderingContext(this.canvas?.ctx as CanvasRenderingContext2D, this._transformations, this.getVariables(), this.canvasConfig);
   }
 
   public redraw(): void {

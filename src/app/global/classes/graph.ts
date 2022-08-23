@@ -43,7 +43,7 @@ export class Graph extends CanvasElement {
       for (let x = rangeRect.x; x < rangeRect.x + rangeRect.width; x += curStep) {
         let split = false;
         try {
-          let y = this.func.evaluate(x);
+          let y = this.func.evaluate(x, ctx.variables);
           if (isNaN(y)) throw 'value NaN';
           let p = {
             x: x,

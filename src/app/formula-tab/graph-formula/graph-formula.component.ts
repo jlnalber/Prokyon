@@ -51,6 +51,7 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
     else {
       this.errorMessage = res;
       this.canvasElement.func.stopEvaluation = true;
+      this.canvasElement.onChange.emit();
     }
   }
 

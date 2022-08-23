@@ -14,6 +14,7 @@ import { ColorPickerComponent } from './color-picker/color-picker.component';
 import {FormsModule} from "@angular/forms";
 import { SettingsTabComponent } from './settings-tab/settings-tab.component';
 import { FormulaElementComponent } from './formula-tab/formula-element/formula-element.component';
+import { VariableFormulaComponent } from './formula-tab/variable-formula/variable-formula.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { FormulaElementComponent } from './formula-tab/formula-element/formula-e
     HoverMenuComponent,
     ColorPickerComponent,
     SettingsTabComponent,
-    FormulaElementComponent
+    FormulaElementComponent,
+    VariableFormulaComponent
   ],
   imports: [
     BrowserModule,

@@ -1,7 +1,7 @@
 import {Operation} from "./operations/operation";
 
 export class Func {
-  constructor(public readonly operation: Operation, public readonly name?: string, private readonly variable?: string) { }
+  constructor(public readonly operation: Operation, public readonly name?: string, public readonly variable?: string) { }
 
   public evaluate(x: number, dict?: any): number {
     if (this.stopEvaluation) {

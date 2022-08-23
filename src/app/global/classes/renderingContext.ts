@@ -11,7 +11,7 @@ export interface Config {
 }
 
 export class RenderingContext {
-  constructor (private readonly ctx: CanvasRenderingContext2D, private readonly transformations: Transformations, public readonly config?: Config) { }
+  constructor (private readonly ctx: CanvasRenderingContext2D, private readonly transformations: Transformations, public readonly variables: any, public readonly config?: Config) { }
 
   public transformPointFromCanvasToField(p: Point): Point {
     return {

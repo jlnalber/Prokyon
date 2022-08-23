@@ -38,7 +38,7 @@
   color: black;
 }
 
-.delete, .derive {
+/*.delete, .derive {
   float: right;
   width: var(--buttonSize);
   height: var(--buttonSize);
@@ -72,7 +72,7 @@
     'wght' 400,
     'GRAD' 0,
     'opsz' 48
-}
+}*/
 
 .colorPicker {
   --borderThickness: 2px;
