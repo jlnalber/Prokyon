@@ -41,6 +41,7 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
   }
 
   onChange(value: string) {
+    // on change, try to parse the function, otherwise "crash" --> show error message, don't render graph
     let res = this.drawerService.parseAndValidateFunc(value);
     if (res instanceof Func) {
       this.errorMessage = undefined;

@@ -38,42 +38,6 @@
   color: black;
 }
 
-/*.delete, .derive {
-  float: right;
-  width: var(--buttonSize);
-  height: var(--buttonSize);
-  margin-top: calc(-1 * var(--buttonSize));
-  border: 1px solid transparent;
-  border-radius: 50%;
-  transition: 0.1s all ease-in-out;
-  background: transparent;
-  user-select: none;
-}
-
-.delete {
-  color: red;
-}
-
-.derive {
-  margin-right: calc(var(--buttonSize) + var(--margin));
-}
-
-.delete:hover, .derive:hover {
-  background: #eee;
-}
-
-.delete:active, .derive:active {
-  background: #ddd;
-}
-
-.material-symbols-outlined {
-  font-variation-settings:
-    'FILL' 0,
-    'wght' 400,
-    'GRAD' 0,
-    'opsz' 48
-}*/
-
 .colorPicker {
   --borderThickness: 2px;
   float: left;

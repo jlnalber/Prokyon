@@ -1,7 +1,7 @@
-import {Func} from "../func";
-import {Operation} from "./operation";
-import {Variable} from "./variable";
-import {ExternalFunction} from "./externalFunction";
+import {Func} from "./func";
+import {Operation} from "./operations/operation";
+import {Variable} from "./operations/variable";
+import {ExternalFunction} from "./operations/externalFunction";
 
 const derivationCharacter = '\'';
 
@@ -57,6 +57,26 @@ export function containsFunc(funcOrOp: Func | Operation, func: Func, countDeriva
     })
     if (funcOrOp instanceof ExternalFunction) {
       res = res || containsFunc(funcOrOp.func, func);
+    }
+    return res;
+  }
+}
+
+export function containsVariable(funcOrOp: Func | Operation, varKey: string): boolean {
+  if (funcOrOp instanceof Func) {
+    return containsVariable(funcOrOp.operation, varKey);
+  }
+  else {
+    if (funcOrOp instanceof Variable && funcOrOp.key === varKey) {
+      return true;
+    }
+
+    let res = false;
+    funcOrOp.childOperations.forEach(item => {
+      res = res || containsVariable(item, varKey);
+    })
+    if (funcOrOp instanceof ExternalFunction) {
+      res = res || containsVariable(funcOrOp.func, varKey);
     }
     return res;
   }

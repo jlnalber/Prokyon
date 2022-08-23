@@ -16,11 +16,11 @@ import {FuncProvider} from "../global/classes/func/operations/externalFunction";
 import {Func} from "../global/classes/func/func";
 import {FuncParser} from "../global/classes/func/funcParser";
 import {
-  analyse,
+  analyse, containsVariable,
   countDerivations,
   funcNameWithoutDerivation,
   isRecursive
-} from "../global/classes/func/operations/funcAnalyser";
+} from "../global/classes/func/funcAnalyser";
 import Cache from "../global/essentials/cache";
 import VariableElement from "../global/classes/variableElement";
 
@@ -45,15 +45,15 @@ export class DrawerService {
   private _canvasElements: CanvasElement[] = [];
   public addCanvasElement(canvasElement: CanvasElement): void {
     this._canvasElements.push(canvasElement);
-    canvasElement.onChange.addListener(this.redrawListener);
-    this.onCanvasElementsChanged.emit(canvasElement);
+    canvasElement.onChange.addListener(this.canvasElementOnChangeListener);
+    this.onCanvasElementChanged.emit(canvasElement);
   }
   public removeCanvasElement(canvasElement: CanvasElement): boolean {
     const index = this._canvasElements.indexOf(canvasElement);
     if (index >= 0) {
       this._canvasElements.splice(index, 1);
-      canvasElement.onChange.removeListener(this.redrawListener);
-      this.onCanvasElementsChanged.emit(canvasElement);
+      canvasElement.onChange.removeListener(this.canvasElementOnChangeListener);
+      this.onCanvasElementChanged.emit(canvasElement);
       return true;
     }
     return false;
@@ -101,34 +101,61 @@ export class DrawerService {
 
   private readonly funcCache: Cache<string, Func> = new Cache<string, Func>();
 
-  public parseAndValidateFunc(str: string, requestConstants: boolean = true): Func | string {
+  public parseAndValidateFunc(str: string, requestVariables: boolean = true): Func | string {
+    // this function tries to parse a string to a func
+    // if 'requestVariables' is true, the function tries to create a new variable
     const parserError = 'Ungültige Eingabe.';
+    const unknownFunction = "Diese Funktion referenziert eine unbekannte Funktion."
     const recursiveError = 'Eine Funktion darf nicht auf sich selbst verweisen.'
     try {
+      // try to parse the function
       let func = new FuncParser(str, this.funcProvider).parse();
 
       try {
+        // function can't be recursive, otherwise it would end up in an endless loop
         if (isRecursive(func)) {
           return recursiveError;
         }
 
+        // analyse the function, it is not just needed for checking for variables, but also for unknown functions
         let analyserRes = analyse(func);
 
-        if (requestConstants) {
+        // find the variables
+        if (requestVariables) {
           for (let variable of analyserRes.variableNames) {
+            // if the variable is unknown, add it
             if (variable !== func.variable && (func.variable !== undefined || variable !== 'x') && !this.hasVariable(variable)) {
-              this.addCanvasElement(new VariableElement(variable, 0));
+              const variableElement = new VariableElement(variable, 0);
+
+              // listen whether the variable is sill in use, if not remove
+              let checkForReferenceListener = () => {
+                let hasReference = false;
+                for (let graph of this.graphs) {
+                  hasReference = hasReference || containsVariable(graph.func, variableElement.key);
+                }
+                if (!hasReference) {
+                  this.onCanvasElementChanged.removeListener(checkForReferenceListener);
+                  this.removeCanvasElement(variableElement);
+                }
+              }
+
+              // add the variableElement
+              this.addCanvasElement(variableElement);
+              this.onCanvasElementChanged.addListener(checkForReferenceListener);
             }
           }
         }
 
+        // return function --> everything worked out fine
         return func;
       }
-      catch (e) {
-        return parserError;
+      catch {
+        // return a unknown function error
+        return unknownFunction;
       }
     }
     catch {
+      // return a parser error
       return parserError;
     }
   }
@@ -238,7 +265,7 @@ export class DrawerService {
 
   // Events
   public readonly onBackgroundColorChanged: Event<Color> = new Event<Color>();
-  public readonly onCanvasElementsChanged: Event<CanvasElement> = new Event<CanvasElement>();
+  public readonly onCanvasElementChanged: Event<any> = new Event<any>();
   public readonly onMetaDrawersChanged: Event<CanvasDrawer> = new Event<CanvasDrawer>();
   public readonly onTransformationsChanged: Event<number> = new Event<number>();
   public readonly onCanvasConfigChanged: Event<CanvasConfig> = new Event<CanvasConfig>();
@@ -247,6 +274,10 @@ export class DrawerService {
 
   private redrawListener = () => {
     this.redraw();
+  }
+
+  private canvasElementOnChangeListener = (val: any) => {
+    this.onCanvasElementChanged.emit(val);
   }
 
   private emptyCacheListener = () => {
@@ -259,13 +290,13 @@ export class DrawerService {
     this.addMetaDrawer(new Grid());
 
     this.onBackgroundColorChanged.addListener(this.redrawListener);
-    this.onCanvasElementsChanged.addListener(this.redrawListener);
+    this.onCanvasElementChanged.addListener(this.redrawListener);
     this.onTransformationsChanged.addListener(this.redrawListener);
     this.onMetaDrawersChanged.addListener(this.redrawListener);
     this.onCanvasConfigChanged.addListener(this.redrawListener);
 
-    this.onBeforeRedraw.addListener(this.emptyCacheListener);
-    this.onAfterRedraw.addListener(this.emptyCacheListener);
+    this.onCanvasElementChanged.addListener(this.emptyCacheListener);
+    this.onCanvasElementChanged.addListener(this.emptyCacheListener);
   }
 
   public get renderingContext(): RenderingContext {
