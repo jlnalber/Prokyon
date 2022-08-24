@@ -1,5 +1,7 @@
 import {ComponentRef, Directive, Input, ViewContainerRef} from '@angular/core';
 import {ContextMenuComponent} from "./context-menu/context-menu.component";
+import {Event as CustomEvent} from "../global/essentials/event";
+import {Point} from "../global/interfaces/point";
 
 @Directive({
   selector: '[appContextMenu]'
@@ -8,7 +10,19 @@ export class ContextMenuDirective {
 
   private contextMenu?: ComponentRef<ContextMenuComponent>;
 
-  @Input() public appContextMenu!: ContextMenu;
+  private _appContextMenu!: ContextMenu;
+  public get appContextMenu(): ContextMenu {
+    return this._appContextMenu;
+  }
+  @Input() public set appContextMenu(value: ContextMenu) {
+    if (this._appContextMenu && this._appContextMenu.additionalEvent) {
+      this._appContextMenu.additionalEvent.removeListener(this.customContextMenuActivateListener);
+    }
+    if (value.additionalEvent) {
+      value.additionalEvent.addListener(this.customContextMenuActivateListener);
+    }
+    this._appContextMenu = value;
+  }
   private readonly element: Element;
 
   constructor(private readonly vc: ViewContainerRef) {
@@ -19,7 +33,7 @@ export class ContextMenuDirective {
     document.addEventListener('click', this.closeContextMenuEventListener);
     document.addEventListener('wheel', this.closeContextMenuEventListener);
     document.addEventListener('contextmenu', this.contextmenuDocumentEventListener);
-    document.addEventListener('keydown', this.keyboardDocumentEventListener)
+    document.addEventListener('keydown', this.keyboardDocumentEventListener);
   }
 
   contextmenuDocumentEventListener = (e: Event | PointerEvent) => {
@@ -44,20 +58,39 @@ export class ContextMenuDirective {
     if (e instanceof PointerEvent) {
       e.preventDefault();
 
-      if (this.contextMenu) this.contextMenu.destroy();
-      this.contextMenu = this.vc.createComponent(ContextMenuComponent);
-      this.contextMenu.instance.position = {
+      this.showContextMenuAt({
         x: e.x,
         y: e.y
-      };
-      this.contextMenu.instance.contextMenu = this.appContextMenu;
+      });
     }
   }
 
+  customContextMenuActivateListener = (p?: Point) => {
+    let point: Point | undefined = p;
+    if (!point) {
+      point = this.appContextMenu.defaultPopUpPosition;
+      if (!point) {
+        point = this.element.getBoundingClientRect() ?? {
+          x: 0,
+          y: 0
+        };
+      }
+    }
+    this.showContextMenuAt(point);
+  }
+
+  public showContextMenuAt(p: Point): void {
+    if (this.contextMenu) this.contextMenu.destroy();
+    this.contextMenu = this.vc.createComponent(ContextMenuComponent);
+    this.contextMenu.instance.position = p;
+    this.contextMenu.instance.contextMenu = this.appContextMenu;
+  }
 }
 
 export interface ContextMenu {
-  elements: ContextMenuElement[]
+  elements: ContextMenuElement[],
+  additionalEvent?: CustomEvent<Point>,
+  defaultPopUpPosition?: Point
 }
 
 export interface ContextMenuElement {

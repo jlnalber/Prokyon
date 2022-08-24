@@ -46,7 +46,9 @@ export class FormulaElementComponent implements AfterViewInit {
           },
           icon: 'delete'
         }
-      ]
+      ],
+      additionalEvent: this.formulaElementComponent?.contextMenu.additionalEvent,
+      defaultPopUpPosition: this.formulaElementComponent?.contextMenu.defaultPopUpPosition
     }
   }
 

@@ -9,6 +9,8 @@ import {HoverConfiguration} from "../../hover-menu/hover-menu.directive";
 import {ColorPickerComponent} from "../../color-picker/color-picker.component";
 import {FuncParser} from "../../global/classes/func/funcParser";
 import {FormulaElement} from "../../global/classes/abstract/formulaElement";
+import {Event} from "../../global/essentials/event";
+import {Point} from "../../global/interfaces/point";
 
 @Component({
   selector: 'app-graph-formula',
@@ -30,6 +32,8 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
   get canvasElement(): Graph {
     return this._canvasElement;
   }
+
+  public readonly threePointsClickedEvent: Event<Point> = new Event<Point>();
 
   constructor(private readonly drawerService: DrawerService) {
     super();
@@ -110,7 +114,8 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
         click: () => {
           this.duplicate();
         }
-      }]
+      }],
+      additionalEvent: this.threePointsClickedEvent
     }
   }
 
@@ -136,5 +141,18 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
   changeVisibility() {
     this.canvasElement.visible = !this.canvasElement.visible;
     this.drawerService.redraw();
+  }
+
+  threePointsClicked(ev: MouseEvent) {
+    ev.stopPropagation();
+    let button: Element = ev.target as Element;
+    if (button instanceof HTMLSpanElement) {
+      button = button.parentElement!;
+    }
+    let rect = button.getBoundingClientRect();
+    this.threePointsClickedEvent.emit({
+      x: rect.x + rect.width / 2,
+      y: rect.y + rect.height / 2
+    });
   }
 }
