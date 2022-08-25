@@ -28,6 +28,10 @@ export class FormulaElementComponent implements AfterViewInit {
     this.drawerService.removeCanvasElement(this.canvasElement);
   }
 
+  get selected(): boolean {
+    return this.drawerService.selection.contains(this.canvasElement || undefined);
+  }
+
   private getContextMenuElementsFromFormulaElement(): ContextMenuElement[] {
     if (this.formulaElementComponent) {
       return this.formulaElementComponent.contextMenu.elements;
@@ -35,9 +39,17 @@ export class FormulaElementComponent implements AfterViewInit {
     return [];
   }
   get completeContextMenu(): ContextMenu {
+    const selected = this.selected;
     return {
       elements: [
         ...this.getContextMenuElementsFromFormulaElement(),
+        {
+          header: selected ? 'Auswahl entfernen' : 'Auswählen',
+          click: () => {
+            this.drawerService.selection.alternate(this.canvasElement || undefined);
+          },
+          icon: selected ? 'remove_done' : 'done'
+        },
         {
           header: 'Löschen',
           color: 'red',

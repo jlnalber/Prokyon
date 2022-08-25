@@ -1,6 +1,6 @@
 import {ComponentRef, Directive, Input, Type, ViewContainerRef} from '@angular/core';
 import {HoverMenuComponent} from "./hover-menu/hover-menu.component";
-import {getPosFromMouseEvent, isIn} from "../global/essentials/utils";
+import {isIn} from "../global/essentials/utils";
 import {Point} from "../global/interfaces/point";
 
 @Directive({

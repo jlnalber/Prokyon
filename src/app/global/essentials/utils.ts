@@ -28,31 +28,13 @@ export function isInRange(val: number, min: number, max: number): boolean {
   return val >= min && val <= max;
 }
 
-export function getPosFromPointerEvent(e: PointerEvent, el: Element): Point {
+export function getPosFromEvent(e: PointerEvent | WheelEvent | MouseEvent, el: Element): Point {
   const rect = el.getBoundingClientRect();
 
   return {
     x: e.clientX - rect.left,
     y: e.clientY - rect.top
   };
-}
-
-export function getPosFromWheelEvent(e: WheelEvent, el: Element): Point {
-  const rect = el.getBoundingClientRect();
-
-  return {
-    x: e.clientX - rect.left,
-    y: e.clientY - rect.top
-  }
-}
-
-export function getPosFromMouseEvent(e: MouseEvent, el: Element): Point {
-  const rect = el.getBoundingClientRect();
-
-  return {
-    x: e.clientX - rect.left,
-    y: e.clientY - rect.top
-  }
 }
 
 export function tryParseNumber(str: string): boolean {

@@ -1,7 +1,7 @@
 import {CanvasElement} from "./abstract/canvasElement";
 import {RenderingContext} from "./renderingContext";
 import {Func} from "./func/func";
-import {Color} from "../interfaces/color";
+import {Color, colorAsTransparent} from "../interfaces/color";
 import {Point} from "../interfaces/point";
 import {expandRectBy, isIn} from "../essentials/utils";
 import {GraphFormulaComponent} from "../../formula-tab/graph-formula/graph-formula.component";
@@ -37,8 +37,13 @@ export class Graph extends CanvasElement {
       let step = ctx.step;
       let curStep = step;
 
+      // get the selection
+      const selected = ctx.selection.indexOf(this) !== -1;
+      const colorSelected = colorAsTransparent(this.color, 0.3);
+      const lineWidthSelected = this.lineWidth * 2.5;
+
       // get possible points
-      let lastElevation: number | undefined;
+      let lastElevation: number | undefined = undefined;
       let lastPoint: Point | undefined;
       for (let x = rangeRect.x; x < rangeRect.x + rangeRect.width; x += curStep) {
         let split = false;
@@ -105,7 +110,18 @@ export class Graph extends CanvasElement {
       // then draw all paths
       for (let path of paths) {
         ctx.drawPath(path, this.lineWidth, this.color);
+        if (selected) {
+          ctx.drawPath(path, lineWidthSelected, colorSelected);
+        }
       }
+    }
+  }
+
+  public override getDistance(p: Point, ctx: RenderingContext): number | undefined {
+    try {
+      return Math.abs(p.y - this.func.evaluate(p.x, ctx.variables));
+    } catch {
+      return undefined;
     }
   }
 

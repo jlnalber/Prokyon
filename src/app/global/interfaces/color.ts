@@ -16,3 +16,11 @@ export function getColorAsRgbaFunction(color: Color): string {
   return `rgba(${color.r}, ${color.g}, ${color.b})`;
 }
 
+export function colorAsTransparent(color: Color, ratio: number = 0.5): Color {
+  return {
+    r: color.r,
+    g: color.g,
+    b: color.b,
+    a: color.a === undefined ? ratio : color.a * ratio
+  }
+}

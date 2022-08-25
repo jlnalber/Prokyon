@@ -2,6 +2,7 @@ import {Transformations} from "../interfaces/transformations";
 import {Point} from "../interfaces/point";
 import {Rect} from "../interfaces/rect";
 import {Color, getColorAsRgbaFunction} from "../interfaces/color";
+import {CanvasElement} from "./abstract/canvasElement";
 
 export interface Config {
   showGrid?: boolean,
@@ -11,7 +12,11 @@ export interface Config {
 }
 
 export class RenderingContext {
-  constructor (private readonly ctx: CanvasRenderingContext2D, private readonly transformations: Transformations, public readonly variables: any, public readonly config?: Config) { }
+  constructor (private readonly ctx: CanvasRenderingContext2D,
+               private readonly transformations: Transformations,
+               public readonly variables: any,
+               public readonly selection: CanvasElement[],
+               public readonly config?: Config) { }
 
   public transformPointFromCanvasToField(p: Point): Point {
     return {

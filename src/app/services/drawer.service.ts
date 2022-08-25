@@ -23,12 +23,14 @@ import {
 } from "../global/classes/func/funcAnalyser";
 import Cache from "../global/essentials/cache";
 import VariableElement from "../global/classes/variableElement";
+import Selection from "../global/essentials/selection";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DrawerService {
 
+  // #region the properties of the canvas --> bgColor, elements in canvas, transformations and config
   private _backgroundColor: Color = {
     r: 255,
     g: 255,
@@ -62,6 +64,156 @@ export class DrawerService {
     return this._canvasElements.slice();
   }
 
+  private _metaDrawers: CanvasDrawer[] = [];
+  public addMetaDrawer(canvasElement: CanvasDrawer): void {
+    this._metaDrawers.push(canvasElement);
+    this.onMetaDrawersChanged.emit(canvasElement);
+  }
+  public removeMetaDrawer(canvasElement: CanvasDrawer): boolean {
+    const index = this._metaDrawers.indexOf(canvasElement);
+    if (index >= 0) {
+      this._metaDrawers.splice(index, 1);
+      this.onMetaDrawersChanged.emit(canvasElement);
+      return true;
+    }
+    return false;
+  }
+  public get metaDrawers(): CanvasDrawer[] {
+    return this._metaDrawers.slice();
+  }
+
+  private _transformations: Transformations = {
+    translateX: 7,
+    translateY: -5,
+    zoom: 100
+  };
+  public set translateX(value: number) {
+    this._transformations.translateX = value;
+    this.onTransformationsChanged.emit(value);
+  }
+  public get translateX(): number {
+    return this._transformations.translateX;
+  }
+  public set translateY(value: number) {
+    this._transformations.translateY = value;
+    this.onTransformationsChanged.emit(value);
+  }
+  public get translateY(): number {
+    return this._transformations.translateY;
+  }
+  public set zoom(value: number) {
+    this._transformations.zoom = value;
+    this.onTransformationsChanged.emit(value);
+  }
+  public get zoom(): number {
+    return this._transformations.zoom;
+  }
+
+  private _showGrid: boolean = true;
+  public get showGrid(): boolean {
+    return this._showGrid;
+  }
+  public set showGrid(value: boolean) {
+    this._showGrid = value;
+    this.onCanvasConfigChanged.emit(this.canvasConfig);
+  }
+  private _showGridNumbers: boolean = true;
+  public get showGridNumbers(): boolean {
+    return this._showGridNumbers;
+  }
+  public set showGridNumbers(value: boolean) {
+    this._showGridNumbers = value;
+    this.onCanvasConfigChanged.emit(this.canvasConfig);
+  }
+  private get canvasConfig(): CanvasConfig {
+    return {
+      showNumbers: this.showGridNumbers,
+      showGrid: this.showGrid
+    }
+  }
+  // #endregion
+
+  // other properties
+  public readonly selection: Selection<CanvasElement> = new Selection<CanvasElement>();
+  public canvas?: CanvasComponent;
+
+  // Events
+  public readonly onBackgroundColorChanged: Event<Color> = new Event<Color>();
+  public readonly onCanvasElementChanged: Event<any> = new Event<any>();
+  public readonly onMetaDrawersChanged: Event<CanvasDrawer> = new Event<CanvasDrawer>();
+  public readonly onTransformationsChanged: Event<number> = new Event<number>();
+  public readonly onCanvasConfigChanged: Event<CanvasConfig> = new Event<CanvasConfig>();
+  public readonly onBeforeRedraw: Event<undefined> = new Event<undefined>();
+  public readonly onAfterRedraw: Event<undefined> = new Event<undefined>();
+
+  // Event listeners
+  private redrawListener = () => {
+    this.redraw();
+  }
+  private canvasElementOnChangeListener = (val: any) => {
+    this.onCanvasElementChanged.emit(val);
+  }
+  private emptyCacheListener = () => {
+    this.funcCache.empty();
+  }
+
+  constructor() {
+    this.addMetaDrawer(new Grid());
+
+    this.onBackgroundColorChanged.addListener(this.redrawListener);
+    this.onCanvasElementChanged.addListener(this.redrawListener);
+    this.onTransformationsChanged.addListener(this.redrawListener);
+    this.onMetaDrawersChanged.addListener(this.redrawListener);
+    this.onCanvasConfigChanged.addListener(this.redrawListener);
+    this.selection.onSelectionChanged.addListener(this.redrawListener);
+
+    this.onCanvasElementChanged.addListener(this.emptyCacheListener);
+    this.onCanvasElementChanged.addListener(this.emptyCacheListener);
+  }
+
+  // #region fields for rendering
+  public get renderingContext(): RenderingContext {
+    return new RenderingContext(this.canvas?.ctx as CanvasRenderingContext2D, this._transformations, this.getVariables(), this.selection.toArray(), this.canvasConfig);
+  }
+
+  public redraw(): void {
+    if (this.canvas && this.canvas.canvasEl && this.canvas.wrapperEl && this.canvas.ctx) {
+      this.onBeforeRedraw.emit();
+
+      // resize canvas
+      let boundingRect = this.canvas.wrapperEl.getBoundingClientRect();
+      this.canvas.ctx.canvas.width = boundingRect.width;
+      this.canvas.ctx.canvas.height = boundingRect.height;
+
+      // first: draw the background
+      this.canvas.ctx.fillStyle = getColorAsRgbaFunction(this.backgroundColor);
+      this.canvas.ctx.fillRect(0, 0, this.canvas.canvasEl.width, this.canvas.canvasEl.height);
+
+      // then: draw the elements (first metaDrawers, then canvasElements)
+      let renderingContext = this.renderingContext;
+      for (let metaDrawer of this._metaDrawers) {
+        metaDrawer.draw(renderingContext);
+      }
+      for (let canvasElement of this._canvasElements) {
+        canvasElement.draw(renderingContext);
+      }
+
+      this.onAfterRedraw.emit();
+    }
+  }
+
+  public zoomToBy(p: Point, factor: number): void {
+    let vec: Vector = {
+      x: p.x / this.zoom * (1 - 1 / factor),
+      y: -p.y / this.zoom * (1 - 1 / factor)
+    }
+    this._transformations.translateX -= vec.x;
+    this._transformations.translateY -= vec.y;
+    this.zoom *= factor;
+  }
+  // #endregion
+
+  // #region fields for dealing with graphs/functions
   public get graphs(): Graph[] {
     let graphs = [];
     for (let cEl of this.canvasElements) {
@@ -71,6 +223,8 @@ export class DrawerService {
     }
     return graphs;
   }
+
+  private readonly funcCache: Cache<string, Func> = new Cache<string, Func>();
 
   public readonly funcProvider: FuncProvider = (key: string) => {
     // first, read from cache
@@ -98,8 +252,6 @@ export class DrawerService {
     }
     return undefined;
   }
-
-  private readonly funcCache: Cache<string, Func> = new Cache<string, Func>();
 
   public parseAndValidateFunc(str: string, requestVariables: boolean = true): Func | string {
     // this function tries to parse a string to a func
@@ -184,149 +336,43 @@ export class DrawerService {
     }
     return false;
   }
+  // #endregion
 
-  private _metaDrawers: CanvasDrawer[] = [];
-  public addMetaDrawer(canvasElement: CanvasDrawer): void {
-    this._metaDrawers.push(canvasElement);
-    this.onMetaDrawersChanged.emit(canvasElement);
-  }
-  public removeMetaDrawer(canvasElement: CanvasDrawer): boolean {
-    const index = this._metaDrawers.indexOf(canvasElement);
-    if (index >= 0) {
-      this._metaDrawers.splice(index, 1);
-      this.onMetaDrawersChanged.emit(canvasElement);
-      return true;
-    }
-    return false;
-  }
-  public get metaDrawers(): CanvasDrawer[] {
-    return this._metaDrawers.slice();
-  }
+  // #region further fields
+  public setSelection(p: Point, empty: boolean = true) {
+    let ctx = this.renderingContext;
+    let newP = ctx.transformPointFromCanvasToField(p);
+    let minDist: number | undefined = undefined;
+    let minCanvasElement: CanvasElement | undefined;
 
-  private _transformations: Transformations = {
-    translateX: 7,
-    translateY: -5,
-    zoom: 100
-  };
-  public set translateX(value: number) {
-    this._transformations.translateX = value;
-    this.onTransformationsChanged.emit(value);
-  }
-  public get translateX(): number {
-    return this._transformations.translateX;
-  }
-  public set translateY(value: number) {
-    this._transformations.translateY = value;
-    this.onTransformationsChanged.emit(value);
-  }
-  public get translateY(): number {
-    return this._transformations.translateY;
-  }
-  public set zoom(value: number) {
-    this._transformations.zoom = value;
-    this.onTransformationsChanged.emit(value);
-  }
-  public get zoom(): number {
-    return this._transformations.zoom;
-  }
-
-  public zoomToBy(p: Point, factor: number): void {
-    let vec: Vector = {
-      x: p.x / this.zoom * (1 - 1 / factor),
-      y: -p.y / this.zoom * (1 - 1 / factor)
-    }
-    this._transformations.translateX -= vec.x;
-    this._transformations.translateY -= vec.y;
-    this.zoom *= factor;
-  }
-
-  private _showGrid: boolean = true;
-  public get showGrid(): boolean {
-    return this._showGrid;
-  }
-  public set showGrid(value: boolean) {
-    this._showGrid = value;
-    this.onCanvasConfigChanged.emit(this.canvasConfig);
-  }
-  private _showGridNumbers: boolean = true;
-  public get showGridNumbers(): boolean {
-    return this._showGridNumbers;
-  }
-  public set showGridNumbers(value: boolean) {
-    this._showGridNumbers = value;
-    this.onCanvasConfigChanged.emit(this.canvasConfig);
-  }
-  private get canvasConfig(): CanvasConfig {
-    return {
-      showNumbers: this.showGridNumbers,
-      showGrid: this.showGrid
-    }
-  }
-
-  // Events
-  public readonly onBackgroundColorChanged: Event<Color> = new Event<Color>();
-  public readonly onCanvasElementChanged: Event<any> = new Event<any>();
-  public readonly onMetaDrawersChanged: Event<CanvasDrawer> = new Event<CanvasDrawer>();
-  public readonly onTransformationsChanged: Event<number> = new Event<number>();
-  public readonly onCanvasConfigChanged: Event<CanvasConfig> = new Event<CanvasConfig>();
-  public readonly onBeforeRedraw: Event<undefined> = new Event<undefined>();
-  public readonly onAfterRedraw: Event<undefined> = new Event<undefined>();
-
-  private redrawListener = () => {
-    this.redraw();
-  }
-
-  private canvasElementOnChangeListener = (val: any) => {
-    this.onCanvasElementChanged.emit(val);
-  }
-
-  private emptyCacheListener = () => {
-    this.funcCache.empty();
-  }
-
-  public canvas?: CanvasComponent;
-
-  constructor() {
-    this.addMetaDrawer(new Grid());
-
-    this.onBackgroundColorChanged.addListener(this.redrawListener);
-    this.onCanvasElementChanged.addListener(this.redrawListener);
-    this.onTransformationsChanged.addListener(this.redrawListener);
-    this.onMetaDrawersChanged.addListener(this.redrawListener);
-    this.onCanvasConfigChanged.addListener(this.redrawListener);
-
-    this.onCanvasElementChanged.addListener(this.emptyCacheListener);
-    this.onCanvasElementChanged.addListener(this.emptyCacheListener);
-  }
-
-  public get renderingContext(): RenderingContext {
-    return new RenderingContext(this.canvas?.ctx as CanvasRenderingContext2D, this._transformations, this.getVariables(), this.canvasConfig);
-  }
-
-  public redraw(): void {
-    if (this.canvas && this.canvas.canvasEl && this.canvas.wrapperEl && this.canvas.ctx) {
-      this.onBeforeRedraw.emit();
-
-      // resize canvas
-      let boundingRect = this.canvas.wrapperEl.getBoundingClientRect();
-      this.canvas.ctx.canvas.width = boundingRect.width;
-      this.canvas.ctx.canvas.height = boundingRect.height;
-
-      // first: draw the background
-      this.canvas.ctx.fillStyle = getColorAsRgbaFunction(this.backgroundColor);
-      this.canvas.ctx.fillRect(0, 0, this.canvas.canvasEl.width, this.canvas.canvasEl.height);
-
-      // then: draw the elements (first metaDrawers, then canvasElements)
-      let renderingContext = this.renderingContext;
-      for (let metaDrawer of this._metaDrawers) {
-        metaDrawer.draw(renderingContext);
+    // find out the element with the minimal distance
+    for (let canvasElement of this.canvasElements) {
+      const dist = canvasElement.getDistance(newP, ctx);
+      if (dist) {
+        let closer = minDist === undefined;
+        closer = closer || dist < minDist!;
+        if (closer) {
+          minDist = dist;
+          minCanvasElement = canvasElement;
+        }
       }
-      for (let canvasElement of this._canvasElements) {
-        canvasElement.draw(renderingContext);
-      }
+    }
 
-      this.onAfterRedraw.emit();
+    // if the distance is too high, don't do anything
+    const maxDistance = 10;
+    if (minDist !== undefined && maxDistance < minDist * this.zoom) {
+      minCanvasElement = undefined;
+      minDist = undefined;
+    }
+
+    // set the selection, or alternate the element, e.g. when ctrl is pressed
+    if (empty) {
+      this.selection.set(minCanvasElement);
+    }
+    else {
+      this.selection.alternate(minCanvasElement);
     }
   }
+  // #endregion
 
 }

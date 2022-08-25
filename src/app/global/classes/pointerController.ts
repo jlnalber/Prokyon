@@ -1,18 +1,21 @@
 import {Point} from "../interfaces/point";
-import {getPosFromPointerEvent, getPosFromWheelEvent} from "../essentials/utils";
+import {getPosFromEvent} from "../essentials/utils";
 import Cache from "../essentials/cache";
 
 export interface PointerControllerEvents {
   pointerStart?: (p: Point, context: PointerContext) => void,
   pointerMove?: (from: Point, to: Point, context: PointerContext) => void,
   pointerEnd?: (p: Point, context: PointerContext) => void,
+  click?: (p: Point, context: PointerContext) => void,
   scroll?: (p: Point, delta: number) => void,
-  pinchZoom?: (p: Point, factor: number) => void;
+  pinchZoom?: (p: Point, factor: number) => void
 }
 
 export interface PointerContext {
   id: number,
-  pointerCount: number
+  pointerCount: number,
+  ctrlKey: boolean,
+  moveEventsFired?: number
 }
 
 export class PointerController {
@@ -49,20 +52,30 @@ export class PointerController {
     'contextmenu'
   ]
 
+  // this cache stores the last point to the pointer id
   private pointerCache: Cache<number, Point> = new Cache<number, Point>();
+  // this cache stores the amount of move events fired with the given pointer id
+  private pointerMoveCountCache: Cache<number, number> = new Cache<number, number>();
 
   private getPointerContext(e: PointerEvent): PointerContext {
     return {
       id: e.pointerId,
-      pointerCount: this.pointerCache.size
+      pointerCount: this.pointerCache.size,
+      ctrlKey: e.ctrlKey,
+      moveEventsFired: this.pointerMoveCountCache.getItem(e.pointerId)
     }
   }
 
   // Events for mouse (stylus, touch) movement
   private startEvent = (e: PointerEvent | Event) => {
     if (e instanceof PointerEvent) {
-      let p = getPosFromPointerEvent(e, this.element);
+      let p = getPosFromEvent(e, this.element);
+
+      // register the pointer on the pointerCaches
       this.pointerCache.setItem(e.pointerId, p);
+      this.pointerMoveCountCache.setItem(e.pointerId, 0);
+
+      // fire event
       if (this.pointerControllerEvents.pointerStart) {
         this.pointerControllerEvents.pointerStart(p, this.getPointerContext(e));
       }
@@ -71,7 +84,14 @@ export class PointerController {
 
   private moveEvent = (e: PointerEvent | Event) => {
     if (e instanceof PointerEvent) {
-      let p = getPosFromPointerEvent(e, this.element);
+      let p = getPosFromEvent(e, this.element);
+
+      // count up the amount of pointer move events fired on the pointer
+      if (this.pointerMoveCountCache.hasKey(e.pointerId)) {
+        this.pointerMoveCountCache.setItem(e.pointerId, this.pointerMoveCountCache.getItem(e.pointerId)! + 1);
+      }
+
+      // trigger the move event on the pointer
       if (this.pointerCache.hasKey(e.pointerId)) {
         if (this.pointerControllerEvents.pointerMove) {
           this.pointerControllerEvents.pointerMove(this.pointerCache.getItem(e.pointerId)!, p, this.getPointerContext(e));
@@ -83,11 +103,22 @@ export class PointerController {
 
   private endEvent = (e: PointerEvent | Event) => {
     if (e instanceof PointerEvent) {
-      let p = getPosFromPointerEvent(e, this.element);
-      if (this.pointerControllerEvents.pointerEnd) {
-        this.pointerControllerEvents.pointerEnd(p, this.getPointerContext(e));
+      let p = getPosFromEvent(e, this.element);
+      let pointerContext = this.getPointerContext(e);
+
+      // first, fire pointerEnd event
+      if (this.pointerControllerEvents.pointerEnd && this.pointerCache.hasKey(e.pointerId)) {
+        this.pointerControllerEvents.pointerEnd(p, pointerContext);
       }
+
+      // then, fire click event
+      if (this.pointerControllerEvents.click && this.pointerMoveCountCache.getItem(e.pointerId) === 0) {
+        this.pointerControllerEvents.click(p, pointerContext);
+      }
+
+      // empty the caches
       this.pointerCache.delItem(e.pointerId);
+      this.pointerMoveCountCache.delItem(e.pointerId);
     }
   }
 
@@ -95,7 +126,7 @@ export class PointerController {
   private mouseWheelHandler = (e: WheelEvent | Event) => {
     if (e instanceof WheelEvent) {
       e.preventDefault();
-      let p = getPosFromWheelEvent(e, this.element);
+      let p = getPosFromEvent(e, this.element);
       let delta = Math.sqrt(e.deltaY ** 2 + e.deltaX ** 2 + e.deltaZ ** 2) * Math.sign((e.deltaX ? e.deltaX : 1) * (e.deltaY ? e.deltaY : 1) * (e.deltaZ ? e.deltaZ : 1));
       if (this.pointerControllerEvents.scroll) {
         this.pointerControllerEvents.scroll(p, delta);
@@ -208,13 +239,6 @@ export class PointerController {
   private movePinchZoomEvent = (ev: PointerEvent | Event) => {
     if (ev instanceof PointerEvent && ev.pointerType == 'touch') {
       // This function implements a 2-pointer horizontal pinch/zoom gesture.
-      //
-      // If the distance between the two pointers has increased (zoom in),
-      // the taget element's background is changed to "pink" and if the
-      // distance is decreasing (zoom out), the color is changed to "lightblue".
-      //
-      // This function sets the target element's border to "dashed" to visually
-      // indicate the pointer's target received a move event.
 
       // Find this event in the cache and update its record with this event
       for (let i = 0; i < this.evCache.length; i++) {

@@ -1,5 +1,11 @@
 .wrapper {
   padding: 15px;
-  border-bottom: 1px solid #ccc;
   background: #fcfcfc;
+  border: 1px solid transparent;
+  border-bottom: 1px solid #ccc;
+}
+
+.selected {
+  border: 1px solid black;
+  border-radius: 7px;
 }
