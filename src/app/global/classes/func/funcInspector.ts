@@ -2,19 +2,20 @@ import {Func} from "./func";
 import {Operation} from "./operations/operation";
 import {Variable} from "./operations/variable";
 import {ExternalFunction} from "./operations/externalFunction";
+import {removeDuplicates} from "../../essentials/utils";
 
 const derivationCharacter = '\'';
 
-type AnalyserResult = {
+export type InspectorResult = {
   variableNames: string[],
   externalFuncNames: string[]
 }
 
-export function analyse(func: Func): AnalyserResult {
-  return analyseOperation(func.operation);
+export function inspect(func: Func): InspectorResult {
+  return inspectOperation(func.operation);
 }
 
-export function analyseOperation(operation: Operation): AnalyserResult {
+export function inspectOperation(operation: Operation): InspectorResult {
   let variableNames: string[] = [];
   let externalFuncNames: string[] = [];
 
@@ -26,10 +27,13 @@ export function analyseOperation(operation: Operation): AnalyserResult {
   }
 
   operation.childOperations.forEach(child => {
-    let res = analyseOperation(child);
+    let res = inspectOperation(child);
     variableNames.push(...res.variableNames);
     externalFuncNames.push(...res.externalFuncNames);
   })
+
+  variableNames = removeDuplicates(variableNames);
+  externalFuncNames = removeDuplicates(externalFuncNames);
 
   return {
     variableNames,

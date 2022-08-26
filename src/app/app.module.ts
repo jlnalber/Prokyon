@@ -15,6 +15,7 @@ import {FormsModule} from "@angular/forms";
 import { SettingsTabComponent } from './settings-tab/settings-tab.component';
 import { FormulaElementComponent } from './formula-tab/formula-element/formula-element.component';
 import { VariableFormulaComponent } from './formula-tab/variable-formula/variable-formula.component';
+import { DialogComponent } from './dialog/dialog/dialog.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { VariableFormulaComponent } from './formula-tab/variable-formula/variabl
     ColorPickerComponent,
     SettingsTabComponent,
     FormulaElementComponent,
-    VariableFormulaComponent
+    VariableFormulaComponent,
+    DialogComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,34 @@
+@keyframes animateFiller {
+  from { background-color: #00000000 }
+  to { background-color: #00000077 }
+}
+
+@keyframes animateWrapper {
+  from { transform: scale(0) }
+  to { transform: scale(1) }
+}
+
+.filler {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #00000077;
+  align-items: center;
+  justify-content: center;
+  animation: animateFiller 0.1s ease-in-out;
+}
+
+.wrapper {
+  background-color: white;
+  padding: 16px;
+  border-radius: 7px;
+  animation: animateWrapper 0.1s ease-in-out;
+}
+
+.componentNeighbor {
+  display: none;
+}

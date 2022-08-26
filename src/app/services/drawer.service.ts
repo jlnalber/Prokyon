@@ -16,11 +16,11 @@ import {FuncProvider} from "../global/classes/func/operations/externalFunction";
 import {Func} from "../global/classes/func/func";
 import {FuncParser} from "../global/classes/func/funcParser";
 import {
-  analyse, containsVariable,
+  inspect, containsVariable,
   countDerivations,
   funcNameWithoutDerivation,
   isRecursive
-} from "../global/classes/func/funcAnalyser";
+} from "../global/classes/func/funcInspector";
 import Cache from "../global/essentials/cache";
 import VariableElement from "../global/classes/variableElement";
 import Selection from "../global/essentials/selection";
@@ -270,7 +270,7 @@ export class DrawerService {
         }
 
         // analyse the function, it is not just needed for checking for variables, but also for unknown functions
-        let analyserRes = analyse(func);
+        let analyserRes = inspect(func);
 
         // find the variables
         if (requestVariables) {

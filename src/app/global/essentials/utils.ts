@@ -187,3 +187,13 @@ export function getNew<T>(pool: T[], arr: T[], compare: (t1: T, t2: T) => boolea
 export function clone(obj: any): any {
   return JSON.parse(JSON.stringify(obj))
 }
+
+export function removeDuplicates<T>(ts: T[]): T[] {
+  let newT: T[] = [];
+  for (let t of ts) {
+    if (newT.indexOf(t) === -1) {
+      newT.push(t);
+    }
+  }
+  return newT;
+}
