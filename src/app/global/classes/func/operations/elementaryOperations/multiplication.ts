@@ -12,12 +12,12 @@ export class Multiplication extends Operation {
     return product;
   }
 
-  public derive(): Operation {
+  public derive(key: string): Operation {
     let summands: Operation[] = [];
     for (let i = 0; i < this.factors.length; i++) {
       let newFactors = this.factors.map((o, k) => {
         if (k == i) {
-          return o.derive();
+          return o.derive(key);
         }
         return o;
       });

@@ -9,8 +9,8 @@ export class NaturalLogarithm extends GeneralFunction {
     return Math.log(this.operation.evaluate(dict));
   }
 
-  public derive(): Operation {
-    return new Division(this.operation.derive(), this.operation);
+  public derive(key: string): Operation {
+    return new Division(this.operation.derive(key), this.operation);
   }
 
   constructor(operation: Operation) {

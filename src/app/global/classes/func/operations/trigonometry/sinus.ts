@@ -9,8 +9,8 @@ export class Sinus extends GeneralFunction {
     return Math.sin(this.operation.evaluate(dict));
   }
 
-  public derive(): Operation {
-    return new Multiplication(this.operation.derive(), new Cosinus(this.operation))
+  public derive(key: string): Operation {
+    return new Multiplication(this.operation.derive(key), new Cosinus(this.operation))
   }
 
   constructor(operation: Operation) {

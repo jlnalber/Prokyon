@@ -12,8 +12,8 @@ function deriveFunctionName(name: string): string {
 
 export class ExternalFunction extends GeneralFunction {
 
-  derive(): Operation {
-    return new Multiplication(this.operation.derive(), new ExternalFunction(deriveFunctionName(this.funcKey), this.funcProvider, this.operation))
+  derive(key: string): Operation {
+    return new Multiplication(this.operation.derive(key), new ExternalFunction(deriveFunctionName(this.funcKey), this.funcProvider, this.operation))
   }
 
   evaluate(dict: any): number {

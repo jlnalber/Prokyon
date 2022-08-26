@@ -9,8 +9,8 @@ export class Root extends Operation {
     return this.base.evaluate(dict) ** (1 / this.exponent.evaluate(dict));
   }
 
-  public derive(): Operation {
-    return new Pow(this.base, new Division(new Constant(1), this.exponent)).derive();
+  public derive(key: string): Operation {
+    return new Pow(this.base, new Division(new Constant(1), this.exponent)).derive(key);
   }
 
   constructor(private readonly base: Operation, private readonly exponent: Operation) {

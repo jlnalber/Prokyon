@@ -10,8 +10,8 @@ export class Variable extends Operation {
     throw 'no number found';
   }
 
-  public derive(): Operation {
-    return new Constant(1);
+  public derive(key: string): Operation {
+    return new Constant(key === this.key ? 1 : 0);
   }
 
   constructor(public readonly key: string) {

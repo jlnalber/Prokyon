@@ -11,10 +11,10 @@ export class Pow extends Operation {
     return this.base.evaluate(dict) ** this.exponent.evaluate(dict);
   }
 
-  public derive(): Operation {
+  public derive(key: string): Operation {
     return new Multiplication(new Pow(this.base, this.exponent),
-                              new Addition(new Multiplication(this.exponent.derive(), new NaturalLogarithm(this.base)),
-                                            new Multiplication(this.exponent, new Division(this.base.derive(), this.base))));
+                              new Addition(new Multiplication(this.exponent.derive(key), new NaturalLogarithm(this.base)),
+                                            new Multiplication(this.exponent, new Division(this.base.derive(key), this.base))));
   }
 
   constructor(private readonly base: Operation, private readonly exponent: Operation) {

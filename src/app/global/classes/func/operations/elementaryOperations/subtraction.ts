@@ -7,8 +7,8 @@ export class Subtraction extends Operation {
     return this.minuend.evaluate(dict) - this.subtrahend.evaluate(dict);
   }
 
-  public derive(): Operation {
-    return new Subtraction(this.minuend.derive(), this.subtrahend.derive());
+  public derive(key: string): Operation {
+    return new Subtraction(this.minuend.derive(key), this.subtrahend.derive(key));
   }
 
   constructor(private readonly minuend: Operation, private readonly subtrahend: Operation) {

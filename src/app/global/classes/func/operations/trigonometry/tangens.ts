@@ -11,8 +11,8 @@ export class Tangens extends GeneralFunction {
     return Math.tan(this.operation.evaluate(dict));
   }
 
-  public derive(): Operation {
-    return new Division(this.operation.derive(), new Pow(new Cosinus(this.operation), new Constant(2)));
+  public derive(key: string): Operation {
+    return new Division(this.operation.derive(key), new Pow(new Cosinus(this.operation), new Constant(2)));
   }
 
   constructor(operation: Operation) {

@@ -10,9 +10,9 @@ export class Addition extends Operation {
     return sum;
   }
 
-  public derive(): Operation {
+  public derive(key: string): Operation {
     return new Addition(...this.summands.map(s => {
-      return s.derive();
+      return s.derive(key);
     }))
   }
 

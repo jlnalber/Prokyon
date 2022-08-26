@@ -14,9 +14,9 @@ export class ConditionalOperation extends Operation {
     throw 'no condition matched';
   }
 
-  public derive(): Operation {
+  public derive(key: string): Operation {
     return new ConditionalOperation(...this.conditionsWithOperations.map((cO: ConditionWithOperation): ConditionWithOperation => {
-      return [ cO[0], cO[1].derive() ];
+      return [ cO[0], cO[1].derive(key) ];
     }));
   }
 

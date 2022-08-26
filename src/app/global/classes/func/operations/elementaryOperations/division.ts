@@ -9,8 +9,8 @@ export class Division extends Operation {
     return this.dividend.evaluate(dict) / this.divisor.evaluate(dict);
   }
 
-  public derive(): Operation {
-    return new Division(new Subtraction(new Multiplication(this.dividend.derive(), this.divisor), new Multiplication(this.dividend, this.divisor.derive())),
+  public derive(key: string ): Operation {
+    return new Division(new Subtraction(new Multiplication(this.dividend.derive(key), this.divisor), new Multiplication(this.dividend, this.divisor.derive(key))),
                                       new Pow(this.divisor, new Constant(2)));
   }
 
