@@ -1,10 +1,10 @@
-import {CanvasElement} from "./abstract/canvasElement";
-import {RenderingContext} from "./renderingContext";
-import {Func} from "./func/func";
-import {Color, colorAsTransparent} from "../interfaces/color";
-import {Point} from "../interfaces/point";
-import {expandRectBy, isIn} from "../essentials/utils";
-import {GraphFormulaComponent} from "../../formula-tab/graph-formula/graph-formula.component";
+import {CanvasElement} from "../abstract/canvasElement";
+import {RenderingContext} from "../renderingContext";
+import {Func} from "../func/func";
+import {BLACK, Color, colorAsTransparent} from "../../interfaces/color";
+import {Point} from "../../interfaces/point";
+import {expandRectBy, isIn} from "../../essentials/utils";
+import {GraphFormulaComponent} from "../../../formula-tab/graph-formula/graph-formula.component";
 
 export class Graph extends CanvasElement {
 
@@ -19,9 +19,29 @@ export class Graph extends CanvasElement {
     this.onChange.emit(value);
   }
 
-  constructor(func: Func, public color: Color = { r: 0, g: 0, b: 0 }, public visible: boolean = true, public lineWidth: number = 3) {
+  private _color: Color = BLACK;
+  public get color(): Color {
+    return this._color;
+  }
+  public set color(value: Color) {
+    this._color = value;
+    this.onChange.emit(value);
+  }
+
+  private _visible: boolean = true;
+  public get visible(): boolean {
+    return this._visible;
+  }
+  public set visible(value: boolean) {
+    this._visible = value;
+    this.onChange.emit(value);
+  }
+
+  constructor(func: Func, color: Color = { r: 0, g: 0, b: 0 }, visible: boolean = true, public lineWidth: number = 3) {
     super();
     this._func = func;
+    this._color = color;
+    this._visible = visible;
   }
 
   public override draw(ctx: RenderingContext) {

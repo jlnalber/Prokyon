@@ -8,7 +8,7 @@ import {Transformations} from "../global/interfaces/transformations";
 import {Point, Vector} from "../global/interfaces/point";
 import { CanvasDrawer } from '../global/classes/abstract/canvasDrawer';
 import {Grid} from "../global/classes/grid";
-import {Graph} from "../global/classes/graph";
+import {Graph} from "../global/classes/canvas-elements/graph";
 import {getNew, sameColors} from "../global/essentials/utils";
 import {colors} from "../formula-tab/formula-tab.component";
 import {Config as CanvasConfig} from "../global/classes/renderingContext";
@@ -22,8 +22,9 @@ import {
   isRecursive
 } from "../global/classes/func/funcInspector";
 import Cache from "../global/essentials/cache";
-import VariableElement from "../global/classes/variableElement";
+import VariableElement from "../global/classes/canvas-elements/variableElement";
 import Selection from "../global/essentials/selection";
+import PointElement from "../global/classes/canvas-elements/pointElement";
 
 @Injectable({
   providedIn: 'root'
@@ -213,15 +214,13 @@ export class DrawerService {
   }
   // #endregion
 
-  // #region fields for dealing with graphs/functions
+  // #region fields for dealing with graphs/functions/points
   public get graphs(): Graph[] {
-    let graphs = [];
-    for (let cEl of this.canvasElements) {
-      if (cEl instanceof Graph) {
-        graphs.push(cEl);
-      }
-    }
-    return graphs;
+    return this.canvasElements.filter(el => el instanceof Graph) as Graph[];
+  }
+
+  public get points(): PointElement[] {
+    return this.canvasElements.filter(el => el instanceof PointElement) as PointElement[];
   }
 
   private readonly funcCache: Cache<string, Func> = new Cache<string, Func>();
@@ -241,6 +240,9 @@ export class DrawerService {
         // derive to the requested level
         let deriveNow = countDerivations(func.name!);
         let requestedDerive = countDerivations(key);
+        if (deriveNow > requestedDerive) {
+          continue;
+        }
         for (let i = 0; i < requestedDerive - deriveNow; i++) {
           func = func.derive();
         }
@@ -312,8 +314,10 @@ export class DrawerService {
     }
   }
 
-  public getNewColorForGraph(): Color {
-    return getNew(colors, this.graphs.map(g => g.color), (c1, c2) => { return sameColors(c1, c2) })
+  public getNewColor(): Color {
+    return getNew(colors,
+      (this.graphs as (Graph | PointElement)[]).concat(...this.points).map(g => g.color),
+      (c1, c2) => { return sameColors(c1, c2) })
   }
 
   public getVariables(): any {

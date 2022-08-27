@@ -29,6 +29,12 @@ export class Dialog<T extends DialogComponentType> {
     this.dialogComponent.componentType = componentType;
   }
   public open(dialogData?: any): void {
-    this.dialogComponent.open(dialogData);
+    this.dialogComponent.open(dialogData, this);
+  }
+  public close(): any {
+    return this.dialogComponent.close();
+  }
+  public destroy(): void {
+    this.dialogComponentRef.destroy();
   }
 }

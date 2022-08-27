@@ -1,7 +1,7 @@
 import {Transformations} from "../interfaces/transformations";
 import {Point} from "../interfaces/point";
 import {Rect} from "../interfaces/rect";
-import {Color, getColorAsRgbaFunction} from "../interfaces/color";
+import {BLACK, Color, getColorAsRgbaFunction, TRANSPARENT} from "../interfaces/color";
 import {CanvasElement} from "./abstract/canvasElement";
 
 export interface Config {
@@ -50,6 +50,10 @@ export class RenderingContext {
       width: rect.width * this.transformations.zoom,
       height: -rect.height * this.transformations.zoom
     }
+  }
+
+  public get zoom(): number {
+    return this.transformations.zoom;
   }
 
   public get step(): number {
@@ -122,5 +126,33 @@ export class RenderingContext {
 
     // draw the text
     ctx.fillText(text, realP.x, realP.y, maxWidth);
+  }
+
+  public drawEllipse(center: Point,
+                     radiusX: number,
+                     radiusY: number,
+                     rotation: number,
+                     fill: Color = BLACK,
+                     stroke: Color = TRANSPARENT,
+                     strokeWidth: number = 0): void {
+    // draw an ellipse around the center point
+    this.ctx.lineWidth = strokeWidth;
+    this.ctx.strokeStyle = getColorAsRgbaFunction(stroke);
+    this.ctx.fillStyle = getColorAsRgbaFunction(fill);
+    const realCenter = this.transformPointFromFieldToCanvas(center)
+
+    this.ctx.beginPath();
+    this.ctx.ellipse(realCenter.x, realCenter.y, radiusX, radiusY, rotation, 0, 2 * Math.PI);
+    this.ctx.stroke();
+    this.ctx.fill();
+    this.ctx.closePath();
+  }
+
+  public drawCircle(center: Point,
+                    radius: number,
+                    fill: Color = BLACK,
+                    stroke: Color = TRANSPARENT,
+                    strokeWidth: number = 0): void {
+    this.drawEllipse(center, radius, radius, 0, fill, stroke, strokeWidth);
   }
 }

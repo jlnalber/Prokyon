@@ -1,0 +1,7 @@
+<div class="wrapper">
+  <app-color-circle [(color)]="this.canvasElement.color" [(visible)]="this.canvasElement.visible"></app-color-circle>
+  <p class="paragraph"><span></span>
+    {{ this.name }}( <span><input type="number" class="input" [(ngModel)]="this.canvasElement.x"></span> |
+    <span><input type="number" class="input" [(ngModel)]="this.canvasElement.y"></span> )
+  </p>
+</div>

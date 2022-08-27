@@ -1,16 +1,16 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {Func} from "../../global/classes/func/func";
-import {Graph} from "../../global/classes/graph";
+import {Graph} from "../../global/classes/canvas-elements/graph";
 import {Constant} from "../../global/classes/func/operations/constants/constant";
 import {DrawerService} from "../../services/drawer.service";
-import {ContextMenu} from "../../contextMenu/context-menu.directive";
-import {Color, getColorAsRgbaFunction} from "../../global/interfaces/color";
-import {HoverConfiguration} from "../../hover-menu/hover-menu.directive";
-import {ColorPickerComponent} from "../../color-picker/color-picker.component";
+import {ContextMenu} from "../../context-menu/context-menu.directive";
+import {getColorAsRgbaFunction} from "../../global/interfaces/color";
 import {FuncParser} from "../../global/classes/func/funcParser";
 import {FormulaElement} from "../../global/classes/abstract/formulaElement";
 import {Event} from "../../global/essentials/event";
 import {Point} from "../../global/interfaces/point";
+import {DialogService} from "../../dialog/dialog.service";
+import {FuncAnalyserDialogComponent} from "../../func-analyser-dialog/func-analyser-dialog.component";
 
 @Component({
   selector: 'app-graph-formula',
@@ -35,7 +35,7 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
 
   public readonly threePointsClickedEvent: Event<Point> = new Event<Point>();
 
-  constructor(private readonly drawerService: DrawerService) {
+  constructor(private readonly drawerService: DrawerService, private readonly dialogService: DialogService) {
     super();
     this._canvasElement = new Graph(new Func(new Constant(0)));
     this._canvasElement.configuration.formula = '0';
@@ -62,7 +62,7 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
 
   derive() {
     try {
-      let derivedGraph = new Graph(this.canvasElement.func.derive(), this.drawerService.getNewColorForGraph());
+      let derivedGraph = new Graph(this.canvasElement.func.derive(), this.drawerService.getNewColor());
       derivedGraph.configuration.editable = true;
       derivedGraph.configuration.formula = derivedGraph.func.operationAsString;
       this.drawerService.addCanvasElement(derivedGraph);
@@ -114,24 +114,18 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
         click: () => {
           this.duplicate();
         }
+      },
+      {
+        header: 'Analysieren',
+        icon: 'query_stats',
+        click: () => {
+          this.dialogService.createDialog(FuncAnalyserDialogComponent)?.open({
+            func: this.canvasElement.func
+          });
+        }
       }],
       additionalEvent: this.threePointsClickedEvent
     }
-  }
-
-  public get hoverMenu(): HoverConfiguration {
-    return {
-      component: ColorPickerComponent,
-      data: {
-        getter: () => {
-          return this.canvasElement.color;
-        },
-        setter: (c: Color) => {
-          this.canvasElement.color = c;
-          this.drawerService.redraw();
-        }
-      }
-    };
   }
 
   public get color(): string {

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {FormulaElement} from "../../global/classes/abstract/formulaElement";
-import VariableElement from "../../global/classes/variableElement";
+import VariableElement from "../../global/classes/canvas-elements/variableElement";
 
 @Component({
   selector: 'app-variable-formula',

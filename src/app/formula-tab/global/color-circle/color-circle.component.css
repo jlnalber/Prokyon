@@ -1,0 +1,13 @@
+.colorPicker {
+  --buttonSize: 46px;
+  --borderThickness: 2px;
+  float: left;
+  width: calc(var(--buttonSize) - 2 * var(--borderThickness));
+  height: calc(var(--buttonSize) - 2 * var(--borderThickness));
+  border: var(--borderThickness) solid;
+  border-radius: 100%;
+}
+
+.colorPicker.notVisible {
+  background: transparent !important;
+}

@@ -1,4 +1,4 @@
-import {Func} from "../func";
+import {Func} from "./func";
 
 export function newtonMethod(startValue: number, func: Func, dict: any, iterations: number): number {
   const derivation = func.derive();

@@ -1,3 +1,5 @@
+@import url("../global/styles/_global.css");
+
 .text, .input {
   height: 30px;
   font-size: 14pt;
@@ -19,28 +21,7 @@
 }
 
 .input {
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  padding: var(--padding);
   width: 100%;
-  border: var(--border) solid transparent;
-  border-radius: 5px;
-  outline: none;
-  background: #eee;
-  transition: 0.1s all ease-in-out;
-  color: #555;
-}
-
-.input:hover {
-  background: #ddd;
-}
-
-.input:focus {
-  background: white;
-  border: 1px solid #d9d9d9;
-  color: black;
 }
 
 .slider {

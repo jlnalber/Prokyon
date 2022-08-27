@@ -1,5 +1,5 @@
 <app-formula-element *ngFor="let canvasElement of this.drawerService.canvasElements" [canvasElement]="canvasElement"></app-formula-element>
-<div class="addDiv" (click)="addClick()" (keydown)="keyboardAdd($event)" tabindex="0">
+<div class="addDiv" [appContextMenu]="this.contextMenu" (click)="addClick()" (keydown)="keyboardAdd($event)" tabindex="0">
   <p>
     <span class="material-symbols-outlined">add</span>
     Hinzufügen
