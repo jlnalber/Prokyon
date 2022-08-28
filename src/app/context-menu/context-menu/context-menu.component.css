@@ -40,10 +40,14 @@
 }
 
 @keyframes start {
-  from {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  1% {
     transform: scale(0);
   }
-  to {
+  100% {
     transform: scale(1);
   }
 }
