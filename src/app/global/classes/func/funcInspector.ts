@@ -2,9 +2,9 @@ import {Func} from "./func";
 import {Operation} from "./operations/operation";
 import {Variable} from "./operations/variable";
 import {ExternalFunction} from "./operations/externalFunction";
-import {removeDuplicates} from "../../essentials/utils";
+import {eliminateDuplicates} from "../../essentials/utils";
 
-const derivationCharacter = '\'';
+const derivativeCharacter = '\'';
 
 export type InspectorResult = {
   variableNames: string[],
@@ -32,8 +32,8 @@ export function inspectOperation(operation: Operation): InspectorResult {
     externalFuncNames.push(...res.externalFuncNames);
   })
 
-  variableNames = removeDuplicates(variableNames);
-  externalFuncNames = removeDuplicates(externalFuncNames);
+  variableNames = eliminateDuplicates(variableNames);
+  externalFuncNames = eliminateDuplicates(externalFuncNames);
 
   return {
     variableNames,
@@ -41,17 +41,17 @@ export function inspectOperation(operation: Operation): InspectorResult {
   }
 }
 
-export function isRecursive(func: Func, countDerivation: boolean = true): boolean {
-  return containsFunc(func, func, countDerivation);
+export function isRecursive(func: Func, countderivative: boolean = true): boolean {
+  return containsFunc(func, func, countderivative);
 }
 
-export function containsFunc(funcOrOp: Func | Operation, func: Func, countDerivation: boolean = false): boolean {
+export function containsFunc(funcOrOp: Func | Operation, func: Func, countderivative: boolean = false): boolean {
   if (funcOrOp instanceof Func) {
     return containsFunc(funcOrOp.operation, func);
   }
   else {
     if (funcOrOp instanceof ExternalFunction && (funcOrOp.funcKey === func.name ||
-      (countDerivation && funcNameWithoutDerivation(funcOrOp.funcKey) === funcNameWithoutDerivation(func.name)))) {
+      (countderivative && funcNameWithoutderivative(funcOrOp.funcKey) === funcNameWithoutderivative(func.name)))) {
       return true;
     }
 
@@ -86,19 +86,19 @@ export function containsVariable(funcOrOp: Func | Operation, varKey: string): bo
   }
 }
 
-export function funcNameWithoutDerivation(name: string | undefined): string | undefined {
+export function funcNameWithoutderivative(name: string | undefined): string | undefined {
   if (!name) return undefined;
   let res = name;
-  while (res.endsWith(derivationCharacter)) {
+  while (res.endsWith(derivativeCharacter)) {
     res = res.substring(0, res.length - 1);
   }
   return res;
 }
 
-export function countDerivations(funcName: string): number {
+export function countderivatives(funcName: string): number {
   let res = 0;
   let name = funcName;
-  while (name.endsWith(derivationCharacter)) {
+  while (name.endsWith(derivativeCharacter)) {
     name = name.substring(0, name.length - 1);
     res++;
   }

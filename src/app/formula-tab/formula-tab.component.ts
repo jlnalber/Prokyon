@@ -68,6 +68,14 @@ export class FormulaTabComponent implements OnInit {
             this.addPoint();
           },
           icon: 'radio_button_checked'
+        },
+        {
+          header: 'Alle löschen',
+          click: () => {
+            this.drawerService.emptyCanvasElements();
+          },
+          icon: 'delete',
+          color: 'red'
         }
       ]
     }

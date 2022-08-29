@@ -1,0 +1,45 @@
+@import url("../global/styles/_global.css");
+
+.wrapper {
+  width: 500px;
+}
+
+.heading {
+  font-size: 16pt !important;
+  font-weight: 600;
+  margin-top: 0;
+}
+
+.paragraph {
+  font-size: 14pt;
+  font-family: 'Segoe UI', Calibri, 'sans-serif';
+  user-select: none;
+}
+
+.maths {
+  font-size: 14pt;
+  user-select: none;
+  font-family: "Cambria Math", Cambria, serif;
+}
+
+.centered {
+  text-align: center;
+}
+
+.right {
+  float: right;
+}
+
+.close {
+  color: red;
+}
+
+.button {
+  margin-left: 7px;
+  margin-top: 7px;
+}
+
+.input {
+  width: 50px;
+  display: unset;
+}

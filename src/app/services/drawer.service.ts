@@ -17,8 +17,8 @@ import {Func} from "../global/classes/func/func";
 import {FuncParser} from "../global/classes/func/funcParser";
 import {
   inspect, containsVariable,
-  countDerivations,
-  funcNameWithoutDerivation,
+  countderivatives,
+  funcNameWithoutderivative,
   isRecursive
 } from "../global/classes/func/funcInspector";
 import Cache from "../global/essentials/cache";
@@ -61,6 +61,13 @@ export class DrawerService {
     }
     return false;
   }
+  public emptyCanvasElements(): void {
+    for (let canvasElement of this._canvasElements) {
+      canvasElement.onChange.removeListener(this.canvasElementOnChangeListener);
+    }
+    this._canvasElements = [];
+    this.onCanvasElementChanged.emit();
+  }
   public get canvasElements(): CanvasElement[] {
     return this._canvasElements.slice();
   }
@@ -78,6 +85,10 @@ export class DrawerService {
       return true;
     }
     return false;
+  }
+  public emptyMetaDrawers(): void {
+    this._metaDrawers = [];
+    this.onMetaDrawersChanged.emit();
   }
   public get metaDrawers(): CanvasDrawer[] {
     return this._metaDrawers.slice();
@@ -234,12 +245,12 @@ export class DrawerService {
 
     // then look up in the graphs
     for (let graph of this.graphs) {
-      if (funcNameWithoutDerivation(key) === funcNameWithoutDerivation(graph.func.name)) {
+      if (funcNameWithoutderivative(key) === funcNameWithoutderivative(graph.func.name)) {
         let func = graph.func
 
         // derive to the requested level
-        let deriveNow = countDerivations(func.name!);
-        let requestedDerive = countDerivations(key);
+        let deriveNow = countderivatives(func.name!);
+        let requestedDerive = countderivatives(key);
         if (deriveNow > requestedDerive) {
           continue;
         }

@@ -2,21 +2,28 @@
   --buttonSize: 46px;
   height: var(--buttonSize);
   width: var(--buttonSize);
-  float: right;
-  margin-top: calc(-1 * var(--buttonSize));
   border: none;
   outline: none;
   background: #fcfcfc;
-  transition: all 0.2s ease-in-out;
+  transition: all 0.1s ease-in-out;
   border-radius: 50%;
+  user-select: none;
 }
 
 .iconButton:hover {
   background: #eeeeee;
 }
 
-.iconButton:active, button:focus {
+.iconButton:active, .iconButton:focus {
   background: #dddddd;
+}
+
+.iconButton.depositionTop {
+  margin-top: calc(-1 * var(--buttonSize));
+}
+
+.floatRight {
+  float: right;
 }
 
 .input {
@@ -56,4 +63,27 @@
     'wght' 400,
     'GRAD' 0,
     'opsz' 48
+}
+
+.button {
+  padding: 7px;
+  outline: none;
+  border: 1px solid #cccccc;
+  background: #fcfcfc;
+  border-radius: 5px;
+  transition: all 0.1s ease-in-out;
+  font-size: 12pt;
+  font-family: 'Segoe UI', Calibri, 'sans-serif';
+  font-weight: 500;
+  user-select: none;
+}
+
+.button:hover {
+  background: #eeeeee;
+  border: 1px solid #999999;
+}
+
+.button:focus, .button:active {
+  background: #dddddd;
+  border: 1px solid #555;
 }

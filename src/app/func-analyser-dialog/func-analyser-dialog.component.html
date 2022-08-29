@@ -1,2 +1,17 @@
-<p>{{ this.dialogData?.func?.name }}</p>
-<button (click)="this.dialog.close()">Schließen</button>
+<div class="wrapper">
+  <p class="paragraph heading">Funktion <span class="maths heading">{{ this.dialogData?.func?.name ? this.dialogData?.func?.name + ' ' : '' }}</span>analysieren:</p>
+  <p class="centered maths">{{ this.dialogData?.func?.operationAsString }}</p>
+  <p class="paragraph">Im Intervall</p>
+  <p class="centered maths">
+    [<input class="input" step="any" type="number" [(ngModel)]="this.from">;
+    <input class="input" step="any" type="number" [(ngModel)]="this.to">]
+  </p>
+  <p class="paragraph">mit der Suchtiefe:</p>
+  <p class="centered maths">
+    <input class="input" type="number" [(ngModel)]="this.depth">
+  </p>
+  <button class="button right" (click)="this.evaluateZeroPoints()">Nullpunkte bestimmen</button>
+  <button class="button right" (click)="this.evaluateExtremumPoints()">Extrempunkte bestimmen</button>
+  <button class="button right" (click)="this.evaluateInflectionPoints()">Wendepunkte bestimmen</button>
+  <button class="button right close" (click)="this.dialog.close()">Schließen</button>
+</div>

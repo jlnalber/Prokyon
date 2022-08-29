@@ -5,6 +5,7 @@ import {PointFormulaComponent} from "../../../formula-tab/point-formula/point-fo
 import {Point} from "../../interfaces/point";
 import {FormulaElement} from "../abstract/formulaElement";
 import {BLACK, Color, colorAsTransparent} from "../../interfaces/color";
+import {isIn} from "../../essentials/utils";
 
 export default class PointElement extends CanvasElement {
 
@@ -85,11 +86,13 @@ export default class PointElement extends CanvasElement {
   }
 
   public override draw(ctx: RenderingContext): void {
-    if (ctx.selection.indexOf(this) !== -1) {
-      ctx.drawCircle(this.point, 1.75 * this.radius, colorAsTransparent(this.color, 0.3))
-    }
-    if (this.visible) {
-      ctx.drawCircle(this.point, this.radius, this.color, this.stroke, this.strokeWidth);
+    const selectionRadiusFactor = 1.75;
+    const point = this.point;
+    if (this.visible && isIn(point, ctx.range, selectionRadiusFactor * this.radius / ctx.zoom)) {
+      if (ctx.selection.indexOf(this) !== -1) {
+        ctx.drawCircle(point, selectionRadiusFactor * this.radius, colorAsTransparent(this.color, 0.3))
+      }
+      ctx.drawCircle(point, this.radius, this.color, this.stroke, this.strokeWidth);
     }
   }
 

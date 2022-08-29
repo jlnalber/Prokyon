@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {ContextMenu, ContextMenuElement} from "../context-menu.directive";
 import {Point} from "../../global/interfaces/point";
 

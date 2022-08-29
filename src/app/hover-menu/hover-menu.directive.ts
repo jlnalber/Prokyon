@@ -17,12 +17,32 @@ export class HoverMenuDirective {
     this.element = vc.element.nativeElement as Element;
 
     this.element.addEventListener('mouseover', this.eventListenerStart);
+    this.element.addEventListener('mousemove', this.eventListenerStart);
     this.element.addEventListener('mouseleave', this.eventListenerEnd);
-
   }
 
-  private eventListenerStart = (event: Event | MouseEvent) => {
-    if (!this.hoverMenu && event instanceof MouseEvent) {
+  // time, after which the hover menu should appear in milliseconds
+  public hoverTimeMs = 500;
+
+  private version = 0;
+
+  private eventListenerStart = () => {
+    if (!this.hoverMenu) {
+      // thisVersion stores when the event was emitted
+      const thisVersion = ++this.version;
+
+      // after 'hoverTimeMs', the hoverMenu should open, but only when the version is still the same, meaning that no mousemove, etc. event was fired
+      setTimeout(() => {
+        if (this.version == thisVersion) {
+          this.openHoverMenu();
+        }
+      }, this.hoverTimeMs)
+    }
+  }
+
+  private openHoverMenu(): void {
+    if (!this.hoverMenu) {
+      // create component
       this.hoverMenu = this.vc.createComponent(HoverMenuComponent);
 
       // give data to this.hoverMenu
@@ -53,6 +73,9 @@ export class HoverMenuDirective {
         this.hoverMenu = undefined;
       }
     }
+
+    // reset the version
+    this.version = 0;
   }
 
 }

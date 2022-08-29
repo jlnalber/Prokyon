@@ -188,12 +188,23 @@ export function clone(obj: any): any {
   return JSON.parse(JSON.stringify(obj))
 }
 
-export function removeDuplicates<T>(ts: T[]): T[] {
-  let newT: T[] = [];
+export function eliminateDuplicates<T>(ts: T[]): T[] {
+  return [...(new Set<T>(ts))];
+  /*let newT: T[] = [];
   for (let t of ts) {
     if (newT.indexOf(t) === -1) {
       newT.push(t);
     }
   }
-  return newT;
+  return newT;*/
+}
+
+export function joinAsSets<T>(...tArrs: T[][]): T[] {
+  const set = new Set<T>();
+  for (let tArr of tArrs) {
+    for (let t of tArr) {
+      set.add(t);
+    }
+  }
+  return [ ...set ];
 }

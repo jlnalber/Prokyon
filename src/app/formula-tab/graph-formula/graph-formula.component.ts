@@ -7,8 +7,6 @@ import {ContextMenu} from "../../context-menu/context-menu.directive";
 import {getColorAsRgbaFunction} from "../../global/interfaces/color";
 import {FuncParser} from "../../global/classes/func/funcParser";
 import {FormulaElement} from "../../global/classes/abstract/formulaElement";
-import {Event} from "../../global/essentials/event";
-import {Point} from "../../global/interfaces/point";
 import {DialogService} from "../../dialog/dialog.service";
 import {FuncAnalyserDialogComponent} from "../../func-analyser-dialog/func-analyser-dialog.component";
 
@@ -32,8 +30,6 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
   get canvasElement(): Graph {
     return this._canvasElement;
   }
-
-  public readonly threePointsClickedEvent: Event<Point> = new Event<Point>();
 
   constructor(private readonly drawerService: DrawerService, private readonly dialogService: DialogService) {
     super();
@@ -120,7 +116,8 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
         icon: 'query_stats',
         click: () => {
           this.dialogService.createDialog(FuncAnalyserDialogComponent)?.open({
-            func: this.canvasElement.func
+            func: this.canvasElement.func,
+            color: this.canvasElement.color
           });
         }
       }],
@@ -135,18 +132,5 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
   changeVisibility() {
     this.canvasElement.visible = !this.canvasElement.visible;
     this.drawerService.redraw();
-  }
-
-  threePointsClicked(ev: MouseEvent) {
-    ev.stopPropagation();
-    let button: Element = ev.target as Element;
-    if (button instanceof HTMLSpanElement) {
-      button = button.parentElement!;
-    }
-    let rect = button.getBoundingClientRect();
-    this.threePointsClickedEvent.emit({
-      x: rect.x + rect.width / 2,
-      y: rect.y + rect.height / 2
-    });
   }
 }
