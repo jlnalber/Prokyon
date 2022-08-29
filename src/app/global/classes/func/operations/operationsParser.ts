@@ -205,9 +205,14 @@ export class OperationsParser {
             // for the variable, mapping might be required: e.g. 'π' --> 'pi'
             const el = arr[0];
             if (typeof el == 'string') {
-              return {
-                value: mapElement(el, variableMappings)
-              };
+              if (!contains(notNumbersVariablesOrFunctions, el)) {
+                return {
+                  value: mapElement(el, variableMappings)
+                };
+              }
+
+              // this might occur when there is only a bracket, a times, etc. left (operations and brackets)
+              throw parseErrorMessage;
             }
             return el;
           }
