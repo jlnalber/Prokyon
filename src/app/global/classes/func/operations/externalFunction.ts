@@ -1,8 +1,8 @@
-import GeneralFunction from "./generalFunction";
+import GeneralFunction from "./other-operations/generalFunction";
 import {Func} from "../func";
 import {Operation} from "./operation";
 import {clone} from "../../../essentials/utils";
-import {Multiplication} from "./elementaryOperations/multiplication";
+import {Multiplication} from "./elementary-operations/multiplication";
 
 export type FuncProvider = (key: string) => Func | undefined;
 

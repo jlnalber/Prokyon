@@ -4,18 +4,18 @@ import {
   containsCombination,
   indexOf,
   indexUntil,
-  lastIndexOf, lastIndexOfCombination,
+  lastIndexOfCombination, mapElement,
   replaceAll,
   tryParseNumber
 } from "../../../essentials/utils";
 import {Constant} from "./constants/constant";
-import {Addition} from "./elementaryOperations/addition";
+import {Addition} from "./elementary-operations/addition";
 import {Variable} from "./variable";
-import {Subtraction} from "./elementaryOperations/subtraction";
-import {Multiplication} from "./elementaryOperations/multiplication";
-import {Division} from "./elementaryOperations/division";
-import {Pow} from "./elementaryOperations/pow";
-import {Modulo} from "./elementaryOperations/modulo";
+import {Subtraction} from "./elementary-operations/subtraction";
+import {Multiplication} from "./elementary-operations/multiplication";
+import {Division} from "./elementary-operations/division";
+import {Pow} from "./elementary-operations/pow";
+import {Modulo} from "./elementary-operations/modulo";
 import {Sinus} from "./trigonometry/sinus";
 import {Cosinus} from "./trigonometry/cosinus";
 import {Tangens} from "./trigonometry/tangens";
@@ -28,11 +28,13 @@ import {Arcustangens} from "./trigonometry/arcustangens";
 import {Arcussecans} from "./trigonometry/arcussecans";
 import {Arcuscosecans} from "./trigonometry/arcuscosecans";
 import {Arcuscotangens} from "./trigonometry/arcuscotangens";
-import {Root} from "./elementaryOperations/root";
-import {NaturalLogarithm} from "./naturalLogarithm";
+import {Root} from "./elementary-operations/root";
+import {NaturalLogarithm} from "./other-operations/naturalLogarithm";
 import {PiConstant} from "./constants/pi";
 import {EConstant} from "./constants/e";
 import {ExternalFunction, FuncProvider} from "./externalFunction";
+import {Absolute} from "./other-operations/Absolute";
+import {Signum} from "./other-operations/signum";
 
 const powerOperators = [
   '^'
@@ -62,7 +64,7 @@ const closingBrackets = [
   ']'
 ]
 const brackets = [ ...openingBrackets, ...closingBrackets ];
-const trigonometryFunctions = [
+/*const trigonometryFunctions = [
   'sin',
   'asin',
   'cos',
@@ -80,8 +82,20 @@ const otherFunctions = [
   'ln',
   'sqrt'
 ];
-const functions = [ ...trigonometryFunctions, ...otherFunctions ];
+const functions = [ ...trigonometryFunctions, ...otherFunctions ];*/
 const notNumbersVariablesOrFunctions = [ ...whitespaces, ...operations, ...brackets ];
+const functionMappings: [string, string][] = [
+  ['arcsin', 'asin'],
+  ['arccos', 'acos'],
+  ['arctan', 'atan'],
+  ['arcsec', 'asec'],
+  ['arccsc', 'acsc'],
+  ['arccot', 'acot'],
+  ['sign', 'sgn']
+]
+const variableMappings: [string, string][] = [
+  ['π', 'pi']
+]
 
 const parseErrorMessage = 'syntax error';
 
@@ -97,13 +111,6 @@ export class OperationsParser {
   public formatString(): string {
     if (!this.formattedString) {
       this.formattedString = replaceAll(this.str.trim(), '**', '^');
-      this.formattedString = replaceAll(this.formattedString, 'arcsin', 'asin');
-      this.formattedString = replaceAll(this.formattedString, 'arccos', 'acos');
-      this.formattedString = replaceAll(this.formattedString, 'arctan', 'atan');
-      this.formattedString = replaceAll(this.formattedString, 'arcsec', 'asec');
-      this.formattedString = replaceAll(this.formattedString, 'arccsc', 'acsc');
-      this.formattedString = replaceAll(this.formattedString, 'arccot', 'acot');
-      this.formattedString = replaceAll(this.formattedString, 'π', 'pi');
     }
 
     return this.formattedString;
@@ -142,10 +149,11 @@ export class OperationsParser {
         // check whether additional elements have to be inserted
         for (let i = 0; i < this.stringSplit.length - 1; i++) {
 
+          // checking the following is obsolete, since I then want the functions to be treated as variables
           //check for functions that don't use brackets
-          if (contains(functions, this.stringSplit[i]) && !contains(openingBrackets, this.stringSplit[i + 1])) {
+          /*if (contains(functions, this.stringSplit[i]) && !contains(openingBrackets, this.stringSplit[i + 1])) {
             throw parseErrorMessage;
-          }
+          }*/
 
           // first multiplication
           if (!(i + 1 == this.stringSplit.length
@@ -155,7 +163,8 @@ export class OperationsParser {
             || contains(operations, this.stringSplit[i])
             || contains(operations, this.stringSplit[i + 1])
             || tryParseNumber(this.stringSplit[i + 1])
-            || contains(functions, this.stringSplit[i]))) {
+            // I believe this last case is obsolete. The third should already be enough.
+            /*|| contains(functions, this.stringSplit[i])*/)) {
 
             this.stringSplit.splice(i + 1, 0, '*');
           }
@@ -192,10 +201,12 @@ export class OperationsParser {
             throw parseErrorMessage;
           }
           else if (arr.length == 1) {
-            let el = arr[0];
+            // if there is only one element, and it is a string, it is either a number or a variable
+            // for the variable, mapping might be required: e.g. 'π' --> 'pi'
+            const el = arr[0];
             if (typeof el == 'string') {
               return {
-                value: el
+                value: mapElement(el, variableMappings)
               };
             }
             return el;
@@ -219,17 +230,20 @@ export class OperationsParser {
               return typeof el1 === 'string' && typeof el2 !== 'string' && !contains(notNumbersVariablesOrFunctions, el1);
             }
             while (containsCombination(parseArray, funcCond)) {
+              // get the position of the function
               let startIndex = lastIndexOfCombination(parseArray, funcCond);
 
+              // if the function is at the end, it is invalid
               if (startIndex == parseArray.length - 1) throw parseErrorMessage;
 
-              let func = parseArray[startIndex] as string;
+              // get the name of the function (mapped, meaning e.g. 'arcsin' --> 'asin')
+              let func = mapElement(parseArray[startIndex] as string, functionMappings);
               let param = parseArray[startIndex + 1];
 
               if (contains(brackets, param)) throw parseErrorMessage;
               if (contains(operations, param)) throw parseErrorMessage;
 
-              // remove elements from array
+              // remove elements from array and add the function
               parseArray.splice(startIndex, 2, {
                 value: func,
                 first: arrToTree([ param ])
@@ -239,14 +253,18 @@ export class OperationsParser {
             // then, read in Powers, Points, Lines (ltr)
             for (let priority of [ powerOperators, pointOperators, lineOperators ]) {
               while (contains(parseArray, ...priority)) {
+                // get the index of the operation
                 let index = indexOf(parseArray, ...priority);
                 if (index != -1 && index != 0 && index != parseArray.length - 1) {
+                  // remove the elements
                   let deletedItems = parseArray.splice(index - 1, 3);
                   let binaryTree: BinaryTree<string> = {
                     value: deletedItems[1] as string,
                     first: arrToTree([ deletedItems[0] ]),
                     second: arrToTree([ deletedItems[2] ])
                   };
+
+                  // and then add the operation as a binary tree
                   parseArray.splice(index - 1, 0, binaryTree);
                 }
                 else {
@@ -255,12 +273,15 @@ export class OperationsParser {
               }
             }
 
+            // if only one element is left (BinaryTree), the BinaryTree has successfully been created
             if (parseArray.length == 1) {
               let el = parseArray[0];
-              if (typeof el != 'string') {
+              if (typeof el !== 'string') {
                 return el;
               }
             }
+
+            // something went wrong if nothing was returned until here
             throw parseErrorMessage;
           }
         }
@@ -283,7 +304,10 @@ export class OperationsParser {
     if (!this.operation) {
       if (this.parseTree) {
 
+        // function for recursive use
         let treeToOperation = (tree: BinaryTree<string>): Operation => {
+          // TODO: This code (especially the functions) looks a bit like boilerplate. Refactor?
+
           if (tryParseNumber(tree.value)) {
             return new Constant(parseFloat(tree.value));
           }
@@ -308,61 +332,67 @@ export class OperationsParser {
 
           // functions
           // trigonometry
-          else if (tree.value == 'sin' && tree.first != undefined) {
+          else if (tree.value === 'sin' && tree.first !== undefined) {
             return new Sinus(treeToOperation(tree.first));
           }
-          else if (tree.value == 'asin' && tree.first != undefined) {
+          else if (tree.value === 'asin' && tree.first !== undefined) {
             return new Arcussinus(treeToOperation(tree.first));
           }
-          else if (tree.value == 'cos' && tree.first != undefined) {
+          else if (tree.value === 'cos' && tree.first !== undefined) {
             return new Cosinus(treeToOperation(tree.first));
           }
-          else if (tree.value == 'acos' && tree.first != undefined) {
+          else if (tree.value === 'acos' && tree.first !== undefined) {
             return new Arcuscosinus(treeToOperation(tree.first));
           }
-          else if (tree.value == 'tan' && tree.first != undefined) {
+          else if (tree.value === 'tan' && tree.first !== undefined) {
             return new Tangens(treeToOperation(tree.first));
           }
-          else if (tree.value == 'atan' && tree.first != undefined) {
+          else if (tree.value === 'atan' && tree.first !== undefined) {
             return new Arcustangens(treeToOperation(tree.first));
           }
-          else if (tree.value == 'sec' && tree.first != undefined) {
+          else if (tree.value === 'sec' && tree.first !== undefined) {
             return new Secans(treeToOperation(tree.first));
           }
-          else if (tree.value == 'asec' && tree.first != undefined) {
+          else if (tree.value === 'asec' && tree.first !== undefined) {
             return new Arcussecans(treeToOperation(tree.first));
           }
-          else if (tree.value == 'csc' && tree.first != undefined) {
+          else if (tree.value === 'csc' && tree.first !== undefined) {
             return new Cosecans(treeToOperation(tree.first));
           }
-          else if (tree.value == 'acsc' && tree.first != undefined) {
+          else if (tree.value === 'acsc' && tree.first !== undefined) {
             return new Arcuscosecans(treeToOperation(tree.first));
           }
-          else if (tree.value == 'cot' && tree.first != undefined) {
+          else if (tree.value === 'cot' && tree.first !== undefined) {
             return new Cotangens(treeToOperation(tree.first));
           }
-          else if (tree.value == 'acot' && tree.first != undefined) {
+          else if (tree.value === 'acot' && tree.first !== undefined) {
             return new Arcuscotangens(treeToOperation(tree.first));
           }
           // other functions
-          else if (tree.value == 'ln' && tree.first != undefined) {
+          else if (tree.value === 'ln' && tree.first !== undefined) {
             return new NaturalLogarithm(treeToOperation(tree.first));
           }
-          else if (tree.value == 'sqrt' && tree.first != undefined) {
+          else if (tree.value === 'sqrt' && tree.first !== undefined) {
             return new Root(treeToOperation(tree.first), new Constant(2));
+          }
+          else if (tree.value === 'abs' && tree.first !== undefined) {
+            return new Absolute(treeToOperation(tree.first));
+          }
+          else if (tree.value === 'sgn' && tree.first !== undefined) {
+            return new Signum(treeToOperation(tree.first));
           }
 
           // constants
-          else if (tree.value == 'pi') {
+          else if (tree.value === 'pi') {
             return new PiConstant();
           }
-          else if (tree.value == 'e') {
+          else if (tree.value === 'e') {
             return new EConstant();
           }
 
           // else default to a variable
           else {
-            if (tree.first != undefined) {
+            if (tree.first !== undefined) {
               return new ExternalFunction(tree.value, this.funcProvider, treeToOperation(tree.first));
             }
             else {

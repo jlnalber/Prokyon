@@ -1,6 +1,6 @@
-import {Operation} from "./operation";
-import {Division} from "./elementaryOperations/division";
-import {Constant} from "./constants/constant";
+import {Operation} from "../operation";
+import {Division} from "../elementary-operations/division";
+import {Constant} from "../constants/constant";
 import GeneralFunction from "./generalFunction";
 
 export class NaturalLogarithm extends GeneralFunction {

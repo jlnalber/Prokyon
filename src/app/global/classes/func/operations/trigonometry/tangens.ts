@@ -1,9 +1,9 @@
 import {Operation} from "../operation";
-import {Division} from "../elementaryOperations/division";
+import {Division} from "../elementary-operations/division";
 import {Cosinus} from "./cosinus";
-import {Pow} from "../elementaryOperations/pow";
+import {Pow} from "../elementary-operations/pow";
 import {Constant} from "../constants/constant";
-import GeneralFunction from "../generalFunction";
+import GeneralFunction from "../other-operations/generalFunction";
 
 export class Tangens extends GeneralFunction {
 

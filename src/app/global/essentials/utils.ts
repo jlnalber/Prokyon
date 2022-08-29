@@ -208,3 +208,12 @@ export function joinAsSets<T>(...tArrs: T[][]): T[] {
   }
   return [ ...set ];
 }
+
+export function mapElement<T>(element: T, mapArray: [T, T][]): T {
+  for (let mapping of mapArray) {
+    if (mapping[0] === element) {
+      return mapping[1];
+    }
+  }
+  return element;
+}

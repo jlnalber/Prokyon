@@ -1,4 +1,4 @@
-import {Operation} from "./operation";
+import {Operation} from "../operation";
 
 type Condition = (dict: any) => boolean;
 type ConditionWithOperation = [ Condition, Operation ];

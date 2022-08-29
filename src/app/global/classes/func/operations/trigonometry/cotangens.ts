@@ -1,5 +1,5 @@
 import {Operation} from "../operation";
-import GeneralFunction from "../generalFunction";
+import GeneralFunction from "../other-operations/generalFunction";
 
 export class Cotangens extends GeneralFunction {
 

@@ -2,7 +2,7 @@ import {Operation} from "../operation";
 import {Constant} from "../constants/constant";
 import {Multiplication} from "./multiplication";
 import {Addition} from "./addition";
-import {NaturalLogarithm} from "../naturalLogarithm";
+import {NaturalLogarithm} from "../other-operations/naturalLogarithm";
 import {Division} from "./division";
 
 export class Pow extends Operation {

@@ -1,4 +1,4 @@
-import {Operation} from "./operation";
+import {Operation} from "../operation";
 
 export default abstract class GeneralFunction extends Operation {
 

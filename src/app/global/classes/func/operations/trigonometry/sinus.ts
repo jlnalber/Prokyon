@@ -1,7 +1,7 @@
 import {Operation} from "../operation";
-import {Multiplication} from "../elementaryOperations/multiplication";
+import {Multiplication} from "../elementary-operations/multiplication";
 import {Cosinus} from "./cosinus";
-import GeneralFunction from "../generalFunction";
+import GeneralFunction from "../other-operations/generalFunction";
 
 export class Sinus extends GeneralFunction {
 
