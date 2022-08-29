@@ -10,7 +10,6 @@ import { CanvasDrawer } from '../global/classes/abstract/canvasDrawer';
 import {Grid} from "../global/classes/grid";
 import {Graph} from "../global/classes/canvas-elements/graph";
 import {getNew, sameColors} from "../global/essentials/utils";
-import {colors} from "../formula-tab/formula-tab.component";
 import {Config as CanvasConfig} from "../global/classes/renderingContext";
 import {FuncProvider} from "../global/classes/func/operations/externalFunction";
 import {Func} from "../global/classes/func/func";
@@ -25,6 +24,7 @@ import Cache from "../global/essentials/cache";
 import VariableElement from "../global/classes/canvas-elements/variableElement";
 import Selection from "../global/essentials/selection";
 import PointElement from "../global/classes/canvas-elements/pointElement";
+import {colors} from "../global/styles/colors";
 
 @Injectable({
   providedIn: 'root'

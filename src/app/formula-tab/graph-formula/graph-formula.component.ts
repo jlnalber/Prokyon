@@ -128,9 +128,4 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
   public get color(): string {
     return getColorAsRgbaFunction(this.canvasElement.color);
   }
-
-  changeVisibility() {
-    this.canvasElement.visible = !this.canvasElement.visible;
-    this.drawerService.redraw();
-  }
 }
