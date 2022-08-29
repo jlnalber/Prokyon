@@ -17,7 +17,7 @@ export class Pow extends Operation {
                                             new Multiplication(this.exponent, new Division(this.base.derive(key), this.base))));
   }
 
-  constructor(private readonly base: Operation, private readonly exponent: Operation) {
+  constructor(public readonly base: Operation, public readonly exponent: Operation) {
     super();
     this.childOperations.push(this.base, this.exponent);
   }
@@ -43,6 +43,11 @@ export class Pow extends Operation {
     // check the base
     if (newBase instanceof Constant && newBase.constant == 1) {
       return new Constant(1);
+    }
+
+    // simplify if there are two pows (in the base as well)
+    if (newBase instanceof Pow) {
+      return new Pow(newBase.base, new Multiplication(newBase.exponent, newExponent)).simplify();
     }
 
     return new Pow(newBase, newExponent);

@@ -2,12 +2,11 @@ import {CanvasElement} from "../abstract/canvasElement";
 import {FormulaElement} from "../abstract/formulaElement";
 import {Type} from "@angular/core";
 import {VariableFormulaComponent} from "../../../formula-tab/variable-formula/variable-formula.component";
-import {RenderingContext} from "../renderingContext";
 
 export default class VariableElement extends CanvasElement {
   public readonly componentType: Type<FormulaElement> = VariableFormulaComponent;
 
-  public override draw(ctx: RenderingContext): void {
+  public override draw(): void {
     return;
   }
 

@@ -3,15 +3,15 @@
   <p class="centered maths">{{ this.dialogData?.func?.operationAsString }}</p>
   <p class="paragraph">Im Intervall</p>
   <p class="centered maths">
-    [<input class="input" step="any" type="number" [(ngModel)]="this.from">;
-    <input class="input" step="any" type="number" [(ngModel)]="this.to">]
+    [<input class="input" step="any" type="number" [(ngModel)]="this.from" title="Von (einschließlich)">;
+    <input class="input" step="any" type="number" [(ngModel)]="this.to" title="Bis (einschließlich)">]
   </p>
   <p class="paragraph">mit der Suchtiefe:</p>
   <p class="centered maths">
-    <input class="input" type="number" [(ngModel)]="this.depth">
+    <input class="input" type="number" [(ngModel)]="this.depth" title="Suchtiefe">
   </p>
-  <button class="button right" (click)="this.evaluateZeroPoints()">Nullpunkte bestimmen</button>
-  <button class="button right" (click)="this.evaluateExtremumPoints()">Extrempunkte bestimmen</button>
-  <button class="button right" (click)="this.evaluateInflectionPoints()">Wendepunkte bestimmen</button>
-  <button class="button right close" (click)="this.dialog.close()">Schließen</button>
+  <button class="button right" (click)="this.evaluateExtremumPoints()" title="Extrempunkte berechnen">Extrempunkte</button>
+  <button class="button right" (click)="this.evaluateZeroPoints()" title="Nullpunkte berechnen">Nullpunkte</button>
+  <button class="button right close" (click)="this.dialog.close()" title="Dialog schließen">Schließen</button>
+  <button class="button right" (click)="this.evaluateInflectionPoints()" title="Wendepunkte berechnen">Wendepunkte</button>
 </div>

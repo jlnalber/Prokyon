@@ -1,7 +1,7 @@
 import {Operation} from "../operation";
 
 export class Constant extends Operation {
-  public evaluate(dict: any): number {
+  public evaluate(): number {
     return this.constant;
   }
 

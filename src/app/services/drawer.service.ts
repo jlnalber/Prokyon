@@ -15,7 +15,8 @@ import {FuncProvider} from "../global/classes/func/operations/externalFunction";
 import {Func} from "../global/classes/func/func";
 import {FuncParser} from "../global/classes/func/funcParser";
 import {
-  inspect, containsVariable,
+  inspect,
+  containsVariable,
   countderivatives,
   funcNameWithoutderivative,
   isRecursive
@@ -315,7 +316,7 @@ export class DrawerService {
         return func;
       }
       catch {
-        // return a unknown function error
+        // return an unknown function error
         return unknownFunction;
       }
     }

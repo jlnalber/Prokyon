@@ -7,7 +7,7 @@ export class Signum extends GeneralFunction {
     super(operation, 'sgn');
   }
 
-  derive(key: string): Operation {
+  derive(): Operation {
     throw 'not implemented yet';
   }
 

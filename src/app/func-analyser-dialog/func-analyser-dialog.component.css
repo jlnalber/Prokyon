@@ -1,7 +1,7 @@
 @import url("../global/styles/_global.css");
 
 .wrapper {
-  width: 500px;
+  width: 350px;
 }
 
 .heading {
@@ -37,9 +37,14 @@
 .button {
   margin-left: 7px;
   margin-top: 7px;
+  width: 120px;
 }
 
 .input {
   width: 50px;
   display: unset;
+}
+
+.buttonGroup {
+  display: block;
 }

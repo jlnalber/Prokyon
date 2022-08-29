@@ -21,7 +21,7 @@ export class ContextMenuComponent implements OnInit, AfterViewInit {
     y: 0
   }
   public get position(): Point {
-    // if the context menu is on the side of the page, prevent a "overflow" and position it back
+    // if the context menu is on the side of the page, prevent an "overflow" and position it back
     if (this.wrapperElement) {
       const viewportSize = {
         width: window.innerWidth,

@@ -32,7 +32,7 @@ export class FuncParser {
         let operationsPart = this.str.slice(index + 1, this.str.length);
 
         // throw error when there are multiple occurrences of the splitChars or the name part doesn't exist
-        if (strContains(operationsPart, ...splitChars) || namePart.length == 0) {
+        if (strContains(operationsPart, ...splitChars) || namePart.length === 0) {
           throw splitError;
         }
         this.funcOperation = operationsPart;
@@ -44,14 +44,19 @@ export class FuncParser {
           };
         }
         else {
+          // split the string by the brackets
           let splitString = namePart.split(/(\(|\))/).map(s => {
             return s.trim();
           }).filter(s => {
-            return s != '';
+            return s !== '';
           });
 
           // get the name
-          if (splitString.length == 4 && !strContains(splitString[0], ...whitespaces) && !strContains(splitString[2], ...whitespaces) && splitString[1] == '(' && splitString[3] == ')') {
+          // case: f(x) = ...
+          if (splitString.length === 4
+            && !strContains(splitString[0], ...whitespaces)
+            && !strContains(splitString[2], ...whitespaces)
+            && splitString[1] == '(' && splitString[3] == ')') {
             this.funcMetaData = {
               name: splitString[0],
               variable: splitString[2]
@@ -63,6 +68,7 @@ export class FuncParser {
         }
       }
       else {
+        // this case is when there is no
         this.funcOperation = this.str;
         this.funcMetaData = {};
       }

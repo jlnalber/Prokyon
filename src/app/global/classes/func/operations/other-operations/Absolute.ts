@@ -7,7 +7,7 @@ export class Absolute extends GeneralFunction {
     super(operation, 'abs');
   }
 
-  derive(key: string): Operation {
+  derive(): Operation {
     throw 'not implemented yet';
   }
 

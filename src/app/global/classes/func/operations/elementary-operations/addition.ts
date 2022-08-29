@@ -4,34 +4,37 @@ import {Constant} from "../constants/constant";
 export class Addition extends Operation {
   public evaluate(dict: any): number {
     let sum = 0;
-    for (let summand of this.summands) {
+    for (let summand of this._summands) {
       sum += summand.evaluate(dict);
     }
     return sum;
   }
 
   public derive(key: string): Operation {
-    return new Addition(...this.summands.map(s => {
+    return new Addition(...this._summands.map(s => {
       return s.derive(key);
     }))
   }
 
-  private readonly summands: Operation[];
+  private readonly _summands: Operation[];
+  public get summands(): Operation[] {
+    return this._summands.slice();
+  }
 
   constructor(...summands: Operation[]) {
     super();
-    this.summands = summands;
+    this._summands = summands;
     this.childOperations.push(...summands);
   }
 
   public override toString(): string {
-    if (this.summands.length == 0) {
+    if (this._summands.length == 0) {
       return '0';
     }
     else {
-      let str = `(${this.summands[0].toString()}`;
-      for (let i = 1; i < this.summands.length; i++) {
-        str += ` + ${this.summands[i].toString()}`;
+      let str = `(${this._summands[0].toString()}`;
+      for (let i = 1; i < this._summands.length; i++) {
+        str += ` + ${this._summands[i].toString()}`;
       }
       str += ')';
       return str;
@@ -41,7 +44,7 @@ export class Addition extends Operation {
   public override simplify(): Operation {
     // simplify the summands, then filter out the constants and add them
     let sum = 0;
-    let summands = this.summands.map(f => {
+    let summands = this._summands.map(f => {
       return f.simplify();
     }).filter(f => {
       if (f instanceof  Constant) {
@@ -66,7 +69,7 @@ export class Addition extends Operation {
     let newSummands = [];
     for (let summand of summands) {
       if (summand instanceof Addition) {
-        newSummands.push(...summand.summands)
+        newSummands.push(...summand._summands)
       }
       else {
         newSummands.push(summand);

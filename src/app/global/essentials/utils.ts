@@ -69,14 +69,15 @@ export function indexOf<T>(ts: T[], ...searchValues: T[]): number {
   return -1;
 }
 
+// this function searches the first occurrence of one of the searchValues in str
 export function strIndexOf(str: string, ...searchValues: string[]): number {
   let pos = searchValues.map(s => {
     return str.indexOf(s);
   }).filter(n => {
-    return n != -1;
+    return n !== -1;
   });
 
-  if (pos.length == 0) {
+  if (pos.length === 0) {
     return -1;
   }
 
@@ -122,11 +123,11 @@ export function lastIndexOfCombination<T>(ts: T[], func: (t1: T, t2: T) => boole
 }
 
 export function containsCombination<T>(ts: T[], func: (t1: T, t2: T) => boolean): boolean {
-  return indexOfCombination(ts, func) != -1;
+  return indexOfCombination(ts, func) !== -1;
 }
 
 export function strContains(str: string, ...searchValues: string[]): boolean {
-  return strIndexOf(str, ...searchValues) != -1;
+  return strIndexOf(str, ...searchValues) !== -1;
 }
 
 export function clamp(min: number, val: number, max: number): number {
