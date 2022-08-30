@@ -43,34 +43,46 @@ export class FuncAnalyserDialogComponent implements OnInit {
   }
 
   evaluateZeroPoints() {
-    if (this.dialogData?.func) {
-      const result = zeroPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth);
-      this.snackbarService.openSnackbar(this.getMessage('Nullpunkt', result.length));
-      result.forEach(p => {
-        this.drawerService.addCanvasElement(new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor()));
-      })
+    try {
+      if (this.dialogData?.func) {
+        const result = zeroPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth);
+        this.snackbarService.openSnackbar(this.getMessage('Nullpunkt', result.length));
+        result.forEach(p => {
+          this.drawerService.addCanvasElement(new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor()));
+        })
+      }
+    } catch {
+      this.openErrorSnackbar();
     }
     this.dialog.close();
   }
 
   evaluateExtremumPoints() {
-    if (this.dialogData?.func) {
-      const result = extremumPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth);
-      this.snackbarService.openSnackbar(this.getMessage('Extrempunkt', result.length));
-      result.forEach(p => {
-        this.drawerService.addCanvasElement(new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor()));
-      })
+    try {
+      if (this.dialogData?.func) {
+        const result = extremumPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth);
+        this.snackbarService.openSnackbar(this.getMessage('Extrempunkt', result.length));
+        result.forEach(p => {
+          this.drawerService.addCanvasElement(new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor()));
+        })
+      }
+    } catch {
+      this.openErrorSnackbar();
     }
     this.dialog.close();
   }
 
   evaluateInflectionPoints() {
-    if (this.dialogData?.func) {
-      const result = inflectionPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth);
-      this.snackbarService.openSnackbar(this.getMessage('Wendepunkt', result.length));
-      result.forEach(p => {
-        this.drawerService.addCanvasElement(new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor()));
-      })
+    try {
+      if (this.dialogData?.func) {
+        const result = inflectionPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth);
+        this.snackbarService.openSnackbar(this.getMessage('Wendepunkt', result.length));
+        result.forEach(p => {
+          this.drawerService.addCanvasElement(new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor()));
+        })
+      }
+    } catch {
+      this.openErrorSnackbar();
     }
     this.dialog.close();
   }
@@ -88,5 +100,12 @@ export class FuncAnalyserDialogComponent implements OnInit {
     else {
       return `${count} ${name} gefunden.`;
     }
+  }
+
+  private openErrorSnackbar(errorMessage: string = 'Ein unerwarteter Fehler ist aufgetreten!'): void {
+    this.snackbarService.openSnackbar(errorMessage, {
+      color: 'white',
+      background: '#c44'
+    })
   }
 }

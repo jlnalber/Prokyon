@@ -1,6 +1,7 @@
 import {Func} from "./func";
 import {Point} from "../../interfaces/point";
 import {joinAsSets} from "../../essentials/utils";
+import {tryGetDerivative} from "../../essentials/funcUtils";
 
 export function newtonMethod(startValue: number, func: Func, dict: any, iterations: number): number {
   const derivative = func.derive();
@@ -12,11 +13,12 @@ function internalNewtonMethod(value: number, func: Func, derivative: Func, dict:
   return iterations === 1 ? newValue : internalNewtonMethod(newValue, func, derivative, dict, iterations - 1);
 }
 
-export function zerosInInterval(func: Func, dict: any, from: number, to: number, depth: number, respectChangeOfSign: boolean = false): number[] {
+export function zerosInInterval(func: Func, dict: any, from: number, to: number, depth: number, respectChangeOfSign: boolean = false, checkWithDerivative: boolean = true): number[] {
   // split the interval in many intervals
   // for each interval, check whether the outer values are already values>
   // if not, check whether they have different signs --> then the average is approximately considered as a zero
   // respectChangeOfSign indicates whether the sign has to change to count as a zero, this is especially useful for extrema
+  // checkWithDerivative checks whether the function actually goes to the x-axis, that prevents zeros in functions like e.g. 1/x
   const average = (from + to) / 2;
   const centerDiff = (to - from) / 2;
 
@@ -40,7 +42,18 @@ export function zerosInInterval(func: Func, dict: any, from: number, to: number,
 
       // check for the average
       if (y1 * y2 < 0 && isFinite(y1) && isFinite(y2)) {
-        zeros.push(average);
+        if (checkWithDerivative) {
+          // try to check whether the function goes across the x-axis (and not do a jump like e.g. 1/x)
+          const derivative = tryGetDerivative(func);
+          if (!derivative
+            || (y1 * derivative.evaluate(from, dict) < 0)
+              && y2 * derivative.evaluate(to, dict) < 0) {
+            zeros.push(average);
+          }
+        }
+        else {
+          zeros.push(average);
+        }
       }
 
       // return the zeros
