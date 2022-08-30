@@ -46,8 +46,8 @@ export function zerosInInterval(func: Func, dict: any, from: number, to: number,
           // try to check whether the function goes across the x-axis (and not do a jump like e.g. 1/x)
           const derivative = tryGetDerivative(func);
           if (!derivative
-            || (y1 * derivative.evaluate(from, dict) < 0)
-              && y2 * derivative.evaluate(to, dict) < 0) {
+            || (y1 * derivative.evaluate(from, dict) <= 0)
+              && y2 * derivative.evaluate(to, dict) >= 0) {
             zeros.push(average);
           }
         }
