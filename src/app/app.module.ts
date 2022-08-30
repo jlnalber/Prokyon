@@ -19,6 +19,7 @@ import { DialogComponent } from './dialog/dialog/dialog.component';
 import { FuncAnalyserDialogComponent } from './func-analyser-dialog/func-analyser-dialog.component';
 import { PointFormulaComponent } from './formula-tab/point-formula/point-formula.component';
 import {ColorCircleComponent} from "./formula-tab/global/color-circle/color-circle.component";
+import { SnackbarComponent } from './snackbar/snackbar/snackbar.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import {ColorCircleComponent} from "./formula-tab/global/color-circle/color-circ
     DialogComponent,
     FuncAnalyserDialogComponent,
     PointFormulaComponent,
-    ColorCircleComponent
+    ColorCircleComponent,
+    SnackbarComponent
   ],
   imports: [
     BrowserModule,

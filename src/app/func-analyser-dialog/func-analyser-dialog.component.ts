@@ -9,6 +9,7 @@ import {
 import {DrawerService} from "../services/drawer.service";
 import PointElement from "../global/classes/canvas-elements/pointElement";
 import {Color} from "../global/interfaces/color";
+import {SnackbarService} from "../snackbar/snackbar.service";
 
 export interface FuncAnalyserDialogData {
   func?: Func,
@@ -36,14 +37,16 @@ export class FuncAnalyserDialogComponent implements OnInit {
     this._depth = Math.floor(value);
   }
 
-  constructor(private readonly drawerService: DrawerService) { }
+  constructor(private readonly drawerService: DrawerService, private readonly snackbarService: SnackbarService) { }
 
   ngOnInit(): void {
   }
 
   evaluateZeroPoints() {
     if (this.dialogData?.func) {
-      zeroPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth).forEach(p => {
+      const result = zeroPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth);
+      this.snackbarService.openSnackbar(this.getMessage('Nullpunkt', result.length));
+      result.forEach(p => {
         this.drawerService.addCanvasElement(new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor()));
       })
     }
@@ -52,7 +55,9 @@ export class FuncAnalyserDialogComponent implements OnInit {
 
   evaluateExtremumPoints() {
     if (this.dialogData?.func) {
-      extremumPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth).forEach(p => {
+      const result = extremumPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth);
+      this.snackbarService.openSnackbar(this.getMessage('Extrempunkt', result.length));
+      result.forEach(p => {
         this.drawerService.addCanvasElement(new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor()));
       })
     }
@@ -61,10 +66,27 @@ export class FuncAnalyserDialogComponent implements OnInit {
 
   evaluateInflectionPoints() {
     if (this.dialogData?.func) {
-      inflectionPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth).forEach(p => {
+      const result = inflectionPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth);
+      this.snackbarService.openSnackbar(this.getMessage('Wendepunkt', result.length));
+      result.forEach(p => {
         this.drawerService.addCanvasElement(new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor()));
       })
     }
     this.dialog.close();
+  }
+
+  private getMessage(name: string, count: number): string {
+    if (count !== 1) {
+      name += 'e';
+    }
+    if (count === 0) {
+      return `Keine ${name} gefunden.`;
+    }
+    else if (count === 1) {
+      return `Ein ${name} gefunden.`;
+    }
+    else {
+      return `${count} ${name} gefunden.`;
+    }
   }
 }

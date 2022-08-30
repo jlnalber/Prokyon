@@ -14,7 +14,7 @@ function internalNewtonMethod(value: number, func: Func, derivative: Func, dict:
 
 export function zerosInInterval(func: Func, dict: any, from: number, to: number, depth: number, respectChangeOfSign: boolean = false): number[] {
   // split the interval in many intervals
-  // for each interval, check whether the outer values are already values
+  // for each interval, check whether the outer values are already values>
   // if not, check whether they have different signs --> then the average is approximately considered as a zero
   // respectChangeOfSign indicates whether the sign has to change to count as a zero, this is especially useful for extrema
   const average = (from + to) / 2;
@@ -50,7 +50,7 @@ export function zerosInInterval(func: Func, dict: any, from: number, to: number,
     }
   }
 
-  return joinAsSets(zerosInInterval(func, dict, from, average, depth - 1), zerosInInterval(func, dict, average, to, depth - 1));
+  return joinAsSets(zerosInInterval(func, dict, from, average, depth - 1, respectChangeOfSign), zerosInInterval(func, dict, average, to, depth - 1, respectChangeOfSign));
 }
 
 // kinda useless, huh? zero points should actually always have 0 as y-values
@@ -66,7 +66,6 @@ export function zeroPointsInInterval(func: Func, dict: any, from: number, to: nu
 
 export function extremaInInterval(func: Func, dict: any, from: number, to: number, depth: number): number[] {
   const derivative = func.derive();
-  console.log(derivative);
   return zerosInInterval(derivative, dict, from, to, depth, true);
 }
 

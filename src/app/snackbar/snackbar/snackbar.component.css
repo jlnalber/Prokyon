@@ -1,0 +1,31 @@
+@keyframes animateWrapper {
+  from { transform: translateY(100px) }
+  to { transform: translateY(0) }
+}
+
+.filler {
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  align-items: flex-end;
+  justify-content: center;
+  display: flex;
+}
+
+.snackbar {
+  padding: 10px;
+  border-radius: 7px;
+  animation: animateWrapper 0.2s ease-in-out;
+  font-size: 13pt;
+  text-align: center;
+  font-family: 'Segoe UI', Calibri, 'sans-serif';
+  user-select: none;
+  pointer-events: all;
+  margin-bottom: 10px;
+  box-shadow: 0 0 10px #9997;
+}

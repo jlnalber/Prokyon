@@ -3,6 +3,7 @@ import {Tab} from "./tab-group/tab-group.component";
 import {FormulaTabComponent} from "./formula-tab/formula-tab.component";
 import {SettingsTabComponent} from "./settings-tab/settings-tab.component";
 import {DialogService} from "./dialog/dialog.service";
+import {SnackbarService} from "./snackbar/snackbar.service";
 
 @Component({
   selector: 'app-root',
@@ -11,8 +12,9 @@ import {DialogService} from "./dialog/dialog.service";
 })
 export class AppComponent {
 
-  constructor(private readonly ds: DialogService, private readonly viewContainerRef: ViewContainerRef) {
-    this.ds.rootViewContainerRef = this.viewContainerRef;
+  constructor(private readonly dialogService: DialogService, private readonly snackbarService: SnackbarService, private readonly viewContainerRef: ViewContainerRef) {
+    this.dialogService.rootViewContainerRef = this.viewContainerRef;
+    this.snackbarService.rootViewContainerRef = this.viewContainerRef;
   }
 
   tabs: Tab[] = [
