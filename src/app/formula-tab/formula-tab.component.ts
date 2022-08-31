@@ -13,33 +13,31 @@ import {ContextMenu} from "../context-menu/context-menu.directive";
 })
 export class FormulaTabComponent implements OnInit {
 
-  public get contextMenu(): ContextMenu {
-    return {
-      elements: [
-        {
-          header: 'Funktion hinzufügen',
-          click: () => {
-            this.addGraph();
-          },
-          icon: 'show_chart'
+  public contextMenu: ContextMenu = {
+    elements: () => [
+      {
+        header: 'Funktion hinzufügen',
+        click: () => {
+          this.addGraph();
         },
-        {
-          header: 'Punkt hinzufügen',
-          click: () => {
-            this.addPoint();
-          },
-          icon: 'radio_button_checked'
+        icon: 'show_chart'
+      },
+      {
+        header: 'Punkt hinzufügen',
+        click: () => {
+          this.addPoint();
         },
-        {
-          header: 'Alle löschen',
-          click: () => {
-            this.drawerService.emptyCanvasElements();
-          },
-          icon: 'delete',
-          color: 'red'
-        }
-      ]
-    }
+        icon: 'radio_button_checked'
+      },
+      {
+        header: 'Alle löschen',
+        click: () => {
+          this.drawerService.emptyCanvasElements();
+        },
+        icon: 'delete',
+        color: 'red'
+      }
+    ]
   }
 
   constructor(public readonly drawerService: DrawerService) { }

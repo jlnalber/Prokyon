@@ -3,7 +3,6 @@ import {Func} from "../../global/classes/func/func";
 import {Graph} from "../../global/classes/canvas-elements/graph";
 import {Constant} from "../../global/classes/func/operations/constants/constant";
 import {DrawerService} from "../../services/drawer.service";
-import {ContextMenu} from "../../context-menu/context-menu.directive";
 import {getColorAsRgbaFunction} from "../../global/interfaces/color";
 import {FuncParser} from "../../global/classes/func/funcParser";
 import {FormulaElement} from "../../global/classes/abstract/formulaElement";
@@ -63,9 +62,7 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
       derivedGraph.configuration.formula = derivedGraph.func.operationAsString;
       this.drawerService.addCanvasElement(derivedGraph);
     }
-    catch (e: any) {
-      console.log(e);
-    }
+    catch { }
   }
 
   duplicate() {
@@ -93,9 +90,9 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
     }
   }
 
-  public override get contextMenu(): ContextMenu {
+  public override get contextMenu() {
     return {
-      elements: [{
+    elements: () => [{
         header: 'Ableiten',
         click: () => {
           this.derive();

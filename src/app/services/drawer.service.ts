@@ -47,10 +47,12 @@ export class DrawerService {
   }
 
   private _canvasElements: CanvasElement[] = [];
-  public addCanvasElement(canvasElement: CanvasElement): void {
-    this._canvasElements.push(canvasElement);
-    canvasElement.onChange.addListener(this.canvasElementOnChangeListener);
-    this.onCanvasElementChanged.emit(canvasElement);
+  public addCanvasElement(...canvasElements: CanvasElement[]): void {
+    for (let canvasElement of canvasElements) {
+      this._canvasElements.push(canvasElement);
+      canvasElement.onChange.addListener(this.canvasElementOnChangeListener);
+    }
+    this.onCanvasElementChanged.emit(canvasElements);
   }
   public removeCanvasElement(canvasElement: CanvasElement): boolean {
     const index = this._canvasElements.indexOf(canvasElement);
@@ -182,6 +184,10 @@ export class DrawerService {
 
     this.onCanvasElementChanged.addListener(this.emptyCacheListener);
     this.onCanvasElementChanged.addListener(this.emptyCacheListener);
+
+    this.onBeforeRedraw.addListener(() => {
+      console.log('on before redraw')
+    })
   }
 
   // #region fields for rendering
@@ -366,7 +372,7 @@ export class DrawerService {
       const dist = canvasElement.getDistance(newP, ctx);
       if (dist) {
         let closer = minDist === undefined;
-        closer = closer || dist < minDist!;
+        closer = closer || dist <= minDist!;
         if (closer) {
           minDist = dist;
           minCanvasElement = canvasElement;

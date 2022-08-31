@@ -12,8 +12,17 @@ export class ContextMenuComponent implements OnInit, AfterViewInit {
   @ViewChild('wrapper') wrapper!: ElementRef;
   private wrapperElement?: HTMLDivElement;
 
-  public contextMenu: ContextMenu = {
-    elements: []
+  public elements: ContextMenuElement[] = [];
+
+  private _contextMenu: ContextMenu = {
+    elements: () => []
+  }
+  public get contextMenu(): ContextMenu {
+    return this._contextMenu;
+  }
+  public set contextMenu(value: ContextMenu) {
+    this._contextMenu = value;
+    this.elements = value.elements();
   }
 
   private _position: Point = {

@@ -13,14 +13,14 @@ export class FormulaElementComponent implements AfterViewInit {
 
   @Input() canvasElement!: CanvasElement;
   @ViewChild('formula', { read: ViewContainerRef }) formula!: ViewContainerRef;
-  private formulaElementComponent?: FormulaElement;
+  private formulaElementComp?: FormulaElement;
 
   constructor(private readonly drawerService: DrawerService) { }
 
   ngAfterViewInit() {
     setTimeout(() => {
-      this.formulaElementComponent = this.formula.createComponent(this.canvasElement.componentType).instance;
-      this.formulaElementComponent.canvasElement = this.canvasElement;
+      this.formulaElementComp = this.formula.createComponent(this.canvasElement.componentType).instance;
+      this.formulaElementComp.canvasElement = this.canvasElement;
     })
   }
 
@@ -33,34 +33,36 @@ export class FormulaElementComponent implements AfterViewInit {
   }
 
   private getContextMenuElementsFromFormulaElement(): ContextMenuElement[] {
-    if (this.formulaElementComponent) {
-      return this.formulaElementComponent.contextMenu.elements;
+    if (this.formulaElementComp) {
+      return this.formulaElementComp.contextMenu.elements();
     }
     return [];
   }
   get completeContextMenu(): ContextMenu {
-    const selected = this.selected;
     return {
-      elements: [
-        ...this.getContextMenuElementsFromFormulaElement(),
-        {
-          header: selected ? 'Auswahl entfernen' : 'Auswählen',
-          click: () => {
-            this.drawerService.selection.alternate(this.canvasElement || undefined);
+      elements: () => {
+        const selected = this.selected;
+        return [
+          ...this.getContextMenuElementsFromFormulaElement(),
+          {
+            header: selected ? 'Auswahl entfernen' : 'Auswählen',
+            click: () => {
+              this.drawerService.selection.alternate(this.canvasElement || undefined);
+            },
+            icon: selected ? 'remove_done' : 'done'
           },
-          icon: selected ? 'remove_done' : 'done'
-        },
-        {
-          header: 'Löschen',
-          color: 'red',
-          click: () => {
-            this.delete();
-          },
-          icon: 'delete'
-        }
-      ],
-      additionalEvent: this.formulaElementComponent?.contextMenu.additionalEvent,
-      defaultPopUpPosition: this.formulaElementComponent?.contextMenu.defaultPopUpPosition
+          {
+            header: 'Löschen',
+            color: 'red',
+            click: () => {
+              this.delete();
+            },
+            icon: 'delete'
+          }
+        ]
+      },
+      additionalEvent: this.formulaElementComp?.contextMenu.additionalEvent,
+      defaultPopUpPosition: this.formulaElementComp?.contextMenu.defaultPopUpPosition
     }
   }
 
