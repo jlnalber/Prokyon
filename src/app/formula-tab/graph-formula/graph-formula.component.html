@@ -1,5 +1,5 @@
 <div class="wrapper" [ngClass]="{ 'error': this.errorMessage !== undefined }">
   <app-color-circle [(color)]="this.canvasElement.color" [(visible)]="this.canvasElement.visible"></app-color-circle>
-  <input autocomplete="off" class="input" #inp [title]="this.errorMessage ?? ''" (keyup)="onChange(inp.value)" onClick="this.select();" [value]="this.canvasElement.configuration.formula" [disabled]="!this.canvasElement.configuration.editable">
+  <input autocomplete="off" class="input" #inp [title]="this.errorMessage ?? ''" (keyup)="onChange(inp.value)" [value]="this.canvasElement.configuration.formula" [disabled]="!this.canvasElement.configuration.editable">
   <button class="iconButton depositionTop floatRight" (click)="this.threePointsClicked($event)"><span class="material-symbols-outlined">more_vert</span></button>
 </div>

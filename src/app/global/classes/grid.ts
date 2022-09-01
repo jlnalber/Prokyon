@@ -8,8 +8,7 @@ export class Grid extends CanvasDrawer {
     if (ctx.config?.showGrid == undefined || ctx.config.showGrid) {
       // get metadata about the canvas
       const range = ctx.range;
-      const ctxStep = ctx.step;
-      const step = ctxStep * 99;
+      const step = 99 / ctx.zoom;
 
       // first, calculate the step width that is used to draw lines
       const base = ctx.config?.numbersBase ?? 2;
@@ -19,7 +18,7 @@ export class Grid extends CanvasDrawer {
 
       // then, calculate data for the text rendering
       const drawText = ctx.config?.showNumbers ?? true;
-      const offsetText = 15 * ctxStep;
+      const offsetText = 15 / ctx.zoom;
       const yPos = clamp(range.y + range.height + offsetText, -offsetText, range.y - offsetText);
       const alignBottom = yPos == range.y + range.height + offsetText;
       const xPos = clamp(range.x + offsetText, -offsetText, range.x + range.width - offsetText);
@@ -46,9 +45,9 @@ export class Grid extends CanvasDrawer {
 
         // draw arrow on axis
         if (x == 0) {
-          const height = 15 * ctxStep;
-          const offset = 0.5 * ctxStep;
-          const offsetY = 3 * ctxStep;
+          const height = 15 / ctx.zoom;
+          const offset = 0.5 / ctx.zoom;
+          const offsetY = 3 / ctx.zoom;
           ctx.drawPath([{
             x: x + offset,
             y: range.y + offsetY
@@ -83,9 +82,9 @@ export class Grid extends CanvasDrawer {
 
         // draw arrow on axis
         if (y == 0) {
-          const width = 15 * ctxStep;
-          const offset = 0.5 * ctxStep;
-          const offsetX = 3 * ctxStep;
+          const width = 15 / ctx.zoom;
+          const offset = 0.5 / ctx.zoom;
+          const offsetX = 3 / ctx.zoom;
           ctx.drawPath([{
             x: range.x + range.width + offsetX,
             y: y + offset

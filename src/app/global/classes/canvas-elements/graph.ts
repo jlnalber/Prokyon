@@ -3,7 +3,7 @@ import {RenderingContext} from "../renderingContext";
 import {Func} from "../func/func";
 import {BLACK, Color, colorAsTransparent} from "../../interfaces/color";
 import {Point} from "../../interfaces/point";
-import {expandRectBy, isIn} from "../../essentials/utils";
+import {isIn} from "../../essentials/utils";
 import {GraphFormulaComponent} from "../../../formula-tab/graph-formula/graph-formula.component";
 
 export class Graph extends CanvasElement {
@@ -47,93 +47,120 @@ export class Graph extends CanvasElement {
   public override draw(ctx: RenderingContext) {
     // draw the graph
     if (this.visible) {
+      const start = window.performance.now();
+
       // for that purpose, sometimes more than one path has to be drawn
-      let paths: Point[][] = [];
+      const paths: Point[][] = [];
       let curPath: Point[] = [];
 
       // get the metadata of the canvas
-      let rangeRect = ctx.range;
-      let drawRect = expandRectBy(rangeRect, 5);
-      let step = ctx.step;
+      const rangeRect = ctx.range;
+      const step = ctx.step;
       let curStep = step;
 
       // get the selection
       const selected = ctx.selection.indexOf(this) !== -1;
-      const colorSelected = colorAsTransparent(this.color, 0.3);
+      const colorSelected = colorAsTransparent(this._color, 0.3);
       const lineWidthSelected = this.lineWidth * 2.5;
+
+      // helper function
+      const splitDueToRapidElevationChange = (elevation: number, lastElevation?: number): boolean => {
+        if (lastElevation !== undefined) {
+          const ratio = elevation / (lastElevation === 0 ? 1 : lastElevation);
+          if (Math.abs(elevation) > 10) {
+            if (ratio < 0) {
+              return true;
+            } else if (ratio > 10) {
+              return true;
+            }
+          }
+        }
+
+        return false;
+      }
 
       // get possible points
       let lastElevation: number | undefined = undefined;
-      let lastPoint: Point | undefined;
+      let lastPoint: Point | undefined = undefined;
+      let lastPointIfOutsideRect: Point | undefined = undefined;
       for (let x = rangeRect.x; x < rangeRect.x + rangeRect.width; x += curStep) {
         let split = false;
         try {
-          let y = this.func.evaluate(x, ctx.variables);
+          // Get the point (evaluation might fail).
+          const y = this._func.evaluate(x, ctx.variables);
           if (isNaN(y)) throw 'value NaN';
-          let p = {
+          const p = {
             x: x,
             y: y
           }
 
-          // check whether the elevation is rapidly changing, then split
+          // Check whether the elevation is rapidly changing, in that case split.
           if (lastPoint) {
-            let elevation = (p.y - lastPoint.y) / (p.x - lastPoint.x);
+            const elevation = (p.y - lastPoint.y) / (p.x - lastPoint.x);
+            split = split || splitDueToRapidElevationChange(elevation, lastElevation);
 
-            if (lastElevation != undefined) {
-              let ratio = elevation / (lastElevation == 0 ? 1 : lastElevation);
-              if (Math.abs(elevation) > 10) {
-                if (ratio < 0) {
-                  split = true;
-                } else if (ratio > 10) {
-                  split = true;
-                }
-              }
-            }
+            lastElevation = split ? undefined : elevation;
 
-            if (!split) {
-              lastElevation = elevation;
-            }
-            else {
-              lastElevation = undefined;
-            }
-
-            curStep = step / Math.min(Math.max(1, Math.abs(elevation / 10)), 100);
+            curStep = step / Math.min(Math.max(1, Math.abs(Math.abs(elevation) ** (1/2))), 50);
           }
 
-          // check whether the point is in a certain rect
-          if (!isIn(p, drawRect)) {
-            split = true
+          // Check whether the point is in a certain rect.
+          // If not, don't draw it.
+          // Problem: If you don't draw the first point outside the rect, there will be a gap at the bottom or top.
+          // Therefore, the first point outside fo the rect still has to be drawn + the last point still outside the rect as well.
+          if (!isIn(p, rangeRect)) {
+            // Only split if it's the second point outside the rect.
+            if (lastPointIfOutsideRect || x === rangeRect.x) {
+              split = true
+            }
+            lastPointIfOutsideRect = p;
+          } else {
+            // Add the last point outside the rect if the points are back again in the rect.
+            if (lastPointIfOutsideRect) {
+              curPath.push(lastPointIfOutsideRect);
+              lastElevation = (p.y - lastPointIfOutsideRect.y) / (p.x - lastPointIfOutsideRect.x);
+            }
+            lastPointIfOutsideRect = undefined;
           }
 
-          // add the point
+          // Add the point.
           if (!split) {
             lastPoint = p;
             curPath.push(p);
-          }
-          else {
+          } else {
             lastPoint = undefined;
           }
         }
         catch {
           split = true;
+          lastPointIfOutsideRect = undefined;
         }
 
+        // If the path needs to be split
         if (split && curPath.length != 0) {
           paths.push(curPath);
           curPath = [];
         }
       }
+
+      // Add the last path to the paths.
       if (curPath.length != 0) {
         paths.push(curPath);
       }
 
-      // then draw all paths
+      const middle = window.performance.now();
+
+      // Then, draw all paths.
       for (let path of paths) {
-        ctx.drawPath(path, this.lineWidth, this.color);
+        ctx.drawPath(path, this.lineWidth, this._color);
         if (selected) {
           ctx.drawPath(path, lineWidthSelected, colorSelected);
         }
       }
+
+      const end = window.performance.now();
+
+      console.log(`Evaluation time: ${middle - start}, Draw time: ${end - middle}`);
     }
   }
 
