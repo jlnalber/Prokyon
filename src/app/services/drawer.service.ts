@@ -184,10 +184,6 @@ export class DrawerService {
 
     this.onCanvasElementChanged.addListener(this.emptyCacheListener);
     this.onCanvasElementChanged.addListener(this.emptyCacheListener);
-
-    this.onBeforeRedraw.addListener(() => {
-      console.log('on before redraw')
-    })
   }
 
   // #region fields for rendering

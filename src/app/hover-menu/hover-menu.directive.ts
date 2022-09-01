@@ -66,9 +66,8 @@ export class HoverMenuDirective {
         x: event.clientX,
         y: event.clientY
       }
-      const tolerance = 0;
-      if ((!isIn(p, this.element.getBoundingClientRect(), tolerance) || event.target == this.element)
-        && (!isIn(p, this.hoverMenu.instance.getBoundingClientRect(), tolerance) || event.target == this.hoverMenu.location.nativeElement)) {
+      if ((!isIn(p, this.element.getBoundingClientRect()) || event.target == this.element)
+        && (!isIn(p, this.hoverMenu.instance.getBoundingClientRect()) || event.target == this.hoverMenu.location.nativeElement)) {
         this.hoverMenu.destroy();
         this.hoverMenu = undefined;
       }

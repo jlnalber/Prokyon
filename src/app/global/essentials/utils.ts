@@ -3,13 +3,31 @@ import {Point} from "../interfaces/point";
 import {Color} from "../interfaces/color";
 
 export function isIn(point: Point, rect: Rect, tolerance: number = 0): boolean {
+  if (rect.width < 0) {
+    return isIn(point, {
+      x: rect.x + rect.width,
+      y: rect.y,
+      width: -rect.width,
+      height: rect.height
+    }, tolerance);
+  } else if (rect.height < 0) {
+    return isIn(point, {
+      x: rect.x,
+      y: rect.y + rect.height,
+      width: rect.width,
+      height: -rect.height
+    }, tolerance);
+  }
+
   let firstP = rect as Point;
   let secondP: Point = {
-    x:  firstP.x + rect.width,
-    y: firstP.y + rect.height
+    x:  rect.x + rect.width,
+    y: rect.y + rect.height
   };
-  return isInRange(point.x - tolerance, firstP.x, secondP.x + tolerance) && isInRange(point.y - tolerance, firstP.y, secondP.y + tolerance);
+
+  return isInRange(point.x, firstP.x - tolerance, secondP.x + tolerance) && isInRange(point.y, firstP.y - tolerance, secondP.y + tolerance);
 }
+
 export function expandRectBy(rect: Rect, factor: number): Rect {
   let addX = rect.width * factor;
   let addY = rect.height * factor;
