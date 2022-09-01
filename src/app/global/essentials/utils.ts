@@ -28,17 +28,6 @@ export function isIn(point: Point, rect: Rect, tolerance: number = 0): boolean {
   return isInRange(point.x, firstP.x - tolerance, secondP.x + tolerance) && isInRange(point.y, firstP.y - tolerance, secondP.y + tolerance);
 }
 
-export function expandRectBy(rect: Rect, factor: number): Rect {
-  let addX = rect.width * factor;
-  let addY = rect.height * factor;
-  return {
-    x: rect.x - addX,
-    y: rect.y - addY,
-    width: rect.width + 2 * addX,
-    height: rect.height + 2 * addY
-  };
-}
-
 export function isInRange(val: number, min: number, max: number): boolean {
   if (max < min) {
     return isInRange(val, max, min);

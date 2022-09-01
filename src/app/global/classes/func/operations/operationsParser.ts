@@ -311,8 +311,7 @@ export class OperationsParser {
 
         // function for recursive use
         let treeToOperation = (tree: BinaryTree<string>): Operation => {
-          // TODO: This code (especially the functions) looks a bit like boilerplate. Refactor?
-
+          // try to parse each node in the binary tree to an operation
           if (tryParseNumber(tree.value)) {
             return new Constant(parseFloat(tree.value));
           }
