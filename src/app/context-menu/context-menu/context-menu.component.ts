@@ -1,13 +1,15 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
 import {ContextMenu, ContextMenuElement} from "../context-menu.directive";
 import {Point} from "../../global/interfaces/point";
+
+// This component is responsible for displaying a context menu (opening and closing is managed by the directive).
 
 @Component({
   selector: 'app-context-menu',
   templateUrl: './context-menu.component.html',
   styleUrls: ['./context-menu.component.css']
 })
-export class ContextMenuComponent implements OnInit, AfterViewInit {
+export class ContextMenuComponent implements AfterViewInit {
 
   @ViewChild('wrapper') wrapper!: ElementRef;
   private wrapperElement?: HTMLDivElement;
@@ -30,7 +32,7 @@ export class ContextMenuComponent implements OnInit, AfterViewInit {
     y: 0
   }
   public get position(): Point {
-    // if the context menu is on the side of the page, prevent an "overflow" and position it back
+    // if the context menu is on the side of the page (and exceeds it), prevent an "overflow" and position it back
     if (this.wrapperElement) {
       const viewportSize = {
         width: window.innerWidth,
@@ -51,9 +53,6 @@ export class ContextMenuComponent implements OnInit, AfterViewInit {
 
   constructor() { }
 
-  ngOnInit(): void {
-  }
-
   ngAfterViewInit() {
     this.wrapperElement = this.wrapper.nativeElement as HTMLDivElement;
     this.setPosition();
@@ -68,12 +67,14 @@ export class ContextMenuComponent implements OnInit, AfterViewInit {
   }
 
   click(event: Event, element: ContextMenuElement) {
+    // managing a click on an item
     if (!element.disabled && element.click) {
       element.click(event);
     }
   }
 
   onTabKeyboard(event: KeyboardEvent, element: ContextMenuElement) {
+    // managing keyboard events on an item
     if (event.key == 'Enter' || event.key == ' ') {
       this.click(event, element);
     }

@@ -3,11 +3,30 @@ import {ContextMenuComponent} from "./context-menu/context-menu.component";
 import {Event as CustomEvent} from "../global/essentials/event";
 import {Point} from "../global/interfaces/point";
 
+// These interfaces provide data about the context menu.
+
+export interface ContextMenu {
+  elements: () => ContextMenuElement[], // 'elements' provides each item in the context menu.
+  additionalEvent?: CustomEvent<[Point, Event]>, // When 'additionalEvent' is triggered, the context menu should open as well
+  defaultPopUpPosition?: Point // 'defaultPopUpPosition' specifies a default pop up position if the directive is unable to find a position.
+}
+
+export interface ContextMenuElement {
+  header: string,
+  color?: string,
+  click?: (ev?: Event) => void,
+  icon?: string,
+  disabled?: boolean
+}
+
+// This directive is responsible for context menus. It can be added on every HTML element or Angular component.
+
 @Directive({
   selector: '[appContextMenu]'
 })
 export class ContextMenuDirective implements OnDestroy {
 
+  // reference to the context menu component
   private contextMenu?: ComponentRef<ContextMenuComponent>;
 
   private _appContextMenu?: ContextMenu;
@@ -26,6 +45,8 @@ export class ContextMenuDirective implements OnDestroy {
     }
     this._appContextMenu = value;
   }
+
+  // The HTMLElement that wants a context menu.
   private readonly element: Element;
 
   constructor(private readonly vc: ViewContainerRef) {
@@ -35,10 +56,12 @@ export class ContextMenuDirective implements OnDestroy {
   }
 
   ngOnDestroy() {
+    // Remove the context menu and its listeners.
     this.element.removeEventListener('contextmenu', this.contextmenuEventListener)
     this.destroyContextMenu();
   }
 
+  // #region The listeners
   private contextmenuDocumentEventListener = (e: Event | PointerEvent) => {
     // listener that closes the context menu when another one is triggered
     if (e instanceof PointerEvent && (e as any).path.indexOf(this.element) == -1) {
@@ -77,7 +100,7 @@ export class ContextMenuDirective implements OnDestroy {
   private customContextMenuActivateListener = (p?: [Point, Event]) => {
     // this listener tries to open the context menu at a (given) position
     let point: Point | undefined = p ? p[0] : undefined;
-    this.skipEvent = p ? p[1] : undefined;
+    this.skipEvent = p ? p[1] : undefined; // The context menu shouldn't close immediately after creation.
     if (!point && this._appContextMenu) {
       point = this._appContextMenu.defaultPopUpPosition;
     }
@@ -89,8 +112,9 @@ export class ContextMenuDirective implements OnDestroy {
     }
     this.showContextMenuAt(point);
   }
+  // #endregion
 
-  public showContextMenuAt(p: Point): void {
+  private showContextMenuAt(p: Point): void {
     this.destroyContextMenu();
     if (this._appContextMenu) {
       // create a new context menu and set the position and elements
@@ -106,7 +130,7 @@ export class ContextMenuDirective implements OnDestroy {
     }
   }
 
-  public destroyContextMenu(): void {
+  private destroyContextMenu(): void {
     if (this.contextMenu) {
       // destroy the context menu if open
       this.contextMenu.destroy();
@@ -119,18 +143,4 @@ export class ContextMenuDirective implements OnDestroy {
       document.removeEventListener('keydown', this.keyboardDocumentEventListener);
     }
   }
-}
-
-export interface ContextMenu {
-  elements: () => ContextMenuElement[],
-  additionalEvent?: CustomEvent<[Point, Event]>,
-  defaultPopUpPosition?: Point
-}
-
-export interface ContextMenuElement {
-  header: string,
-  color?: string,
-  click?: (ev?: Event) => void,
-  icon?: string,
-  disabled?: boolean
 }

@@ -1,14 +1,16 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
 import {DrawerService} from "../services/drawer.service";
 import {PointerContext, PointerController} from "../global/classes/pointerController";
 import {Point} from "../global/interfaces/point";
+
+// This component is responsible for providing a canvas for the graphs.
 
 @Component({
   selector: 'app-canvas',
   templateUrl: './canvas.component.html',
   styleUrls: ['./canvas.component.css']
 })
-export class CanvasComponent implements OnInit, AfterViewInit {
+export class CanvasComponent implements AfterViewInit {
 
   @ViewChild('canvas') canvas!: ElementRef;
   canvasEl?: HTMLCanvasElement;
@@ -21,16 +23,18 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     this.drawerService.canvas = this;
   }
 
-  ngOnInit(): void {
-  }
-
   ngAfterViewInit() {
+    // Get the HTMLElements.
     this.canvasEl = this.canvas.nativeElement as HTMLCanvasElement;
     this.wrapperEl = this.wrapper.nativeElement as HTMLDivElement;
     this.ctx = this.canvasEl?.getContext('2d') as CanvasRenderingContext2D | undefined;
+
+    // Listen for resizing
     new ResizeObserver(() => {
       this.drawerService.redraw();
     }).observe(this.canvasEl);
+
+    // Listen for pointer events. They then trigger zoom and translate behaviour on the drawer service
     new PointerController(this.canvasEl, {
       pointerMove: (from: Point, to: Point, context: PointerContext) => {
         this.drawerService.translateX += (to.x - from.x) / this.drawerService.zoom / context.pointerCount;
@@ -52,6 +56,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     }
     });
 
+    // Initial drawing.
     this.drawerService.redraw();
   }
 

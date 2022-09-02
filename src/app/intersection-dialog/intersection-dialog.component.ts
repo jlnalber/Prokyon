@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import {Func} from "../global/classes/func/func";
 import {Color} from "../global/interfaces/color";
-import {Dialog} from "../dialog/dialog.service";
 import {DrawerService} from "../services/drawer.service";
 import {SnackbarService} from "../snackbar/snackbar.service";
 import {Subtraction} from "../global/classes/func/operations/elementary-operations/subtraction";
@@ -11,6 +10,7 @@ import {zerosInInterval} from "../global/classes/func/funcAnalyser";
 import PointElement from "../global/classes/canvas-elements/pointElement";
 import {countDerivatives} from "../global/classes/func/funcInspector";
 import {openErrorSnackbar, openSnackbarWithMessageForSpecialPoints} from "../global/essentials/analysingFunctionsUtils";
+import {Dialog} from "../dialog/dialog";
 
 export interface IntersectionDialogData {
   func1?: Func,

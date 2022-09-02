@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import {Func} from "../global/classes/func/func";
-import {Dialog} from "../dialog/dialog.service";
 import {
   extremumPointsInInterval,
   inflectionPointsInInterval,
@@ -11,6 +10,7 @@ import PointElement from "../global/classes/canvas-elements/pointElement";
 import {Color} from "../global/interfaces/color";
 import {SnackbarService} from "../snackbar/snackbar.service";
 import {openErrorSnackbar, openSnackbarWithMessageForSpecialPoints} from "../global/essentials/analysingFunctionsUtils";
+import {Dialog} from "../dialog/dialog";
 
 export interface FuncAnalyserDialogData {
   func?: Func,
