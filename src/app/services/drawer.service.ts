@@ -47,22 +47,29 @@ export class DrawerService {
   }
 
   private _canvasElements: CanvasElement[] = [];
-  public addCanvasElement(...canvasElements: CanvasElement[]): void {
+  public addCanvasElements(...canvasElements: CanvasElement[]): void {
     for (let canvasElement of canvasElements) {
       this._canvasElements.push(canvasElement);
       canvasElement.onChange.addListener(this.canvasElementOnChangeListener);
     }
     this.onCanvasElementChanged.emit(canvasElements);
   }
-  public removeCanvasElement(canvasElement: CanvasElement): boolean {
-    const index = this._canvasElements.indexOf(canvasElement);
-    if (index >= 0) {
-      this._canvasElements.splice(index, 1);
-      canvasElement.onChange.removeListener(this.canvasElementOnChangeListener);
-      this.onCanvasElementChanged.emit(canvasElement);
-      return true;
+  public removeCanvasElements(...canvasElements: CanvasElement[]): boolean {
+    // Remove all teh given canvas elements from the canvas.
+    let worked = true;
+    for (let canvasElement of canvasElements) {
+      const index = this._canvasElements.indexOf(canvasElement);
+      if (index >= 0) {
+        this._canvasElements.splice(index, 1);
+        canvasElement.onChange.removeListener(this.canvasElementOnChangeListener);
+      } else {
+        worked = false;
+      }
     }
-    return false;
+
+    // Emit event.
+    this.onCanvasElementChanged.emit(canvasElements);
+    return worked;
   }
   public emptyCanvasElements(): void {
     for (let canvasElement of this._canvasElements) {
@@ -303,12 +310,12 @@ export class DrawerService {
                 }
                 if (!hasReference) {
                   this.onCanvasElementChanged.removeListener(checkForReferenceListener);
-                  this.removeCanvasElement(variableElement);
+                  this.removeCanvasElements(variableElement);
                 }
               }
 
               // add the variableElement
-              this.addCanvasElement(variableElement);
+              this.addCanvasElements(variableElement);
               this.onCanvasElementChanged.addListener(checkForReferenceListener);
             }
           }

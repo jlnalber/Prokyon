@@ -24,10 +24,6 @@ export class FormulaElementComponent implements AfterViewInit {
     })
   }
 
-  delete() {
-    this.drawerService.removeCanvasElement(this.canvasElement);
-  }
-
   get selected(): boolean {
     return this.drawerService.selection.contains(this.canvasElement || undefined);
   }
@@ -42,7 +38,7 @@ export class FormulaElementComponent implements AfterViewInit {
     return {
       elements: () => {
         const selected = this.selected;
-        return [
+        const elements = [
           ...this.getContextMenuElementsFromFormulaElement(),
           {
             header: selected ? 'Auswahl entfernen' : 'Auswählen',
@@ -55,11 +51,24 @@ export class FormulaElementComponent implements AfterViewInit {
             header: 'Löschen',
             color: 'red',
             click: () => {
-              this.delete();
+              this.drawerService.removeCanvasElements(this.canvasElement);
             },
             icon: 'delete'
           }
         ]
+
+        if (selected) {
+          elements.push({
+            header: 'Auswahl löschen',
+            click: () => {
+              this.drawerService.removeCanvasElements(...this.drawerService.selection.toArray());
+            },
+            color: 'red',
+            icon: 'delete_forever'
+          })
+        }
+
+        return elements;
       },
       additionalEvent: this.formulaElementComp?.contextMenu.additionalEvent,
       defaultPopUpPosition: this.formulaElementComp?.contextMenu.defaultPopUpPosition

@@ -49,7 +49,7 @@ export class FuncAnalyserDialogComponent implements OnInit {
           return new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor());
         });
         this.snackbarService.openSnackbar(this.getMessage('Nullpunkt', result.length));
-        this.drawerService.addCanvasElement(...result);
+        this.drawerService.addCanvasElements(...result);
       }
     } catch {
       this.openErrorSnackbar();
@@ -64,7 +64,7 @@ export class FuncAnalyserDialogComponent implements OnInit {
           return new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor());
         });
         this.snackbarService.openSnackbar(this.getMessage('Extrempunkt', result.length));
-        this.drawerService.addCanvasElement(...result);
+        this.drawerService.addCanvasElements(...result);
       }
     } catch {
       this.openErrorSnackbar();
@@ -79,7 +79,7 @@ export class FuncAnalyserDialogComponent implements OnInit {
           return new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor());
         });
         this.snackbarService.openSnackbar(this.getMessage('Wendepunkt', result.length));
-        this.drawerService.addCanvasElement(...result);
+        this.drawerService.addCanvasElements(...result);
       }
     } catch {
       this.openErrorSnackbar();

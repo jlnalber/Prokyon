@@ -60,7 +60,7 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
       let derivedGraph = new Graph(this.canvasElement.func.derive(), this.drawerService.getNewColor());
       derivedGraph.configuration.editable = true;
       derivedGraph.configuration.formula = derivedGraph.func.operationAsString;
-      this.drawerService.addCanvasElement(derivedGraph);
+      this.drawerService.addCanvasElements(derivedGraph);
     }
     catch { }
   }
@@ -75,7 +75,7 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
           formula: formula,
           editable: this.canvasElement.configuration.editable ?? false
         }
-        this.drawerService.addCanvasElement(newGraph);
+        this.drawerService.addCanvasElements(newGraph);
       }
     } catch { }
   }

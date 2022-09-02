@@ -59,7 +59,7 @@ export class FormulaTabComponent implements OnInit {
     const graph = new Graph(new Func(new Constant(0)), this.drawerService.getNewColor());
     graph.configuration.formula = '0';
     graph.configuration.editable = true;
-    this.drawerService.addCanvasElement(graph);
+    this.drawerService.addCanvasElements(graph);
   }
 
   addPoint(): void {
@@ -67,6 +67,6 @@ export class FormulaTabComponent implements OnInit {
       x: 0,
       y: 0
     }, this.drawerService.getNewColor());
-    this.drawerService.addCanvasElement(pointElement);
+    this.drawerService.addCanvasElements(pointElement);
   }
 }
