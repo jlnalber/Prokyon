@@ -20,6 +20,7 @@ import { FuncAnalyserDialogComponent } from './func-analyser-dialog/func-analyse
 import { PointFormulaComponent } from './formula-tab/point-formula/point-formula.component';
 import {ColorCircleComponent} from "./formula-tab/global/color-circle/color-circle.component";
 import { SnackbarComponent } from './snackbar/snackbar/snackbar.component';
+import { IntersectionDialogComponent } from './intersection-dialog/intersection-dialog.component';
 
 @NgModule({
   declarations: [
@@ -41,7 +42,8 @@ import { SnackbarComponent } from './snackbar/snackbar/snackbar.component';
     FuncAnalyserDialogComponent,
     PointFormulaComponent,
     ColorCircleComponent,
-    SnackbarComponent
+    SnackbarComponent,
+    IntersectionDialogComponent
   ],
   imports: [
     BrowserModule,

@@ -1,4 +1,4 @@
-@keyframes animateWrapper {
+@keyframes animateWrapperSnackbar {
   from { transform: translateY(100px) }
   to { transform: translateY(0) }
 }
@@ -20,7 +20,7 @@
 .snackbar {
   padding: 10px;
   border-radius: 7px;
-  animation: animateWrapper 0.2s ease-in-out;
+  animation: animateWrapperSnackbar 0.2s ease-in-out;
   font-size: 13pt;
   text-align: center;
   font-family: 'Segoe UI', Calibri, 'sans-serif';

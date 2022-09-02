@@ -1,0 +1,18 @@
+<div class="wrapper">
+  <p class="paragraph heading">Schnittpunkte berechnen</p>
+  <p class="paragraph">Von<span class="maths">{{ this.getFuncName(this.dialogData?.func1) }}</span>:</p>
+  <p class="centered maths">{{ this.dialogData?.func1?.operationAsString }}</p>
+  <p class="paragraph">Und<span class="maths">{{ this.getFuncName(this.dialogData?.func2) }}</span>:</p>
+  <p class="centered maths">{{ this.dialogData?.func2?.operationAsString }}</p>
+  <p class="paragraph">Im Intervall</p>
+  <p class="centered maths">
+    [<input class="input" step="any" type="number" [(ngModel)]="this.from" title="Von (einschließlich)">;
+    <input class="input" step="any" type="number" [(ngModel)]="this.to" title="Bis (einschließlich)">]
+  </p>
+  <p class="paragraph">mit der Suchtiefe:</p>
+  <p class="centered maths">
+    <input class="input" type="number" [(ngModel)]="this.depth" title="Suchtiefe">
+  </p>
+  <button class="button floatRight close" (click)="this.dialog.close()" title="Dialog schließen">Schließen</button>
+  <button class="button floatRight" (click)="this.evaluateIntersectionPoints()" title="Schnittpunkte berechnen">Schnittpunkte</button>
+</div>

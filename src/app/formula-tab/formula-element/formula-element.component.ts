@@ -64,7 +64,7 @@ export class FormulaElementComponent implements AfterViewInit {
               this.drawerService.removeCanvasElements(...this.drawerService.selection.toArray());
             },
             color: 'red',
-            icon: 'delete_forever'
+            icon: 'delete_sweep'
           })
         }
 

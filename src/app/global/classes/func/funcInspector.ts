@@ -51,7 +51,7 @@ export function containsFunc(funcOrOp: Func | Operation, func: Func, countderiva
   }
   else {
     if (funcOrOp instanceof ExternalFunction && (funcOrOp.funcKey === func.name ||
-      (countderivative && funcNameWithoutderivative(funcOrOp.funcKey) === funcNameWithoutderivative(func.name)))) {
+      (countderivative && funcNameWithoutDerivative(funcOrOp.funcKey) === funcNameWithoutDerivative(func.name)))) {
       return true;
     }
 
@@ -86,7 +86,7 @@ export function containsVariable(funcOrOp: Func | Operation, varKey: string): bo
   }
 }
 
-export function funcNameWithoutderivative(name: string | undefined): string | undefined {
+export function funcNameWithoutDerivative(name: string | undefined): string | undefined {
   if (!name) return undefined;
   let res = name;
   while (res.endsWith(derivativeCharacter)) {
@@ -95,7 +95,7 @@ export function funcNameWithoutderivative(name: string | undefined): string | un
   return res;
 }
 
-export function countderivatives(funcName: string): number {
+export function countDerivatives(funcName: string): number {
   let res = 0;
   let name = funcName;
   while (name.endsWith(derivativeCharacter)) {

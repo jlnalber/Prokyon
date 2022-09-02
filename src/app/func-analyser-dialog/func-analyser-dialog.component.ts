@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import {Func} from "../global/classes/func/func";
 import {Dialog} from "../dialog/dialog.service";
 import {
@@ -10,6 +10,7 @@ import {DrawerService} from "../services/drawer.service";
 import PointElement from "../global/classes/canvas-elements/pointElement";
 import {Color} from "../global/interfaces/color";
 import {SnackbarService} from "../snackbar/snackbar.service";
+import {openErrorSnackbar, openSnackbarWithMessageForSpecialPoints} from "../global/essentials/analysingFunctionsUtils";
 
 export interface FuncAnalyserDialogData {
   func?: Func,
@@ -21,7 +22,7 @@ export interface FuncAnalyserDialogData {
   templateUrl: './func-analyser-dialog.component.html',
   styleUrls: ['./func-analyser-dialog.component.css']
 })
-export class FuncAnalyserDialogComponent implements OnInit {
+export class FuncAnalyserDialogComponent {
 
   public dialogData?: FuncAnalyserDialogData;
   public dialog!: Dialog<FuncAnalyserDialogComponent>;
@@ -39,20 +40,17 @@ export class FuncAnalyserDialogComponent implements OnInit {
 
   constructor(private readonly drawerService: DrawerService, private readonly snackbarService: SnackbarService) { }
 
-  ngOnInit(): void {
-  }
-
   evaluateZeroPoints() {
     try {
       if (this.dialogData?.func) {
         const result = zeroPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth).map(p => {
           return new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor());
         });
-        this.snackbarService.openSnackbar(this.getMessage('Nullpunkt', result.length));
+        openSnackbarWithMessageForSpecialPoints(this.snackbarService, 'Nullpunkt', result.length);
         this.drawerService.addCanvasElements(...result);
       }
     } catch {
-      this.openErrorSnackbar();
+      openErrorSnackbar(this.snackbarService);
     }
     this.dialog.close();
   }
@@ -63,11 +61,11 @@ export class FuncAnalyserDialogComponent implements OnInit {
         const result = extremumPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth).map(p => {
           return new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor());
         });
-        this.snackbarService.openSnackbar(this.getMessage('Extrempunkt', result.length));
+        openSnackbarWithMessageForSpecialPoints(this.snackbarService, 'Extrempunkt', result.length);
         this.drawerService.addCanvasElements(...result);
       }
     } catch {
-      this.openErrorSnackbar();
+      openErrorSnackbar(this.snackbarService);
     }
     this.dialog.close();
   }
@@ -78,34 +76,12 @@ export class FuncAnalyserDialogComponent implements OnInit {
         const result = inflectionPointsInInterval(this.dialogData!.func!, this.drawerService.getVariables(), this.from, this.to, this.depth).map(p => {
           return new PointElement(p, this.dialogData?.color ?? this.drawerService.getNewColor());
         });
-        this.snackbarService.openSnackbar(this.getMessage('Wendepunkt', result.length));
+        openSnackbarWithMessageForSpecialPoints(this.snackbarService, 'Wendepunkt', result.length);
         this.drawerService.addCanvasElements(...result);
       }
     } catch {
-      this.openErrorSnackbar();
+      openErrorSnackbar(this.snackbarService);
     }
     this.dialog.close();
-  }
-
-  private getMessage(name: string, count: number): string {
-    if (count !== 1) {
-      name += 'e';
-    }
-    if (count === 0) {
-      return `Keine ${name} gefunden.`;
-    }
-    else if (count === 1) {
-      return `Ein ${name} gefunden.`;
-    }
-    else {
-      return `${count} ${name} gefunden.`;
-    }
-  }
-
-  private openErrorSnackbar(errorMessage: string = 'Ein unerwarteter Fehler ist aufgetreten!'): void {
-    this.snackbarService.openSnackbar(errorMessage, {
-      color: 'white',
-      background: '#c44'
-    })
   }
 }

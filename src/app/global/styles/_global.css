@@ -87,3 +87,33 @@
   background: #dddddd;
   border: 1px solid #555;
 }
+
+.heading {
+  font-size: 16pt !important;
+  font-weight: 600;
+  margin-top: 0;
+}
+
+.paragraph {
+  font-size: 13pt;
+  font-family: 'Segoe UI', Calibri, 'sans-serif';
+  user-select: none;
+}
+
+.maths {
+  font-size: 14pt;
+  user-select: none;
+  font-family: "Cambria Math", Cambria, serif;
+}
+
+.centered {
+  text-align: center;
+}
+
+.floatRight {
+  float: right;
+}
+
+.close {
+  color: red;
+}

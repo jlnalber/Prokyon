@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {Func} from "../../global/classes/func/func";
 import {Graph} from "../../global/classes/canvas-elements/graph";
 import {Constant} from "../../global/classes/func/operations/constants/constant";
@@ -8,13 +8,15 @@ import {FuncParser} from "../../global/classes/func/funcParser";
 import {FormulaElement} from "../../global/classes/abstract/formulaElement";
 import {DialogService} from "../../dialog/dialog.service";
 import {FuncAnalyserDialogComponent} from "../../func-analyser-dialog/func-analyser-dialog.component";
+import {ContextMenu, ContextMenuElement} from "../../context-menu/context-menu.directive";
+import {IntersectionDialogComponent} from "../../intersection-dialog/intersection-dialog.component";
 
 @Component({
   selector: 'app-graph-formula',
   templateUrl: './graph-formula.component.html',
   styleUrls: ['./graph-formula.component.css']
 })
-export class GraphFormulaComponent extends FormulaElement implements OnInit {
+export class GraphFormulaComponent extends FormulaElement {
 
   public errorMessage: string | undefined = undefined;
 
@@ -34,9 +36,6 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
     super();
     this._canvasElement = new Graph(new Func(new Constant(0)));
     this._canvasElement.configuration.formula = '0';
-  }
-
-  ngOnInit(): void {
   }
 
   onChange(value: string) {
@@ -90,34 +89,55 @@ export class GraphFormulaComponent extends FormulaElement implements OnInit {
     }
   }
 
-  public override get contextMenu() {
+  public override get contextMenu(): ContextMenu {
     return {
-    elements: () => [{
-        header: 'Ableiten',
-        click: () => {
-          this.derive();
+      elements: () => {
+        const elements: ContextMenuElement[] = [{
+          header: 'Ableiten',
+          click: () => {
+            this.derive();
+          },
+          disabled: !this.canDerive(),
+          icon: 'south_east'
         },
-        disabled: !this.canDerive(),
-        icon: 'south_east'
-      },
-      {
-        header: 'Duplizieren',
-        icon: 'content_copy',
-        disabled: this.errorMessage !== undefined,
-        click: () => {
-          this.duplicate();
+        {
+          header: 'Duplizieren',
+          icon: 'content_copy',
+          disabled: this.errorMessage !== undefined,
+          click: () => {
+            this.duplicate();
+          }
+        },
+        {
+          header: 'Analysieren',
+          icon: 'query_stats',
+          click: () => {
+            this.dialogService.createDialog(FuncAnalyserDialogComponent)?.open({
+              func: this.canvasElement.func,
+              color: this.canvasElement.color
+            });
+          }
+        }]
+
+        const selection = this.drawerService.selection.toArray();
+        if (selection.indexOf(this.canvasElement) !== -1
+          && selection.length === 2
+          && selection[0] instanceof Graph
+          && selection[1] instanceof Graph) {
+          elements.push({
+            header: 'Schnittpunkte bestimmen',
+            click: () => {
+              this.dialogService.createDialog(IntersectionDialogComponent)?.open({
+                func1: (selection[0] as Graph).func,
+                func2: (selection[1] as Graph).func
+              });
+            },
+            icon: 'multiline_chart'
+          })
         }
+
+        return elements;
       },
-      {
-        header: 'Analysieren',
-        icon: 'query_stats',
-        click: () => {
-          this.dialogService.createDialog(FuncAnalyserDialogComponent)?.open({
-            func: this.canvasElement.func,
-            color: this.canvasElement.color
-          });
-        }
-      }],
       additionalEvent: this.threePointsClickedEvent
     }
   }

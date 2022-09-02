@@ -17,8 +17,8 @@ import {FuncParser} from "../global/classes/func/funcParser";
 import {
   inspect,
   containsVariable,
-  countderivatives,
-  funcNameWithoutderivative,
+  countDerivatives,
+  funcNameWithoutDerivative,
   isRecursive
 } from "../global/classes/func/funcInspector";
 import Cache from "../global/essentials/cache";
@@ -255,12 +255,12 @@ export class DrawerService {
 
     // then look up in the graphs
     for (let graph of this.graphs) {
-      if (funcNameWithoutderivative(key) === funcNameWithoutderivative(graph.func.name)) {
+      if (funcNameWithoutDerivative(key) === funcNameWithoutDerivative(graph.func.name)) {
         let func = graph.func
 
         // derive to the requested level
-        let deriveNow = countderivatives(func.name!);
-        let requestedDerive = countderivatives(key);
+        let deriveNow = countDerivatives(func.name!);
+        let requestedDerive = countDerivatives(key);
         if (deriveNow > requestedDerive) {
           continue;
         }
@@ -306,7 +306,9 @@ export class DrawerService {
               let checkForReferenceListener = () => {
                 let hasReference = false;
                 for (let graph of this.graphs) {
-                  hasReference = hasReference || containsVariable(graph.func, variableElement.key);
+                  hasReference = hasReference || (graph.func.variable !== variableElement.key
+                                              && (graph.func.variable !== undefined || variableElement.key !== 'x')
+                                              && containsVariable(graph.func, variableElement.key));
                 }
                 if (!hasReference) {
                   this.onCanvasElementChanged.removeListener(checkForReferenceListener);
@@ -353,7 +355,7 @@ export class DrawerService {
   }
 
   public hasVariable(key: string): boolean {
-    // loop through the canvasElements and search for variableElements
+    // Loop through the canvasElements and search for variableElements.
     for (let canvasElement of this.canvasElements) {
       if (canvasElement instanceof VariableElement && canvasElement.key === key) {
         return true;

@@ -63,7 +63,7 @@ export function zerosInInterval(func: Func, dict: any, from: number, to: number,
     }
   }
 
-  return joinAsSets(zerosInInterval(func, dict, from, average, depth - 1, respectChangeOfSign), zerosInInterval(func, dict, average, to, depth - 1, respectChangeOfSign));
+  return joinAsSets(zerosInInterval(func, dict, from, average, depth - 1, respectChangeOfSign), zerosInInterval(func, dict, average, to, depth - 1, respectChangeOfSign, checkWithDerivative));
 }
 
 // kinda useless, huh? zero points should actually always have 0 as y-values
