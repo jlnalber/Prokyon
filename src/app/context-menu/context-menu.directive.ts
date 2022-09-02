@@ -63,7 +63,7 @@ export class ContextMenuDirective implements OnDestroy {
 
   private contextmenuEventListener = (e: Event | PointerEvent) => {
     // this listener opens the custom context menu instead of the usual one of the browser
-    if (e instanceof PointerEvent) {
+    if (e instanceof PointerEvent || e instanceof MouseEvent) {
       e.preventDefault();
 
       this.showContextMenuAt({
