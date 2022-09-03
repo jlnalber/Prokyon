@@ -58,7 +58,6 @@ export default class DefiniteIntegral extends CanvasElement {
   }
   public set h(value: number) {
     this._h = this.correctH(value);
-    console.log(this._h);
     this.onChange.emit(this._h);
   }
   private correctH(h: number): number {
