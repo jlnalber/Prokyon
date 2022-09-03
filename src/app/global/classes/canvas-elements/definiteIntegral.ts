@@ -112,7 +112,7 @@ export default class DefiniteIntegral extends CanvasElement {
         try {
           const y = this.graph.func.evaluate(x, variables);
 
-          if (!isNaN(y)) {
+          if (isFinite(y)) {
             // Calculate the surface and the rect.
             sum += h * y;
             rects.push({

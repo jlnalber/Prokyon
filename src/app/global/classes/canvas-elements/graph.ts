@@ -5,6 +5,7 @@ import {Color, colorAsTransparent} from "../../interfaces/color";
 import {Point} from "../../interfaces/point";
 import {isIn, isInRange} from "../../essentials/utils";
 import {GraphFormulaComponent} from "../../../formula-tab/graph-formula/graph-formula.component";
+import {getDistanceToStraightLine} from "../../essentials/straightLineUtils";
 
 export class Graph extends CanvasElement {
 
@@ -61,7 +62,7 @@ export class Graph extends CanvasElement {
       const tryGetPoint = (x: number): Point | undefined => {
         try {
           const y = this._func.evaluate(x, ctx.variables);
-          if (!isNaN(y)) {
+          if (isFinite(y)) {
             return {
               x,
               y
@@ -158,11 +159,40 @@ export class Graph extends CanvasElement {
   }
 
   public override getDistance(p: Point, ctx: RenderingContext): number | undefined {
+    // Try to simulate straight lines and calculate the distance to them.
+    try {
+      const x1 = p.x - ctx.step;
+      const x2 = p.x;
+      const x3 = p.x + ctx.step;
+
+      const p1: Point = {
+        x: x1,
+        y: this.func.evaluate(x1, ctx.variables)
+      }
+      const p2: Point = {
+        x: x2,
+        y: this.func.evaluate(x2, ctx.variables)
+      }
+      const p3: Point = {
+        x: x3,
+        y: this.func.evaluate(x3, ctx.variables)
+      }
+
+      let dist1 = getDistanceToStraightLine(p, p1, p2);
+      let dist2 = getDistanceToStraightLine(p, p2, p3);
+      dist1 = isFinite(dist1) ? dist1 : Infinity;
+      dist2 = isFinite(dist2) ? dist2 : Infinity;
+
+      if (dist1 !== Infinity || dist2 !== Infinity) {
+        return Math.min(dist1, dist2);
+      }
+    } catch { }
+
+    // Try an easier way:
     try {
       return Math.abs(p.y - this.func.evaluate(p.x, ctx.variables));
-    } catch {
-      return undefined;
-    }
+    } catch { }
+    return undefined;
   }
 
 }

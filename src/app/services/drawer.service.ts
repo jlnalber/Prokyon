@@ -377,7 +377,7 @@ export class DrawerService {
     // find out the element with the minimal distance
     for (let canvasElement of this.canvasElements) {
       const dist = canvasElement.getDistance(newP, ctx);
-      if (dist !== undefined) {
+      if (dist !== undefined && isFinite(dist)) {
         let closer = minDist === undefined;
         closer = closer || dist <= minDist!;
         if (closer) {

@@ -78,7 +78,7 @@ export function tryParseNumber(str: string): boolean {
   let retValue = null;
   if(str !== null) {
     if(str.length > 0) {
-      if (!isNaN(str as any)) {
+      if (isFinite(str as any)) {
         retValue = parseInt(str);
       }
     }
