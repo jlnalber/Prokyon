@@ -103,35 +103,37 @@ export class Graph extends CanvasElement {
         if (p && !isIn(p, rangeRect)) {
           // Only split if it's the second point outside the rect.
           if (lastPointIfOutsideRect || x === rangeRect.x) {
-            split = true
-
             // If the graph jumps over the viewport (because of very steep elevation), the line is still rendered with a point in between.
-            if (lastPointIfOutsideRect && isInRange(rangeRect.y, lastPointIfOutsideRect.y, p.y)) {
+            if (!split && lastPointIfOutsideRect && isInRange(rangeRect.y, lastPointIfOutsideRect.y, p.y)) {
               const averageX = (lastPointIfOutsideRect.x + p.x) / 2
               const centerPoint: Point | undefined = tryGetPoint(averageX);
               if (centerPoint && isInRange(centerPoint.y, lastPointIfOutsideRect.y, p.y)) {
                 curPath.push(lastPointIfOutsideRect, centerPoint, p);
               }
             }
+
+            // Split because the point isn't in the viewport.
+            split = true
           }
 
           lastPointIfOutsideRect = p;
         } else if (p) {
           // Add the last point outside the rect if the points are back again in the rect.
-          if (lastPointIfOutsideRect && lastElevation) {
+          if (lastPointIfOutsideRect && lastElevation !== undefined && !split) {
             curPath.push(lastPointIfOutsideRect);
             lastElevation = (p.y - lastPointIfOutsideRect.y) / (p.x - lastPointIfOutsideRect.x);
           }
+
           lastPointIfOutsideRect = undefined;
         }
 
         // Add the point.
         if (p && !split) {
-          lastPoint = p;
           curPath.push(p);
-        } else {
-          lastPoint = undefined;
         }
+
+        // Set the last point to the current point.
+        lastPoint = p;
 
         // If the path needs to be split
         if (split && curPath.length != 0) {
