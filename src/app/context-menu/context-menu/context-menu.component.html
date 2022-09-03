@@ -1,5 +1,5 @@
 <div class="wrapper" #wrapper>
-  <div *ngFor="let element of this.elements" class="element" (click)="click($event, element)" tabindex="0" (keydown)="this.onTabKeyboard($event, element)" [ngStyle]="{ 'color': element.color ?? 'black' }" [ngClass]="{ 'disabled': element.disabled }">
+  <div *ngFor="let element of this.elements" [title]="element.title ?? ''" class="element" (click)="click($event, element)" tabindex="0" (keydown)="this.onTabKeyboard($event, element)" [ngStyle]="{ 'color': element.color ?? 'black' }" [ngClass]="{ 'disabled': element.disabled }">
     <p>{{ element.header }}</p>
     <span class="material-symbols-outlined">{{ element.icon }}</span>
   </div>

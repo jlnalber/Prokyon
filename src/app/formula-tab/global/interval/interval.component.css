@@ -1,0 +1,10 @@
+@import url("../../../global/styles/_global.css");
+
+.input {
+  width: 50px;
+  display: unset;
+}
+
+.noMargin {
+  margin: 0;
+}

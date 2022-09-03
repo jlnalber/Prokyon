@@ -20,14 +20,16 @@ export class FormulaTabComponent implements OnInit {
         click: () => {
           this.addGraph();
         },
-        icon: 'show_chart'
+        icon: 'show_chart',
+        title: 'Eine Funktion hinzufügen.'
       },
       {
         header: 'Punkt hinzufügen',
         click: () => {
           this.addPoint();
         },
-        icon: 'radio_button_checked'
+        icon: 'radio_button_checked',
+        title: 'Einen Punkt hinzufügen.'
       },
       {
         header: 'Alle löschen',
@@ -35,7 +37,8 @@ export class FormulaTabComponent implements OnInit {
           this.drawerService.emptyCanvasElements();
         },
         icon: 'delete',
-        color: 'red'
+        color: 'red',
+        title: 'Alle Elemente löschen.'
       }
     ]
   }

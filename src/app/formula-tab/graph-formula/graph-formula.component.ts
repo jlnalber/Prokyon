@@ -10,6 +10,7 @@ import {DialogService} from "../../dialog/dialog.service";
 import {FuncAnalyserDialogComponent} from "../../func-analyser-dialog/func-analyser-dialog.component";
 import {ContextMenu, ContextMenuElement} from "../../context-menu/context-menu.directive";
 import {IntersectionDialogComponent} from "../../intersection-dialog/intersection-dialog.component";
+import DefiniteIntegral from "../../global/classes/canvas-elements/definiteIntegral";
 
 @Component({
   selector: 'app-graph-formula',
@@ -93,48 +94,58 @@ export class GraphFormulaComponent extends FormulaElement {
   public override get contextMenu(): ContextMenu {
     return {
       elements: () => {
+        const selection = this.drawerService.selection.toArray();
+        const intersectionPointsAvailable = selection.indexOf(this.canvasElement) !== -1
+          && selection.length === 2
+          && selection[0] instanceof Graph
+          && selection[1] instanceof Graph;
+
         const elements: ContextMenuElement[] = [{
           header: 'Ableiten',
           click: () => {
             this.derive();
           },
           disabled: !this.canDerive(),
-          icon: 'south_east'
-        },
-        {
+          icon: 'south_east',
+          title: 'Diese Funktion ableiten.'
+        }, {
           header: 'Duplizieren',
           icon: 'content_copy',
           disabled: this.errorMessage !== undefined,
           click: () => {
             this.duplicate();
-          }
-        },
-        {
+          },
+          title: 'Diese Funktion duplizieren.'
+        }, {
           header: 'Analysieren',
           icon: 'query_stats',
           click: () => {
             this.dialogService.createDialog(FuncAnalyserDialogComponent)?.open({
               graph: this.canvasElement
             });
-          }
-        }]
-
-        const selection = this.drawerService.selection.toArray();
-        if (selection.indexOf(this.canvasElement) !== -1
-          && selection.length === 2
-          && selection[0] instanceof Graph
-          && selection[1] instanceof Graph) {
-          elements.push({
-            header: 'Schnittpunkte bestimmen',
-            click: () => {
+          },
+          title: 'Nullpunkte, Extrempunkte oder Wendepunkte dieser Funktion bestimmen.'
+        }, {
+          header: 'Bestimmtes Integral',
+          click: () => {
+            this.drawerService.addCanvasElements(new DefiniteIntegral(this.canvasElement, -1, 1, 0.1, this.canvasElement.color))
+          },
+          icon: 'monitoring'
+        }, {
+          header: 'Schnittpunkte bestimmen',
+          disabled: !intersectionPointsAvailable,
+          click: () => {
+            if (intersectionPointsAvailable) {
               this.dialogService.createDialog(IntersectionDialogComponent)?.open({
                 graph1: selection[0] as Graph,
                 graph2: selection[1] as Graph
               });
-            },
-            icon: 'multiline_chart'
-          })
-        }
+            }
+          },
+          title: intersectionPointsAvailable ? 'Schnittpunkte der beiden ausgewählten Funktionen berechnen.' : 'Um Schnittpunkte zweier Funktionen zu berechnen, müssen zwei Funktionen ausgewählt sein.',
+          icon: 'multiline_chart'
+        }]
+
 
         return elements;
       },

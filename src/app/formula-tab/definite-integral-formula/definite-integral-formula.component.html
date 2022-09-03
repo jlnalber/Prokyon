@@ -1,0 +1,8 @@
+<div class="wrapper">
+  <app-color-circle [(color)]="this.color" [(visible)]="this.canvasElement.visible"></app-color-circle>
+  <p class="paragraph description">Bestimmtes Integral<span *ngIf="this.canvasElement.graph.func.name"> von <span class="maths">{{ this.canvasElement.graph.func.name }}</span></span></p>
+  <button class="iconButton depositionTop floatRight" (click)="this.threePointsClicked($event)"><span class="material-symbols-outlined">more_vert</span></button>
+  <p class="paragraph intervalParagraph">Intervall: <app-interval class="interval" [noMargin]="true" [(from)]="this.canvasElement.from" [(to)]="this.canvasElement.to"></app-interval></p>
+  <p class="paragraph">Schrittweite: <input class="input" min="0" step="any" type="number" [(ngModel)]="this.canvasElement.h" title="Bis (einschließlich)"></p>
+  <p class="paragraph">→ <span title="Näherungsweise bestimmter Wert" class="maths">{{ this.canvasElement.value.toLocaleString() }}</span></p>
+</div>

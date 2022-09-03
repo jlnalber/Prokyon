@@ -2,9 +2,8 @@
   <p class="paragraph heading">Funktion <span class="maths heading">{{ this.dialogData?.graph?.func?.name ? this.dialogData?.graph?.func?.name + ' ' : '' }}</span>analysieren:</p>
   <p class="centered maths">{{ this.dialogData?.graph?.func?.operationAsString }}</p>
   <p class="paragraph">Im Intervall</p>
-  <p class="centered maths">
-    [<input class="input" step="any" type="number" [(ngModel)]="this.from" title="Von (einschließlich)">;
-    <input class="input" step="any" type="number" [(ngModel)]="this.to" title="Bis (einschließlich)">]
+  <p class="centered">
+    <app-interval [(from)]="this.from" [(to)]="this.to"></app-interval>
   </p>
   <p class="paragraph">mit der Suchtiefe:</p>
   <p class="centered maths">

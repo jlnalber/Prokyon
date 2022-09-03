@@ -22,6 +22,8 @@ import {ColorCircleComponent} from "./formula-tab/global/color-circle/color-circ
 import { SnackbarComponent } from './snackbar/snackbar/snackbar.component';
 import { IntersectionDialogComponent } from './intersection-dialog/intersection-dialog.component';
 import { DependencyPointElementsFormulaComponent } from './formula-tab/dependency-point-elements-formula/dependency-point-elements-formula.component';
+import { DefiniteIntegralFormulaComponent } from './formula-tab/definite-integral-formula/definite-integral-formula.component';
+import { IntervalComponent } from './formula-tab/global/interval/interval.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +47,9 @@ import { DependencyPointElementsFormulaComponent } from './formula-tab/dependenc
     ColorCircleComponent,
     SnackbarComponent,
     IntersectionDialogComponent,
-    DependencyPointElementsFormulaComponent
+    DependencyPointElementsFormulaComponent,
+    DefiniteIntegralFormulaComponent,
+    IntervalComponent
   ],
   imports: [
     BrowserModule,

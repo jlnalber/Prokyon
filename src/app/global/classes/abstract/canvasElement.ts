@@ -4,6 +4,7 @@ import {Type} from "@angular/core";
 import {FormulaElement} from "./formulaElement";
 import {Point} from "../../interfaces/point";
 import {RenderingContext} from "../renderingContext";
+import {BLACK, Color} from "../../interfaces/color";
 
 export interface CanvasElementConfiguration {
   label?: string,
@@ -24,4 +25,22 @@ export abstract class CanvasElement extends CanvasDrawer {
   public configuration: CanvasElementConfiguration = {};
 
   public onRemove(): void { }
+
+  protected _color: Color = BLACK;
+  public get color(): Color {
+    return this._color;
+  }
+  public set color(value: Color) {
+    this._color = value;
+    this.onChange.emit(value);
+  }
+
+  protected _visible: boolean = true;
+  public get visible(): boolean {
+    return this._visible;
+  }
+  public set visible(value: boolean) {
+    this._visible = value;
+    this.onChange.emit(value);
+  }
 }

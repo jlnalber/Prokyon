@@ -155,4 +155,12 @@ export class RenderingContext {
                     strokeWidth: number = 0): void {
     this.drawEllipse(center, radius, radius, 0, fill, stroke, strokeWidth);
   }
+
+  public drawRect(rect: Rect, fill: Color = BLACK, stroke: Color = TRANSPARENT, strokeWidth: number = 0): void {
+    this.ctx.lineWidth = strokeWidth;
+    this.ctx.strokeStyle = getColorAsRgbaFunction(stroke);
+    this.ctx.fillStyle = getColorAsRgbaFunction(fill);
+    const realRect = this.transformRectFromFieldToCanvas(rect);
+    this.ctx.fillRect(realRect.x, realRect.y, realRect.width, realRect.height);
+  }
 }

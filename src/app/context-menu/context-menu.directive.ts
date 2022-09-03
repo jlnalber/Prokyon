@@ -16,7 +16,8 @@ export interface ContextMenuElement {
   color?: string,
   click?: (ev?: Event) => void,
   icon?: string,
-  disabled?: boolean
+  disabled?: boolean,
+  title?: string
 }
 
 // This directive is responsible for context menus. It can be added on every HTML element or Angular component.

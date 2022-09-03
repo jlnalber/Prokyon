@@ -3,24 +3,9 @@ import {Point} from "../interfaces/point";
 import {Color} from "../interfaces/color";
 
 export function isIn(point: Point, rect: Rect, tolerance: number = 0): boolean {
-  if (rect.width < 0) {
-    return isIn(point, {
-      x: rect.x + rect.width,
-      y: rect.y,
-      width: -rect.width,
-      height: rect.height
-    }, tolerance);
-  } else if (rect.height < 0) {
-    return isIn(point, {
-      x: rect.x,
-      y: rect.y + rect.height,
-      width: rect.width,
-      height: -rect.height
-    }, tolerance);
-  }
-
-  let firstP = rect as Point;
-  let secondP: Point = {
+  rect = correctRect(rect);
+  const firstP = rect as Point;
+  const secondP: Point = {
     x:  rect.x + rect.width,
     y: rect.y + rect.height
   };
@@ -33,6 +18,51 @@ export function isInRange(val: number, min: number, max: number): boolean {
     return isInRange(val, max, min);
   }
   return val >= min && val <= max;
+}
+
+export function doRectsCollide(rect1: Rect, rect2: Rect): boolean {
+  rect1 = correctRect(rect1);
+  rect2 = correctRect(rect2);
+
+  return !((rect1.x + rect1.width < rect2.x || rect2.x + rect2.width < rect1.x)
+        && (rect1.y + rect1.height < rect2.y || rect2.y + rect2.height < rect1.y));
+}
+
+export function correctRect(rect: Rect): Rect {
+  if (rect.width < 0) {
+    return correctRect({
+      x: rect.x + rect.width,
+      y: rect.y,
+      width: -rect.width,
+      height: rect.height
+    });
+  } else if (rect.height < 0) {
+    return correctRect({
+      x: rect.x,
+      y: rect.y + rect.height,
+      width: rect.width,
+      height: -rect.height
+    })
+  }
+  return rect;
+}
+
+export function getDistanceToRect(p: Point, rect: Rect): number {
+  if (isIn(p, rect)) {
+    return 0;
+  }
+
+  // Get the vertical and horizontal distance.
+  const distX = Math.min(Math.abs(p.x - rect.x), Math.abs(p.x - rect.x - rect.width));
+  const distY = Math.min(Math.abs(p.y - rect.y), Math.abs(p.y - rect.y - rect.height));
+
+  if (isInRange(p.x, rect.x, rect.x + rect.width)) {
+    return distY;
+  } else if (isInRange(p.y, rect.y, rect.y + rect.height)) {
+    return distX;
+  } else {
+    return Math.sqrt(distY ** 2 + distX ** 2);
+  }
 }
 
 export function getPosFromEvent(e: PointerEvent | WheelEvent | MouseEvent, el: Element): Point {

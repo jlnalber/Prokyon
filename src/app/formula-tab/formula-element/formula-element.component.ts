@@ -45,7 +45,8 @@ export class FormulaElementComponent implements AfterViewInit {
             click: () => {
               this.drawerService.selection.alternate(this.canvasElement || undefined);
             },
-            icon: selected ? 'remove_done' : 'done'
+            icon: selected ? 'remove_done' : 'done',
+            title: 'Dieses Element auswählen.'
           },
           {
             header: 'Löschen',
@@ -53,7 +54,8 @@ export class FormulaElementComponent implements AfterViewInit {
             click: () => {
               this.drawerService.removeCanvasElements(this.canvasElement);
             },
-            icon: 'delete'
+            icon: 'delete',
+            title: 'Dieses Element löschen.'
           }
         ]
 
@@ -64,7 +66,8 @@ export class FormulaElementComponent implements AfterViewInit {
               this.drawerService.removeCanvasElements(...this.drawerService.selection.toArray());
             },
             color: 'red',
-            icon: 'delete_sweep'
+            icon: 'delete_sweep',
+            title: 'Alle ausgewählten Elemente löschen.'
           })
         }
 

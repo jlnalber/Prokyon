@@ -1,0 +1,31 @@
+@import url("../../global/styles/_global.css");
+
+.wrapper {
+  --buttonSize: 46px;
+  --defaultMargin: 1em;
+}
+
+.interval {
+  display: inline-block;
+}
+
+.intervalParagraph {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.description {
+  margin-top: 0;
+  margin-bottom: var(--defaultMargin);
+  margin-left: calc(var(--buttonSize) + 16px);
+  line-height: var(--buttonSize);
+}
+
+.depositionTop {
+  margin-top: calc(-1 * (var(--buttonSize) + var(--defaultMargin))) !important;
+}
+
+.input {
+  width: 50px;
+  display: unset;
+}

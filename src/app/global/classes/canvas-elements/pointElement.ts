@@ -11,24 +11,6 @@ export default class PointElement extends CanvasElement {
 
   public readonly componentType: Type<FormulaElement> = PointFormulaComponent;
 
-  private _color: Color;
-  public get color(): Color {
-    return this._color;
-  }
-  public set color(value: Color) {
-    this._color = value;
-    this.onChange.emit(value);
-  }
-
-  private _visible: boolean;
-  public get visible(): boolean {
-    return this._visible;
-  }
-  public set visible(value: boolean) {
-    this._visible = value;
-    this.onChange.emit(value);
-  }
-
   private _stroke: Color = {
     r: 100,
     g: 100,

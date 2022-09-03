@@ -1,7 +1,7 @@
 import {CanvasElement} from "../abstract/canvasElement";
 import {RenderingContext} from "../renderingContext";
 import {Func} from "../func/func";
-import {BLACK, Color, colorAsTransparent} from "../../interfaces/color";
+import {Color, colorAsTransparent} from "../../interfaces/color";
 import {Point} from "../../interfaces/point";
 import {isIn, isInRange} from "../../essentials/utils";
 import {GraphFormulaComponent} from "../../../formula-tab/graph-formula/graph-formula.component";
@@ -16,24 +16,6 @@ export class Graph extends CanvasElement {
   }
   public set func(value: Func) {
     this._func = value;
-    this.onChange.emit(value);
-  }
-
-  private _color: Color = BLACK;
-  public get color(): Color {
-    return this._color;
-  }
-  public set color(value: Color) {
-    this._color = value;
-    this.onChange.emit(value);
-  }
-
-  private _visible: boolean = true;
-  public get visible(): boolean {
-    return this._visible;
-  }
-  public set visible(value: boolean) {
-    this._visible = value;
     this.onChange.emit(value);
   }
 
