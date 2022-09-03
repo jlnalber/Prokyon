@@ -1,9 +1,9 @@
 <div class="wrapper">
   <p class="paragraph heading">Schnittpunkte berechnen</p>
-  <p class="paragraph">Von<span class="maths">{{ this.getFuncName(this.dialogData?.func1) }}</span>:</p>
-  <p class="centered maths">{{ this.dialogData?.func1?.operationAsString }}</p>
-  <p class="paragraph">Und<span class="maths">{{ this.getFuncName(this.dialogData?.func2) }}</span>:</p>
-  <p class="centered maths">{{ this.dialogData?.func2?.operationAsString }}</p>
+  <p class="paragraph">Von<span class="maths">{{ this.getFuncName(this.dialogData?.graph1) }}</span>:</p>
+  <p class="centered maths">{{ this.dialogData?.graph1?.func?.operationAsString }}</p>
+  <p class="paragraph">Und<span class="maths">{{ this.getFuncName(this.dialogData?.graph2) }}</span>:</p>
+  <p class="centered maths">{{ this.dialogData?.graph2?.func?.operationAsString }}</p>
   <p class="paragraph">Im Intervall</p>
   <p class="centered maths">
     [<input class="input" step="any" type="number" [(ngModel)]="this.from" title="Von (einschließlich)">;

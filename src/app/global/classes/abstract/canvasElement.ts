@@ -22,4 +22,6 @@ export abstract class CanvasElement extends CanvasDrawer {
   }
 
   public configuration: CanvasElementConfiguration = {};
+
+  public onRemove(): void { }
 }

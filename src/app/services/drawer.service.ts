@@ -62,6 +62,7 @@ export class DrawerService {
       if (index >= 0) {
         this._canvasElements.splice(index, 1);
         canvasElement.onChange.removeListener(this.canvasElementOnChangeListener);
+        canvasElement.onRemove();
       } else {
         worked = false;
       }

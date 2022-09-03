@@ -41,17 +41,17 @@ export function inspectOperation(operation: Operation): InspectorResult {
   }
 }
 
-export function isRecursive(func: Func, countderivative: boolean = true): boolean {
-  return containsFunc(func, func, countderivative);
+export function isRecursive(func: Func, countDerivative: boolean = true): boolean {
+  return containsFunc(func, func, countDerivative);
 }
 
-export function containsFunc(funcOrOp: Func | Operation, func: Func, countderivative: boolean = false): boolean {
+export function containsFunc(funcOrOp: Func | Operation, func: Func, countDerivative: boolean = false): boolean {
   if (funcOrOp instanceof Func) {
     return containsFunc(funcOrOp.operation, func);
   }
   else {
     if (funcOrOp instanceof ExternalFunction && (funcOrOp.funcKey === func.name ||
-      (countderivative && funcNameWithoutDerivative(funcOrOp.funcKey) === funcNameWithoutDerivative(func.name)))) {
+      (countDerivative && funcNameWithoutDerivative(funcOrOp.funcKey) === funcNameWithoutDerivative(func.name)))) {
       return true;
     }
 

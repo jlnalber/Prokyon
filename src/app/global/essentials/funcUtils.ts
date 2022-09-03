@@ -1,13 +1,15 @@
 import {Func} from "../classes/func/func";
+import {isRecursive} from "../classes/func/funcInspector";
 
 export function tryGetDerivative(func: Func): Func | undefined {
   try {
-    return func.derive();
+    const derivative = func.derive();
+
+    // Check for derivation of External Functions as well.
+    isRecursive(derivative);
+
+    return derivative;
   } catch {
     return undefined;
   }
-}
-
-export function canDerive(func: Func): boolean {
-  return tryGetDerivative(func) !== undefined;
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import PointElement from "../../global/classes/canvas-elements/pointElement";
 import {FormulaElement} from "../../global/classes/abstract/formulaElement";
 
@@ -7,7 +7,7 @@ import {FormulaElement} from "../../global/classes/abstract/formulaElement";
   templateUrl: './point-formula.component.html',
   styleUrls: ['./point-formula.component.css']
 })
-export class PointFormulaComponent extends FormulaElement implements OnInit {
+export class PointFormulaComponent extends FormulaElement {
 
   public canvasElement: PointElement;
 
@@ -17,9 +17,6 @@ export class PointFormulaComponent extends FormulaElement implements OnInit {
       x: 0,
       y: 0
     });
-  }
-
-  ngOnInit(): void {
   }
 
   public get name(): string {

@@ -7,14 +7,19 @@ import {Subtraction} from "../global/classes/func/operations/elementary-operatio
 import {ExternalFunction} from "../global/classes/func/operations/externalFunction";
 import {Variable} from "../global/classes/func/operations/variable";
 import {zerosInInterval} from "../global/classes/func/funcAnalyser";
-import PointElement from "../global/classes/canvas-elements/pointElement";
 import {countDerivatives} from "../global/classes/func/funcInspector";
-import {openErrorSnackbar, openSnackbarWithMessageForSpecialPoints} from "../global/essentials/analysingFunctionsUtils";
+import {
+  openErrorSnackbar,
+  openSnackbarWithMessageForSpecialPoints
+} from "../global/essentials/analysingFunctionsUtils";
 import {Dialog} from "../dialog/dialog";
+import {Graph} from "../global/classes/canvas-elements/graph";
+import DependencyPointElements from "../global/classes/canvas-elements/dependencyPointElements";
+import {Point} from "../global/interfaces/point";
 
 export interface IntersectionDialogData {
-  func1?: Func,
-  func2?: Func,
+  graph1?: Graph,
+  graph2?: Graph,
   color?: Color
 }
 
@@ -41,9 +46,9 @@ export class IntersectionDialogComponent {
 
   constructor(private readonly drawerService: DrawerService, private readonly snackbarService: SnackbarService) { }
 
-  getFuncName(func: Func | undefined): string {
-    if (func && func.name) {
-      return ` ${func.name}`;
+  getFuncName(graph: Graph | undefined): string {
+    if (graph && graph.func.name) {
+      return ` ${graph.func.name}`;
     }
     return '';
   }
@@ -51,39 +56,57 @@ export class IntersectionDialogComponent {
   evaluateIntersectionPoints() {
     let error = false;
     try {
-      if (this.dialogData && this.dialogData.func1 && this.dialogData.func2) {
-        // Helper function:
-        const getFuncProviderFor: (func: Func) => ((key: string) => Func) = (func: Func) => {
-          return (key: string) => {
-            let f = func;
-            for (let i = 0; i < countDerivatives(key); i++) {
-              f = f.derive();
-            }
-            return f;
-          }
-        }
-
-        // First, prepare a difference function.
-        const func1 = this.dialogData.func1;
-        const func2 = this.dialogData.func2;
-        const variableKey = 'x';
-        const diffFunc = new Func(new Subtraction(new ExternalFunction(func1.name ?? '', getFuncProviderFor(func1), new Variable(variableKey)),
-                                                  new ExternalFunction(func2.name ?? '', getFuncProviderFor(func2), new Variable(variableKey)),
-                                                 ), undefined, variableKey);
-
-        // Then, calculate the zeros.
-        const variables = this.drawerService.getVariables();
+      if (this.dialogData && this.dialogData.graph1 && this.dialogData.graph2) {
+        // Collect the data.
+        const graph1 = this.dialogData.graph1;
+        const graph2 = this.dialogData.graph2;
         const color = this.dialogData.color ?? this.drawerService.getNewColor();
-        const result = zerosInInterval(diffFunc, variables, this.from, this.to, this.depth).map(x => {
-          return {
-            x,
-            y: func1.evaluate(x, variables)
+        const from = this.from;
+        const to = this.to;
+        const depth = this.depth;
+        const variableKey = 'x';
+
+        this.drawerService.addCanvasElements(new DependencyPointElements(this.drawerService, () => {
+          // Helper function:
+          const getFuncProviderFor: (graph: Graph) => ((key: string) => Func) = (graph: Graph) => {
+            return (key: string) => {
+              let f = graph.func;
+              for (let i = 0; i < countDerivatives(key); i++) {
+                f = f.derive();
+              }
+              return f;
+            }
           }
-        }).map(p => {
-          return new PointElement(p, color);
-        })
-        openSnackbarWithMessageForSpecialPoints(this.snackbarService, 'Schnittpunkt', result.length);
-        this.drawerService.addCanvasElements(...result);
+
+          // First, prepare a difference function.
+          const diffFunc = new Func(new Subtraction(new ExternalFunction(graph1.func.name ?? '', getFuncProviderFor(graph1), new Variable(variableKey)),
+            new ExternalFunction(graph2.func.name ?? '', getFuncProviderFor(graph2), new Variable(variableKey)),
+          ), undefined, variableKey);
+
+          // Then, calculate the zeros.
+          const variables = this.drawerService.getVariables();
+          return zerosInInterval(diffFunc, variables, from, to, depth).map(x => {
+            return {
+              x,
+              y: graph1.func.evaluate(x, variables)
+            }
+          })
+        }, () => {
+          // Check whether both of the graphs are still available.
+          let graph1Found: boolean = false;
+          let graph2Found: boolean = false;
+          for (let canvasElement of this.drawerService.canvasElements) {
+            if (canvasElement === graph1) graph1Found = true;
+            else if (canvasElement === graph2) graph2Found = true;
+          }
+          return graph1Found && graph2Found;
+        }, ['Schnittpunkte', () => {
+          // Provide a label for the component in the panel.
+          return graph1.func.name && graph2.func.name ? `${graph1.func.name}, ${graph2.func.name}` : undefined
+        }], color, true, (result: Point[]) => {
+          // Open the snackbar when first initialized.
+          openSnackbarWithMessageForSpecialPoints(this.snackbarService, 'Schnittpunkt', result.length);
+        }));
       } else {
         error = true;
       }

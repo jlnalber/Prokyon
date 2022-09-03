@@ -77,6 +77,20 @@ export default class PointElement extends CanvasElement {
     this.onChange.emit(value);
   }
 
+  public set point(value: Point) {
+    this._x = value.x;
+    this._y = value.y;
+    this.onChange.emit(value);
+  }
+  public get point(): Point {
+    return {
+      x: this.x,
+      y: this.y
+    }
+  }
+
+  public selected: boolean = false;
+
   constructor(p: Point, color: Color = BLACK, public readonly name?: string, visible: boolean = true) {
     super();
     this._x = p.x;
@@ -89,7 +103,7 @@ export default class PointElement extends CanvasElement {
     const selectionRadiusFactor = 1.75;
     const point = this.point;
     if (this.visible && isIn(point, ctx.range, selectionRadiusFactor * this.radius / ctx.zoom)) {
-      if (ctx.selection.indexOf(this) !== -1) {
+      if (this.selected || ctx.selection.indexOf(this) !== -1) {
         ctx.drawCircle(point, selectionRadiusFactor * this.radius, colorAsTransparent(this.color, 0.3))
       }
       ctx.drawCircle(point, this.radius, this.color, this.stroke, this.strokeWidth);
@@ -99,13 +113,6 @@ export default class PointElement extends CanvasElement {
   public override getDistance(p: Point, ctx: RenderingContext): number | undefined {
     // calculate the distance, subtract the radius --> point in canvas isn't a perfect geometric point but has a radius
     return Math.sqrt((this.x - p.x) ** 2 + (this.y - p.y) ** 2) - this.radius / ctx.zoom;
-  }
-
-  public get point(): Point {
-    return {
-      x: this.x,
-      y: this.y
-    }
   }
 
 }

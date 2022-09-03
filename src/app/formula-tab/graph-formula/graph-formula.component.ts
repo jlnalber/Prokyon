@@ -39,18 +39,19 @@ export class GraphFormulaComponent extends FormulaElement {
   }
 
   onChange(value: string) {
-    // on change, try to parse the function, otherwise "crash" --> show error message, don't render graph
-    let res = this.drawerService.parseAndValidateFunc(value);
-    if (res instanceof Func) {
-      this.errorMessage = undefined;
-      this.canvasElement.func = res;
-      this.canvasElement.func.stopEvaluation = false;
-      this.canvasElement.configuration.formula = value;
-    }
-    else {
-      this.errorMessage = res;
-      this.canvasElement.func.stopEvaluation = true;
-      this.canvasElement.onChange.emit();
+    if (value !== this.canvasElement.configuration.formula) {
+      // on change, try to parse the function, otherwise "crash" --> show error message, don't render graph
+      let res = this.drawerService.parseAndValidateFunc(value);
+      if (res instanceof Func) {
+        this.errorMessage = undefined;
+        this.canvasElement.func = res;
+        this.canvasElement.func.stopEvaluation = false;
+        this.canvasElement.configuration.formula = value;
+      } else {
+        this.errorMessage = res;
+        this.canvasElement.func.stopEvaluation = true;
+        this.canvasElement.onChange.emit();
+      }
     }
   }
 
@@ -113,8 +114,7 @@ export class GraphFormulaComponent extends FormulaElement {
           icon: 'query_stats',
           click: () => {
             this.dialogService.createDialog(FuncAnalyserDialogComponent)?.open({
-              func: this.canvasElement.func,
-              color: this.canvasElement.color
+              graph: this.canvasElement
             });
           }
         }]
@@ -128,8 +128,8 @@ export class GraphFormulaComponent extends FormulaElement {
             header: 'Schnittpunkte bestimmen',
             click: () => {
               this.dialogService.createDialog(IntersectionDialogComponent)?.open({
-                func1: (selection[0] as Graph).func,
-                func2: (selection[1] as Graph).func
+                graph1: selection[0] as Graph,
+                graph2: selection[1] as Graph
               });
             },
             icon: 'multiline_chart'
