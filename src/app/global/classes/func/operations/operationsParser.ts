@@ -3,7 +3,7 @@ import {
   contains,
   containsCombination,
   indexOf,
-  indexUntil,
+  indexUntil, isNumber,
   lastIndexOfCombination, mapElement,
   replaceAll,
   tryParseNumber
@@ -129,16 +129,18 @@ export class OperationsParser {
           let c = this.formattedString.charAt(i);
 
           // check whether there has to be a split
-          if ([...operations, ...whitespaces, ...brackets].indexOf(c) != -1 || [...operations, ...brackets].indexOf(str) != -1 || (tryParseNumber(str) && !tryParseNumber(str + c))) {
+          if ([...operations, ...whitespaces, ...brackets].indexOf(c) !== -1
+            || [...operations, ...brackets].indexOf(str) !== -1
+            || (isNumber(str) && !isNumber(str + c))) {
             push = true;
           }
 
           // push the str to the array
-          if (push && str != '') {
+          if (push && str !== '') {
             this.stringSplit.push(str);
             str = '';
           }
-          if (whitespaces.indexOf(c) == -1) {
+          if (whitespaces.indexOf(c) === -1) {
             str += c;
           }
         }
@@ -162,7 +164,7 @@ export class OperationsParser {
             || (contains(openingBrackets, this.stringSplit[i + 1]) && !contains(closingBrackets, this.stringSplit[i]))
             || contains(operations, this.stringSplit[i])
             || contains(operations, this.stringSplit[i + 1])
-            || tryParseNumber(this.stringSplit[i + 1])
+            || isNumber(this.stringSplit[i + 1])
             // I believe this last case is obsolete. The third should already be enough.
             /*|| contains(functions, this.stringSplit[i])*/)) {
 
@@ -312,8 +314,8 @@ export class OperationsParser {
         // function for recursive use
         let treeToOperation = (tree: BinaryTree<string>): Operation => {
           // try to parse each node in the binary tree to an operation
-          if (tryParseNumber(tree.value)) {
-            return new Constant(parseFloat(tree.value));
+          if (isNumber(tree.value)) {
+            return new Constant(tryParseNumber(tree.value)!);
           }
           else if (tree.value == '+' && tree.first != undefined && tree.second != undefined) {
             return new Addition(treeToOperation(tree.first), treeToOperation(tree.second));

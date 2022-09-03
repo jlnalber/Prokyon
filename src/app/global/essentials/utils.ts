@@ -74,16 +74,25 @@ export function getPosFromEvent(e: PointerEvent | WheelEvent | MouseEvent, el: E
   };
 }
 
-export function tryParseNumber(str: string): boolean {
-  let retValue = null;
+export function tryParseNumber(str: string): number | undefined {
+  let retValue: number | undefined = undefined;
   if(str !== null) {
+    // Replace the commas by points.
+    while (str.indexOf(',') !== -1) {
+      str = str.replace(',', '.');
+    }
+
     if(str.length > 0) {
       if (isFinite(str as any)) {
-        retValue = parseInt(str);
+        retValue = parseFloat(str);
       }
     }
   }
-  return typeof retValue == 'number';
+  return retValue;
+}
+
+export function isNumber(str: string): boolean {
+  return tryParseNumber(str) !== undefined;
 }
 
 export function replaceAll(str: string, searchValue: string, replaceValue: string): string {
