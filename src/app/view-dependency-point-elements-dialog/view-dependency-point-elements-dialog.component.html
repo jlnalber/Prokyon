@@ -1,0 +1,10 @@
+<div class="wrapper" *ngIf="this.dialogData?.dependencyPointElements?.points !== undefined">
+  <div class="pointWrappers">
+    <div class="point" *ngFor="let point of this.dialogData?.dependencyPointElements?.points; let l = last" [ngClass]="{'notLast': !l}">
+      <p class="maths paragraph pointParagraph">({{point.x.toLocaleString()}}|{{point.y.toLocaleString()}})</p>
+      <button class="iconButton depositionTop floatRight" (click)="this.addPointToDrawerService(point)"><span class="material-symbols-outlined">add</span></button>
+    </div>
+  </div>
+  <div class="paragraph defaultMargin" *ngIf="this.dialogData?.dependencyPointElements?.size === 0">Es wurden keine Elemente gefunden.</div>
+  <button class="button floatRight close" (click)="this.dialog.close()" title="Dialog schließen">Schließen</button>
+</div>

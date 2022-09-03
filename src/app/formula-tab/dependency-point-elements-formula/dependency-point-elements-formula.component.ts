@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import {FormulaElement} from "../../global/classes/abstract/formulaElement";
 import DependencyPointElements from "../../global/classes/canvas-elements/dependencyPointElements";
+import {ContextMenu, ContextMenuElement} from "../../context-menu/context-menu.directive";
+import {DialogService} from "../../dialog/dialog.service";
+import {
+  ViewDependencyPointElementsDialogComponent
+} from "../../view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component";
 
 @Component({
   selector: 'app-dependency-point-element-formula',
@@ -9,6 +14,41 @@ import DependencyPointElements from "../../global/classes/canvas-elements/depend
 })
 export class DependencyPointElementsFormulaComponent extends FormulaElement {
 
+  constructor(private readonly dialogService: DialogService) {
+    super();
+  }
+
   public canvasElement!: DependencyPointElements;
+
+  get elementCountStr(): string {
+    const size = this.canvasElement.size;
+    if (size === 0) {
+      return 'Keine Elemente'
+    } else if (size === 1) {
+      return 'Ein Element'
+    } else {
+      return `${size} Elemente`;
+    }
+  }
+
+  public override get contextMenu(): ContextMenu {
+    return {
+      elements: () => {
+        const elements: ContextMenuElement[] = [{
+          header: 'Anzeigen',
+          click: () => {
+            this.dialogService.createDialog(ViewDependencyPointElementsDialogComponent)?.open({
+              dependencyPointElements: this.canvasElement
+            })
+          },
+          icon: 'visibility',
+          title: 'Elemente anzeigen.'
+        }]
+
+        return elements;
+      },
+      additionalEvent: this.threePointsClickedEvent
+    }
+  }
 
 }

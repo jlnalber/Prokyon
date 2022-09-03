@@ -1,0 +1,31 @@
+@import url("../global/styles/_global.css");
+
+.defaultMargin {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.pointParagraph {
+  line-height: 46px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.maths {
+  font-size: 16pt !important;
+}
+
+.point {
+  width: 250px;
+  padding: 7px;
+}
+
+.notLast {
+  border-bottom: 1px solid #aaa;
+}
+
+.pointWrappers {
+  margin-bottom: 16px;
+  max-height: 500px;
+  overflow-y: auto;
+}

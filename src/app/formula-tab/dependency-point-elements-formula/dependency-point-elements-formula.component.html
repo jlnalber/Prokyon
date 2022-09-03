@@ -1,8 +1,8 @@
 <div class="wrapper">
   <app-color-circle [(color)]="this.canvasElement.color" [(visible)]="this.canvasElement.visible"></app-color-circle>
   <p class="paragraph">
-    {{ this.canvasElement.description[0] }}
-    <span *ngIf="this.canvasElement.description[1]() !== undefined"> von <span class="maths">{{ this.canvasElement.description[1]() }}</span></span>
+    {{ this.canvasElement.description[0] }}<span *ngIf="this.canvasElement.description[1]() !== undefined"> von <span class="maths">{{ this.canvasElement.description[1]() }}</span></span>
+    <span class="elementCount">{{ this.elementCountStr }}</span>
   </p>
   <button class="iconButton depositionTop floatRight" (click)="this.threePointsClicked($event)"><span class="material-symbols-outlined">more_vert</span></button>
 </div>

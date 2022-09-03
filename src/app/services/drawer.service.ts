@@ -341,7 +341,7 @@ export class DrawerService {
 
   public getNewColor(): Color {
     return getNew(colors,
-      (this.graphs as (Graph | PointElement)[]).concat(...this.points).map(g => g.color),
+      this.canvasElements.map(c => c.color),
       (c1, c2) => { return sameColors(c1, c2) })
   }
 

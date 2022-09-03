@@ -21,6 +21,10 @@ export default class DependencyPointElements extends CanvasElement {
   private correctVersion: number = 0;
   private drawnVersion: number = 0;
 
+  public get points(): Point[] {
+    return this.pointElements.map(pEl => pEl.point);
+  }
+
   private _stroke: Color = {
     r: 100,
     g: 100,

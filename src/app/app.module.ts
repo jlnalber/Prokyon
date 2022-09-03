@@ -24,6 +24,7 @@ import { IntersectionDialogComponent } from './intersection-dialog/intersection-
 import { DependencyPointElementsFormulaComponent } from './formula-tab/dependency-point-elements-formula/dependency-point-elements-formula.component';
 import { DefiniteIntegralFormulaComponent } from './formula-tab/definite-integral-formula/definite-integral-formula.component';
 import { IntervalComponent } from './formula-tab/global/interval/interval.component';
+import { ViewDependencyPointElementsDialogComponent } from './view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import { IntervalComponent } from './formula-tab/global/interval/interval.compon
     IntersectionDialogComponent,
     DependencyPointElementsFormulaComponent,
     DefiniteIntegralFormulaComponent,
-    IntervalComponent
+    IntervalComponent,
+    ViewDependencyPointElementsDialogComponent
   ],
   imports: [
     BrowserModule,

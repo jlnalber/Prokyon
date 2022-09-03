@@ -5,7 +5,7 @@ import {RenderingContext} from "../renderingContext";
 import {
   DefiniteIntegralFormulaComponent
 } from "../../../formula-tab/definite-integral-formula/definite-integral-formula.component";
-import {BLACK, Color, TRANSPARENT} from "../../interfaces/color";
+import {BLACK, Color, colorAsTransparent, TRANSPARENT} from "../../interfaces/color";
 import {Graph} from "./graph";
 import {Rect} from "../../interfaces/rect";
 import {correctRect, doRectsCollide, getDistanceToRect} from "../../essentials/utils";
@@ -150,9 +150,10 @@ export default class DefiniteIntegral extends CanvasElement {
     // Then draw the surface.
     if (this.visible) {
       const range = ctx.range;
+      const color = colorAsTransparent(this.color, 0.3);
       for (let rect of this.rects) {
         if (doRectsCollide(rect, range)) {
-          ctx.drawRect(rect, this.color, this.stroke)
+          ctx.drawRect(rect, color, this.stroke)
         }
       }
     }
