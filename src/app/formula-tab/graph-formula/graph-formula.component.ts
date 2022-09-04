@@ -40,7 +40,7 @@ export class GraphFormulaComponent extends FormulaElement {
   }
 
   onChange(value: string) {
-    if (value !== this.canvasElement.configuration.formula) {
+    if (value !== this.canvasElement.configuration.formula || this.canvasElement.func.stopEvaluation) {
       // on change, try to parse the function, otherwise "crash" --> show error message, don't render graph
       let res = this.drawerService.parseAndValidateFunc(value);
       if (res instanceof Func) {
@@ -95,7 +95,7 @@ export class GraphFormulaComponent extends FormulaElement {
     return {
       elements: () => {
         const selection = this.drawerService.selection.toArray();
-        const intersectionPointsAvailable = selection.indexOf(this.canvasElement) !== -1
+        const twoGraphsAvailable = selection.indexOf(this.canvasElement) !== -1
           && selection.length === 2
           && selection[0] instanceof Graph
           && selection[1] instanceof Graph;
@@ -128,22 +128,32 @@ export class GraphFormulaComponent extends FormulaElement {
         }, {
           header: 'Bestimmtes Integral',
           click: () => {
-            this.drawerService.addCanvasElements(new DefiniteIntegral(this.canvasElement, -1, 1, 0.1, this.canvasElement.color))
+            this.drawerService.addCanvasElements(new DefiniteIntegral(this.canvasElement, undefined, -1, 1, 0.1, this.canvasElement.color));
           },
           icon: 'monitoring'
         }, {
           header: 'Schnittpunkte bestimmen',
-          disabled: !intersectionPointsAvailable,
+          disabled: !twoGraphsAvailable,
           click: () => {
-            if (intersectionPointsAvailable) {
+            if (twoGraphsAvailable) {
               this.dialogService.createDialog(IntersectionDialogComponent)?.open({
                 graph1: selection[0] as Graph,
                 graph2: selection[1] as Graph
               });
             }
           },
-          title: intersectionPointsAvailable ? 'Schnittpunkte der beiden ausgewählten Funktionen berechnen.' : 'Um Schnittpunkte zweier Funktionen zu berechnen, müssen zwei Funktionen ausgewählt sein.',
+          title: twoGraphsAvailable ? 'Schnittpunkte der beiden ausgewählten Funktionen berechnen.' : 'Um Schnittpunkte zweier Funktionen zu berechnen, müssen zwei Funktionen ausgewählt sein.',
           icon: 'multiline_chart'
+        }, {
+          header: 'Fläche zwischen Graphen',
+          disabled: !twoGraphsAvailable,
+          click: () => {
+            if (twoGraphsAvailable) {
+              this.drawerService.addCanvasElements(new DefiniteIntegral(selection[0] as Graph, selection[1] as Graph, -1, 1, 0.1, this.drawerService.getNewColor()));
+            }
+          },
+          title: twoGraphsAvailable ? 'Fläche zwischen den Graphen der beiden ausgewählten Funktionen berechnen.' : 'Um die Fläche zwischen den Graphen zweier Funktionen zu berechnen, müssen zwei Funktionen ausgewählt sein.',
+          icon: 'stacked_line_chart'
         }]
 
 

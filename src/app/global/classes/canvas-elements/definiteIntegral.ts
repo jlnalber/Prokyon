@@ -34,6 +34,16 @@ export default class DefiniteIntegral extends CanvasElement {
     this.onChange.emit(value);
   }
 
+  // 'secondGraph' is only set when the surface between two graphs should be calculated.
+  private _secondGraph: Graph | undefined;
+  public get secondGraph(): Graph | undefined {
+    return this._secondGraph;
+  }
+  public set secondGraph(value: Graph | undefined) {
+    this._secondGraph = value;
+    this.onChange.emit(value);
+  }
+
   private _stroke: Color;
   public get stroke(): Color {
     return this._stroke;
@@ -87,11 +97,12 @@ export default class DefiniteIntegral extends CanvasElement {
     this.onChange.emit(this._to);
   }
 
-  constructor(graph: Graph, from: number, to: number, h: number = 1, color: Color = BLACK, stroke: Color = TRANSPARENT, strokeWidth: number = 0, visible: boolean = true) {
+  constructor(graph: Graph, secondGraph: Graph | undefined, from: number, to: number, h: number = 1, color: Color = BLACK, stroke: Color = TRANSPARENT, strokeWidth: number = 0, visible: boolean = true) {
     super();
 
     // Set the properties.
     this._graph = graph;
+    this._secondGraph = secondGraph;
     this._color = color;
     this._stroke = stroke;
     this._strokeWidth = strokeWidth;
@@ -110,15 +121,16 @@ export default class DefiniteIntegral extends CanvasElement {
       if (h !== 0) {
         try {
           const y = this.graph.func.evaluate(x, variables);
+          const y2 = this.secondGraph?.func.evaluate(x, variables) ?? 0;
 
-          if (isFinite(y)) {
+          if (isFinite(y) && isFinite(y2)) {
             // Calculate the surface and the rect.
-            sum += h * y;
+            sum += h * (y - y2);
             rects.push({
               x,
-              y: 0,
+              y: y2,
               width: h,
-              height: y
+              height: y - y2
             })
           }
         } catch { }
@@ -147,10 +159,13 @@ export default class DefiniteIntegral extends CanvasElement {
     // Reload the data.
     this.reload(ctx.variables);
 
+    // Check whether this element is selected.
+    const selected = ctx.selection.indexOf(this) !== -1;
+
     // Then draw the surface.
     if (this.visible) {
       const range = ctx.range;
-      const color = colorAsTransparent(this.color, 0.3);
+      const color = colorAsTransparent(this.color, selected ? 0.5 : 0.3);
       for (let rect of this.rects) {
         const correctRect = correctRectTo(rect, range);
         if (correctRect) {
