@@ -1,13 +1,13 @@
 import {CanvasDrawer} from "./abstract/canvasDrawer";
 import {RenderingContext} from "./renderingContext";
 import {Color} from "../interfaces/color";
-import {clamp} from "../essentials/utils";
+import {clamp, correctRect} from "../essentials/utils";
 
 export class Grid extends CanvasDrawer {
-  override draw(ctx: RenderingContext) {
-    if (ctx.config?.showGrid == undefined || ctx.config.showGrid) {
+  public override draw(ctx: RenderingContext) {
+    if (ctx.config?.showGrid === undefined || ctx.config.showGrid) {
       // get metadata about the canvas
-      const range = ctx.range;
+      const range = correctRect(ctx.range);
       const step = 99 / ctx.zoom;
 
       // first, calculate the step width that is used to draw lines
@@ -19,44 +19,44 @@ export class Grid extends CanvasDrawer {
       // then, calculate data for the text rendering
       const drawText = ctx.config?.showNumbers ?? true;
       const offsetText = 15 / ctx.zoom;
-      const yPos = clamp(range.y + range.height + offsetText, -offsetText, range.y - offsetText);
-      const alignBottom = yPos == range.y + range.height + offsetText;
+      const yPos = clamp(range.y + offsetText, -offsetText, range.y + range.height - offsetText);
+      const alignBottom = yPos == range.y + offsetText;
       const xPos = clamp(range.x + offsetText, -offsetText, range.x + range.width - offsetText);
       const alignLeft = xPos == range.x + offsetText;
       const font = '15px sans-serif';
 
-      // then draw the lines
+      // then, draw the lines
       const stroke: Color = ctx.config?.gridColor ?? {
         r: 100,
         g: 100,
         b: 100
       };
-      // first parallel to the y-axis
-      for (let x = range.x - range.x % unit; x < range.x + range.width; x += unit / base) {
+      // first, parallel to the y-axis
+      for (let x = range.x - range.x % (unit / base); x < range.x + range.width; x += unit / base) {
         // draw line
-        let big: boolean = x % unit == 0;
+        let big: boolean = x % unit === 0;
         ctx.drawLine({
           x: x,
           y: range.y
         }, {
           x: x,
           y: range.y + range.height
-        }, x == 0 ? 3 : big ? 1 : 0.5, stroke);
+        }, x === 0 ? 3 : big ? 1 : 0.5, stroke);
 
         // draw arrow on axis
-        if (x == 0) {
+        if (x === 0) {
           const height = 15 / ctx.zoom;
           const offset = 0.5 / ctx.zoom;
           const offsetY = 3 / ctx.zoom;
           ctx.drawPath([{
             x: x + offset,
-            y: range.y + offsetY
+            y: range.y + range.height + offsetY
           }, {
             x: x - height / 4 + offset,
-            y: range.y - height
+            y: range.y + range.height - height
           }, {
             x: x + height / 4 + offset,
-            y: range.y - height
+            y: range.y + range.height - height
           }], 0, stroke, stroke);
         }
         // draw the text
@@ -68,20 +68,20 @@ export class Grid extends CanvasDrawer {
         }
       }
 
-      // then those parallel to the x-axis
-      for (let y = (range.y + range.height) - (range.y + range.height) % unit; y < range.y; y += unit / base) {
+      // then, those parallel to the x-axis
+      for (let y = range.y - range.y % (unit / base); y < range.y + range.height; y += unit / base) {
         // draw line
-        let big: boolean = y % unit == 0;
+        let big: boolean = y % unit === 0;
         ctx.drawLine({
           x: range.x,
           y: y
         }, {
           x: range.x + range.width,
           y: y
-        }, y == 0 ? 3 : big ? 1 : 0.5, stroke);
+        }, y === 0 ? 3 : big ? 1 : 0.5, stroke);
 
         // draw arrow on axis
-        if (y == 0) {
+        if (y === 0) {
           const width = 15 / ctx.zoom;
           const offset = 0.5 / ctx.zoom;
           const offsetX = 3 / ctx.zoom;
@@ -106,8 +106,8 @@ export class Grid extends CanvasDrawer {
       }
 
       // draw the 0 if in the range
-      if (range.y >= -offsetText
-        && range.y + range.height <= -offsetText
+      if (range.y <= -offsetText
+        && range.y + range.height >= -offsetText
         && range.x <= -offsetText
         && range.x + range.width >= -offsetText
         && drawText) {
