@@ -24,8 +24,10 @@ export function doRectsCollide(rect1: Rect, rect2: Rect): boolean {
   rect1 = correctRect(rect1);
   rect2 = correctRect(rect2);
 
-  return !((rect1.x + rect1.width < rect2.x || rect2.x + rect2.width < rect1.x)
-        && (rect1.y + rect1.height < rect2.y || rect2.y + rect2.height < rect1.y));
+  return !(rect1.x + rect1.width < rect2.x
+        || rect2.x + rect2.width < rect1.x
+        || rect1.y + rect1.height < rect2.y
+        || rect2.y + rect2.height < rect1.y);
 }
 
 export function correctRect(rect: Rect): Rect {
@@ -43,6 +45,48 @@ export function correctRect(rect: Rect): Rect {
       width: rect.width,
       height: -rect.height
     })
+  }
+  return rect;
+}
+
+export function correctRectTo(rect: Rect, to: Rect): Rect | undefined {
+  rect = correctRect(rect);
+  to = correctRect(to);
+  if (!doRectsCollide(rect, to)) {
+    return undefined;
+  }
+  if (rect.x < to.x) {
+    const diff = to.x - rect.x;
+    return correctRectTo({
+      x: to.x,
+      y: rect.y,
+      width: rect.width - diff,
+      height: rect.height
+    }, to);
+  } else if (rect.y < to.y) {
+    const diff = to.y - rect.y;
+    return correctRectTo({
+      x: rect.x,
+      y: to.y,
+      width: rect.width,
+      height: rect.height - diff
+    }, to);
+  } else if (rect.x + rect.width > to.x + to.width) {
+    const diff = (rect.x + rect.width) - (to.x + to.width);
+    return correctRectTo({
+      x: rect.x,
+      y: rect.y,
+      width: rect.width - diff,
+      height: rect.height
+    }, to);
+  } else if (rect.y + rect.height > to.y + to.height) {
+    const diff = (rect.y + rect.height) - (to.y + to.height);
+    return correctRectTo({
+      x: rect.x,
+      y: rect.y,
+      width: rect.width,
+      height: rect.height - diff
+    }, to);
   }
   return rect;
 }

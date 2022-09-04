@@ -8,7 +8,7 @@ import {
 import {BLACK, Color, colorAsTransparent, TRANSPARENT} from "../../interfaces/color";
 import {Graph} from "./graph";
 import {Rect} from "../../interfaces/rect";
-import {correctRect, doRectsCollide, getDistanceToRect} from "../../essentials/utils";
+import {correctRect, correctRectTo, getDistanceToRect} from "../../essentials/utils";
 import {Point} from "../../interfaces/point";
 
 export default class DefiniteIntegral extends CanvasElement {
@@ -152,8 +152,9 @@ export default class DefiniteIntegral extends CanvasElement {
       const range = ctx.range;
       const color = colorAsTransparent(this.color, 0.3);
       for (let rect of this.rects) {
-        if (doRectsCollide(rect, range)) {
-          ctx.drawRect(rect, color, this.stroke)
+        const correctRect = correctRectTo(rect, range);
+        if (correctRect) {
+          ctx.drawRect(correctRect, color, this.stroke)
         }
       }
     }
