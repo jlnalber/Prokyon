@@ -16,7 +16,7 @@
 }
 
 .point {
-  width: 250px;
+  width: 290px;
   padding: 7px;
 }
 
@@ -26,6 +26,20 @@
 
 .pointWrappers {
   margin-bottom: 16px;
-  max-height: 500px;
+  max-height: 400px;
   overflow-y: auto;
+}
+
+.iconButton {
+  background-color: white;
+}
+
+.input {
+  width: 50px;
+  display: unset;
+}
+
+.pointsNotFoundMessage {
+  width: 290px;
+  padding: 7px;
 }

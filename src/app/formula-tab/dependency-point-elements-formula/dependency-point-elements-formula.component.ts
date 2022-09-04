@@ -42,7 +42,7 @@ export class DependencyPointElementsFormulaComponent extends FormulaElement {
             })
           },
           icon: 'visibility',
-          title: 'Elemente anzeigen.'
+          title: 'Elemente anzeigen und bearbeiten.'
         }]
 
         return elements;

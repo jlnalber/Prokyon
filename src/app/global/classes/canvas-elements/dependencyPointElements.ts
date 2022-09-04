@@ -60,8 +60,36 @@ export default class DependencyPointElements extends CanvasElement {
     return this.pointElements.length;
   }
 
+  private _from: number;
+  public get from(): number {
+    return this._from;
+  }
+  public set from(value: number) {
+    this._from = value;
+    this.onChange.emit(value);
+  }
+
+  private _to: number;
+  public get to(): number {
+    return this._to;
+  }
+  public set to(value: number) {
+    this._to = value;
+    this.onChange.emit(value);
+  }
+
+  private _depth: number;
+  public get depth(): number {
+    return this._depth;
+  }
+  public set depth(value: number) {
+    this._depth = value;
+    this.onChange.emit(value);
+  }
+
   constructor(private readonly drawerService: DrawerService,
-              private readonly pointsProvider: () => Point[],
+              private readonly pointsProvider: (from: number, to: number, depth: number) => Point[],
+              from: number, to: number, depth: number,
               private readonly dependencyStillActive: () => boolean,
               public description: [string, () => string | undefined],
               color: Color = BLACK, visible: boolean = true,
@@ -69,6 +97,9 @@ export default class DependencyPointElements extends CanvasElement {
     super();
     this._color = color;
     this._visible = visible;
+    this._from = from;
+    this._to = to;
+    this._depth = depth;
 
     this.drawerService.onCanvasElementChanged.addListener(this.reloadListener);
   }
@@ -80,7 +111,7 @@ export default class DependencyPointElements extends CanvasElement {
         setTimeout(() => {
           try {
             // Get the points.
-            const points = this.pointsProvider();
+            const points = this.pointsProvider(this.from, this.to, this.depth);
 
             if (!this.initializedYet && this.firstInit) {
               this.firstInit(points);

@@ -61,12 +61,9 @@ export class IntersectionDialogComponent {
         const graph1 = this.dialogData.graph1;
         const graph2 = this.dialogData.graph2;
         const color = this.dialogData.color ?? this.drawerService.getNewColor();
-        const from = this.from;
-        const to = this.to;
-        const depth = this.depth;
         const variableKey = 'x';
 
-        this.drawerService.addCanvasElements(new DependencyPointElements(this.drawerService, () => {
+        this.drawerService.addCanvasElements(new DependencyPointElements(this.drawerService, (from: number, to: number, depth: number) => {
           // Helper function:
           const getFuncProviderFor: (graph: Graph) => ((key: string) => Func) = (graph: Graph) => {
             return (key: string) => {
@@ -91,7 +88,7 @@ export class IntersectionDialogComponent {
               y: graph1.func.evaluate(x, variables)
             }
           })
-        }, () => {
+        }, this.from, this.to, this.depth, () => {
           // Check whether both of the graphs are still available.
           let graph1Found: boolean = false;
           let graph2Found: boolean = false;
