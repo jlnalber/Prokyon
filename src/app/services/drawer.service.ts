@@ -261,12 +261,12 @@ export class DrawerService {
         let func = graph.func
 
         // derive to the requested level
-        let deriveNow = countDerivatives(func.name!);
-        let requestedDerive = countDerivatives(key);
-        if (deriveNow > requestedDerive) {
+        let derivativeNow = countDerivatives(func.name!);
+        let requestedDerivative = countDerivatives(key);
+        if (derivativeNow > requestedDerivative) {
           continue;
         }
-        for (let i = 0; i < requestedDerive - deriveNow; i++) {
+        for (let i = 0; i < requestedDerivative - derivativeNow; i++) {
           func = func.derive();
         }
 

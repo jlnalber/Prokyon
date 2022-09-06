@@ -68,7 +68,16 @@ export class IntersectionDialogComponent {
           const getFuncProviderFor: (graph: Graph) => ((key: string) => Func) = (graph: Graph) => {
             return (key: string) => {
               let f = graph.func;
-              for (let i = 0; i < countDerivatives(key); i++) {
+
+              // Try to count how often the function needs to be derived.
+              const derivativesKey = countDerivatives(key);
+              const derivativesFunc = graph.func.name ? countDerivatives(graph.func.name) : 0;
+              const diff = derivativesKey - derivativesFunc;
+              if (diff < 0) {
+                throw 'can\'t integrate';
+              }
+
+              for (let i = 0; i < diff; i++) {
                 f = f.derive();
               }
               return f;
