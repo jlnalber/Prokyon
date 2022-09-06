@@ -19,10 +19,14 @@ export class HoverMenuDirective {
     this.element.addEventListener('mouseover', this.eventListenerStart);
     this.element.addEventListener('mousemove', this.eventListenerStart);
     this.element.addEventListener('mouseleave', this.eventListenerEnd);
+    this.element.addEventListener('click', () => {
+      // Reset the version (hover menu won't directly show up when click is registered).
+      this.version = 0;
+    })
   }
 
   // time, after which the hover menu should appear in milliseconds
-  public hoverTimeMs = 500;
+  public hoverTimeMs = 750;
 
   private version = 0;
 
@@ -33,7 +37,7 @@ export class HoverMenuDirective {
 
       // after 'hoverTimeMs', the hoverMenu should open, but only when the version is still the same, meaning that no mousemove, etc. event was fired
       setTimeout(() => {
-        if (this.version == thisVersion) {
+        if (this.version === thisVersion) {
           this.openHoverMenu();
         }
       }, this.hoverTimeMs)
