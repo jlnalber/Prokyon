@@ -63,9 +63,9 @@ export class ContextMenuDirective implements OnDestroy {
   }
 
   // #region The listeners
-  private contextmenuDocumentEventListener = (e: Event | PointerEvent) => {
+  private contextmenuDocumentEventListener = (e: Event) => {
     // listener that closes the context menu when another one is triggered
-    if (e instanceof PointerEvent && (e as any).path.indexOf(this.element) == -1) {
+    if ((e instanceof PointerEvent || e instanceof MouseEvent) && (e as any).path.indexOf(this.element) === -1) {
       this.destroyContextMenu();
     }
   }
@@ -85,7 +85,7 @@ export class ContextMenuDirective implements OnDestroy {
     this.skipEvent = undefined;
   }
 
-  private contextmenuEventListener = (e: Event | PointerEvent) => {
+  private contextmenuEventListener = (e: Event) => {
     // this listener opens the custom context menu instead of the usual one of the browser
     if (e instanceof PointerEvent || e instanceof MouseEvent) {
       e.preventDefault();
