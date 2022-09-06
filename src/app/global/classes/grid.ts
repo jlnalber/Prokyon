@@ -11,7 +11,7 @@ export class Grid extends CanvasDrawer {
       const step = 99 / ctx.zoom;
 
       // first, calculate the step width that is used to draw lines
-      const base = ctx.config?.numbersBase ?? 2;
+      const base = 2;
       const dim = Math.round(Math.log(step) / Math.log(base) + 0.5);
       let unit = Math.round(step / (base ** dim) + 0.5) * (base ** dim);
       if (unit == 0) return;

@@ -7,8 +7,7 @@ import {CanvasElement} from "./abstract/canvasElement";
 export interface Config {
   showGrid?: boolean,
   gridColor?: Color,
-  showNumbers?: boolean,
-  numbersBase?: number
+  showNumbers?: boolean
 }
 
 export class RenderingContext {
