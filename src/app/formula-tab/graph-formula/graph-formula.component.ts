@@ -105,7 +105,7 @@ export class GraphFormulaComponent extends FormulaElement {
           click: () => {
             this.derive();
           },
-          disabled: !this.canDerive(),
+          disabled: !this.canDerive() || this.errorMessage !== undefined,
           icon: 'south_east',
           title: 'Diese Funktion ableiten.'
         }, {
