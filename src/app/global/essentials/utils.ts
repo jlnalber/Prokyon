@@ -55,10 +55,13 @@ export function correctRectTo(rect: Rect, to: Rect): Rect | undefined {
   if (!doRectsCollide(rect, to)) {
     return undefined;
   }
+
+  // Keep the values within the outer rect
   const xStart = Math.max(rect.x, to.x);
   const xEnd = Math.min(rect.x + rect.width, to.x + to.width);
   const yStart = Math.max(rect.y, to.y);
   const yEnd = Math.min(rect.y + rect.height, to.y + to.height);
+
   return {
     x: xStart,
     y: yStart,
