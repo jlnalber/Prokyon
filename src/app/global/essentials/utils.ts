@@ -55,40 +55,16 @@ export function correctRectTo(rect: Rect, to: Rect): Rect | undefined {
   if (!doRectsCollide(rect, to)) {
     return undefined;
   }
-  if (rect.x < to.x) {
-    const diff = to.x - rect.x;
-    return correctRectTo({
-      x: to.x,
-      y: rect.y,
-      width: rect.width - diff,
-      height: rect.height
-    }, to);
-  } else if (rect.y < to.y) {
-    const diff = to.y - rect.y;
-    return correctRectTo({
-      x: rect.x,
-      y: to.y,
-      width: rect.width,
-      height: rect.height - diff
-    }, to);
-  } else if (rect.x + rect.width > to.x + to.width) {
-    const diff = (rect.x + rect.width) - (to.x + to.width);
-    return correctRectTo({
-      x: rect.x,
-      y: rect.y,
-      width: rect.width - diff,
-      height: rect.height
-    }, to);
-  } else if (rect.y + rect.height > to.y + to.height) {
-    const diff = (rect.y + rect.height) - (to.y + to.height);
-    return correctRectTo({
-      x: rect.x,
-      y: rect.y,
-      width: rect.width,
-      height: rect.height - diff
-    }, to);
-  }
-  return rect;
+  const xStart = Math.max(rect.x, to.x);
+  const xEnd = Math.min(rect.x + rect.width, to.x + to.width);
+  const yStart = Math.max(rect.y, to.y);
+  const yEnd = Math.min(rect.y + rect.height, to.y + to.height);
+  return {
+    x: xStart,
+    y: yStart,
+    width: xEnd - xStart,
+    height: yEnd - yStart
+  };
 }
 
 export function getDistanceToRect(p: Point, rect: Rect): number {
