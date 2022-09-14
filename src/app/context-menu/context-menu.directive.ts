@@ -65,7 +65,7 @@ export class ContextMenuDirective implements OnDestroy {
   // #region The listeners
   private contextmenuDocumentEventListener = (e: Event) => {
     // listener that closes the context menu when another one is triggered
-    if ((e instanceof PointerEvent || e instanceof MouseEvent) && (e as any).path.indexOf(this.element) === -1) {
+    if ((e instanceof PointerEvent || e instanceof MouseEvent) && e.composedPath().indexOf(this.element) === -1) {
       this.destroyContextMenu();
     }
   }
