@@ -84,6 +84,11 @@ const otherFunctions = [
 ];
 const functions = [ ...trigonometryFunctions, ...otherFunctions ];*/
 const notNumbersVariablesOrFunctions = [ ...whitespaces, ...operations, ...brackets ];
+const stringMappings: [string, string][] = [
+  ['**', '^'],
+  ['²', '^2'],
+  ['³', '^3']
+]
 const functionMappings: [string, string][] = [
   ['arcsin', 'asin'],
   ['arccos', 'acos'],
@@ -110,7 +115,10 @@ export class OperationsParser {
 
   public formatString(): string {
     if (!this.formattedString) {
-      this.formattedString = replaceAll(this.str.trim(), '**', '^');
+      this.formattedString = this.str.trim();
+      for (let mapping of stringMappings) {
+        this.formattedString = replaceAll(this.formattedString, mapping[0], mapping[1]);
+      }
     }
 
     return this.formattedString;
