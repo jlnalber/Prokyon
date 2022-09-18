@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="300" height="100" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .text {
+      fill: white;
+      font: bold 35pt 'Cambria Math', sans-serif;
+    }
+    .banner {
+      fill: #851e3e;
+      font: 35pt 'Cambria Math', sans-serif;
+    }
+    .bold {
+      font-weight: 1000;
+      fill: #445E93;
+      font-size: 50pt;
+      transform: translateY(-12px);
+    }
+  </style>
+  <defs>
+    <linearGradient id="grad" gradientTransform="rotate(0)">
+      <stop offset="10%"  stop-color="#051e3e" />
+      <stop offset="90%" stop-color="#851e3e" />
+    </linearGradient>
+    <linearGradient id="grad2" gradientTransform="rotate(0)">
+      <stop offset="10%"  stop-color="#851e3e" />
+      <stop offset="90%" stop-color="#051e3e" />
+    </linearGradient>
+    <linearGradient id="grad3" gradientTransform="rotate(0)">
+      <stop offset="10%"  stop-color="#9E2A2B" />
+      <stop offset="90%" stop-color="#445E93" />
+    </linearGradient>
+  </defs>
+  <circle r="50" cx="0" cy="70.7" transform="rotate(-45)" fill="url('#grad')"></circle>
+  <path d="M 50 70.7 A 1 1 0 0 1 -50 70.7" fill="url('#grad3')" transform="rotate(-45)"></path>
+
+  <rect x="20" width="60" y="20" height="60" rx="5" fill="black"></rect>
+  <text x="36" y="66" class="text">P</text>
+  <g transform="translate(120 66)">
+    <text y="18" x="0" class="banner bold">P</text><text x="39" y="0" class="banner">rokyon</text>
+  </g>
+
+  <!--<line x1="85.4" y1="14.6" x2="14.6" y2="85.4" stroke="url('#grad3')" stroke-width="5"></line>-->
+</svg>
