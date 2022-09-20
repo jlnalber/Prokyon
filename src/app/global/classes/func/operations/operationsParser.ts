@@ -166,13 +166,15 @@ export class OperationsParser {
           }*/
 
           // first multiplication
-          if (!(i + 1 == this.stringSplit.length
-            || contains(openingBrackets, this.stringSplit[i])
-            || contains(closingBrackets, this.stringSplit[i + 1])
-            || (contains(openingBrackets, this.stringSplit[i + 1]) && !contains(closingBrackets, this.stringSplit[i]))
-            || contains(operations, this.stringSplit[i])
-            || contains(operations, this.stringSplit[i + 1])
-            || isNumber(this.stringSplit[i + 1])
+          if (!(i + 1 == this.stringSplit.length // We don't want to insert a multiplication sign when we are at the end of the expression,...
+            || contains(openingBrackets, this.stringSplit[i]) // ... we start with opening brackets, ...
+            || contains(closingBrackets, this.stringSplit[i + 1]) // ... we end with closing brackets, ...
+            || (contains(openingBrackets, this.stringSplit[i + 1])
+              && !contains(closingBrackets, this.stringSplit[i])) // ... on the right, there is an opening bracket but on the left, there is not (this allows us to parse in functions s.a. f(x)), ...
+              && !isNumber(this.stringSplit[i]) // (furthermore, there has to be a check whether the left part is a number, e.g. 5(1 + 1) should parse as 5 * (1 + 1) (?))
+            || contains(operations, this.stringSplit[i]) // ... we have an operation on the left, ...
+            || contains(operations, this.stringSplit[i + 1]) // ... we have an operation on the right or ...
+            || isNumber(this.stringSplit[i + 1]) // ... the right part is a number, e.g. in (x - 3)5 (looks invalid?).
             // I believe this last case is obsolete. The third should already be enough.
             /*|| contains(functions, this.stringSplit[i])*/)) {
 
@@ -322,99 +324,105 @@ export class OperationsParser {
         // function for recursive use
         let treeToOperation = (tree: BinaryTree<string>): Operation => {
           // try to parse each node in the binary tree to an operation
-          if (isNumber(tree.value)) {
-            return new Constant(tryParseNumber(tree.value)!);
-          }
-          else if (tree.value == '+' && tree.first != undefined && tree.second != undefined) {
-            return new Addition(treeToOperation(tree.first), treeToOperation(tree.second));
-          }
-          else if (tree.value == '-' && tree.first != undefined && tree.second != undefined) {
-            return new Subtraction(treeToOperation(tree.first), treeToOperation(tree.second));
-          }
-          else if (tree.value == '*' && tree.first != undefined && tree.second != undefined) {
-            return new Multiplication(treeToOperation(tree.first), treeToOperation(tree.second));
-          }
-          else if (tree.value == '%' && tree.first != undefined && tree.second != undefined) {
-            return new Modulo(treeToOperation(tree.first), treeToOperation(tree.second));
-          }
-          else if (tree.value == '/' && tree.first != undefined && tree.second != undefined) {
-            return new Division(treeToOperation(tree.first), treeToOperation(tree.second));
-          }
-          else if (tree.value == '^' && tree.first != undefined && tree.second != undefined) {
-            return new Pow(treeToOperation(tree.first), treeToOperation(tree.second));
-          }
+          if (tree.first !== undefined && tree.second !== undefined) {
+            // This branch is about the operations.
+            if (tree.value === '+') {
+              return new Addition(treeToOperation(tree.first), treeToOperation(tree.second));
+            }
+            else if (tree.value === '-') {
+              return new Subtraction(treeToOperation(tree.first), treeToOperation(tree.second));
+            }
+            else if (tree.value === '*') {
+              return new Multiplication(treeToOperation(tree.first), treeToOperation(tree.second));
+            }
+            else if (tree.value === '%') {
+              return new Modulo(treeToOperation(tree.first), treeToOperation(tree.second));
+            }
+            else if (tree.value === '/') {
+              return new Division(treeToOperation(tree.first), treeToOperation(tree.second));
+            }
+            else if (tree.value === '^') {
+              return new Pow(treeToOperation(tree.first), treeToOperation(tree.second));
+            }
+          } else if (tree.first !== undefined && tree.second === undefined) {
+            // Here, we are dealing with functions.
+            // First, the trigonometry functions.
+            if (tree.value === 'sin') {
+              return new Sinus(treeToOperation(tree.first));
+            }
+            else if (tree.value === 'asin') {
+              return new Arcussinus(treeToOperation(tree.first));
+            }
+            else if (tree.value === 'cos') {
+              return new Cosinus(treeToOperation(tree.first));
+            }
+            else if (tree.value === 'acos') {
+              return new Arcuscosinus(treeToOperation(tree.first));
+            }
+            else if (tree.value === 'tan') {
+              return new Tangens(treeToOperation(tree.first));
+            }
+            else if (tree.value === 'atan') {
+              return new Arcustangens(treeToOperation(tree.first));
+            }
+            else if (tree.value === 'sec') {
+              return new Secans(treeToOperation(tree.first));
+            }
+            else if (tree.value === 'asec') {
+              return new Arcussecans(treeToOperation(tree.first));
+            }
+            else if (tree.value === 'csc') {
+              return new Cosecans(treeToOperation(tree.first));
+            }
+            else if (tree.value === 'acsc') {
+              return new Arcuscosecans(treeToOperation(tree.first));
+            }
+            else if (tree.value === 'cot') {
+              return new Cotangens(treeToOperation(tree.first));
+            }
+            else if (tree.value === 'acot') {
+              return new Arcuscotangens(treeToOperation(tree.first));
+            }
+            // Then, other functions
+            else if (tree.value === 'ln') {
+              return new NaturalLogarithm(treeToOperation(tree.first));
+            }
+            else if (tree.value === 'sqrt') {
+              return new Root(treeToOperation(tree.first), new Constant(2));
+            }
+            else if (tree.value === 'abs') {
+              return new Absolute(treeToOperation(tree.first));
+            }
+            else if (tree.value === 'sgn') {
+              return new Signum(treeToOperation(tree.first));
+            }
 
-          // functions
-          // trigonometry
-          else if (tree.value === 'sin' && tree.first !== undefined) {
-            return new Sinus(treeToOperation(tree.first));
-          }
-          else if (tree.value === 'asin' && tree.first !== undefined) {
-            return new Arcussinus(treeToOperation(tree.first));
-          }
-          else if (tree.value === 'cos' && tree.first !== undefined) {
-            return new Cosinus(treeToOperation(tree.first));
-          }
-          else if (tree.value === 'acos' && tree.first !== undefined) {
-            return new Arcuscosinus(treeToOperation(tree.first));
-          }
-          else if (tree.value === 'tan' && tree.first !== undefined) {
-            return new Tangens(treeToOperation(tree.first));
-          }
-          else if (tree.value === 'atan' && tree.first !== undefined) {
-            return new Arcustangens(treeToOperation(tree.first));
-          }
-          else if (tree.value === 'sec' && tree.first !== undefined) {
-            return new Secans(treeToOperation(tree.first));
-          }
-          else if (tree.value === 'asec' && tree.first !== undefined) {
-            return new Arcussecans(treeToOperation(tree.first));
-          }
-          else if (tree.value === 'csc' && tree.first !== undefined) {
-            return new Cosecans(treeToOperation(tree.first));
-          }
-          else if (tree.value === 'acsc' && tree.first !== undefined) {
-            return new Arcuscosecans(treeToOperation(tree.first));
-          }
-          else if (tree.value === 'cot' && tree.first !== undefined) {
-            return new Cotangens(treeToOperation(tree.first));
-          }
-          else if (tree.value === 'acot' && tree.first !== undefined) {
-            return new Arcuscotangens(treeToOperation(tree.first));
-          }
-          // other functions
-          else if (tree.value === 'ln' && tree.first !== undefined) {
-            return new NaturalLogarithm(treeToOperation(tree.first));
-          }
-          else if (tree.value === 'sqrt' && tree.first !== undefined) {
-            return new Root(treeToOperation(tree.first), new Constant(2));
-          }
-          else if (tree.value === 'abs' && tree.first !== undefined) {
-            return new Absolute(treeToOperation(tree.first));
-          }
-          else if (tree.value === 'sgn' && tree.first !== undefined) {
-            return new Signum(treeToOperation(tree.first));
-          }
-
-          // constants
-          else if (tree.value === 'pi') {
-            return new PiConstant();
-          }
-          else if (tree.value === 'e') {
-            return new EConstant();
-          }
-
-          // else default to a variable
-          else {
-            if (tree.first !== undefined) {
+            // Otherwise, use an ExternalFunction
+            else {
               return new ExternalFunction(tree.value, this.funcProvider, treeToOperation(tree.first));
             }
+          } else if (tree.first === undefined && tree.second === undefined) {
+            // Here, we are dealing with numbers, constants or Variables.
+            if (isNumber(tree.value)) {
+              return new Constant(tryParseNumber(tree.value)!);
+            }
+
+            // constants
+            else if (tree.value === 'pi') {
+              return new PiConstant();
+            }
+            else if (tree.value === 'e') {
+              return new EConstant();
+            }
+
+            // else default to a variable
             else {
               return new Variable(tree.value);
             }
           }
 
-          //throw 'didn\'t understand tree';
+          // If we end up here, something didn't work out!
+          throw parseErrorMessage;
         }
 
         this.operation = treeToOperation(this.parseTree);
