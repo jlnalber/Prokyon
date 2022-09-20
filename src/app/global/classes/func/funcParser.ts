@@ -56,7 +56,9 @@ export class FuncParser {
           if (splitString.length === 4
             && !strContains(splitString[0], ...whitespaces)
             && !strContains(splitString[2], ...whitespaces)
-            && splitString[1] == '(' && splitString[3] == ')') {
+            && splitString[1] == '(' && splitString[3] == ')'
+            && splitString[0].length !== 0
+            && 'abcdefghijklmnopqrstuvwxyz_'.indexOf(splitString[0].charAt(0).toLowerCase()) !== -1) {
             this.funcMetaData = {
               name: splitString[0],
               variable: splitString[2]
