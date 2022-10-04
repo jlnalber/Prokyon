@@ -36,19 +36,48 @@ import {ExternalFunction, FuncProvider} from "./externalFunction";
 import {Absolute} from "./other-operations/Absolute";
 import {Signum} from "./other-operations/signum";
 
-const powerOperators = [
-  '^'
+const powerOperationsProviders: [string, (operation1: Operation, operation2: Operation) => Operation][] = [
+  ['^', (op1, op2) => new Pow(op1, op2)]
 ]
-const pointOperators = [
-  '*',
-  '/',
-  '%'
+const pointOperationProviders: [string, (operation1: Operation, operation2: Operation) => Operation][] = [
+  ['*', (op1, op2) => new Multiplication(op1, op2)],
+  ['/', (op1, op2) => new Division(op1, op2)],
+  ['%', (op1, op2) => new Modulo(op1, op2)]
 ]
-const lineOperators = [
-  '+',
-  '-'
+const lineOperationProviders: [string, (operation1: Operation, operation2: Operation) => Operation][] = [
+  ['+', (op1, op2) => new Addition(op1, op2)],
+  ['-', (op1, op2) => new Subtraction(op1, op2)]
 ]
-const operations = [ ...powerOperators, ...lineOperators, ...pointOperators ]
+const operationProviders = [ ...powerOperationsProviders, ...pointOperationProviders, ...lineOperationProviders ]
+
+const powerOperators = powerOperationsProviders.map(p => p[0])
+const pointOperators = pointOperationProviders.map(p => p[0])
+const lineOperators = lineOperationProviders.map(p => p[0])
+const operations = operationProviders.map(p => p[0])
+
+const functionProviders: [string, (operation: Operation) => Operation][] = [
+  ['sin', op => new Sinus(op)],
+  ['asin', op => new Arcussinus(op)],
+  ['csc', op => new Cosecans(op)],
+  ['acsc', op => new Arcuscosecans(op)],
+  ['cos', op => new Cosinus(op)],
+  ['acos', op => new Arcuscosinus(op)],
+  ['sec', op => new Secans(op)],
+  ['asec', op => new Arcussecans(op)],
+  ['tan', op => new Tangens(op)],
+  ['atan', op => new Arcustangens(op)],
+  ['cot', op => new Cotangens(op)],
+  ['acot', op => new Arcuscotangens(op)],
+  ['ln', op => new NaturalLogarithm(op)],
+  ['sqrt', op => new Root(op, new Constant(2))],
+  ['abs', op => new Absolute(op)],
+  ['sgn', op => new Signum(op)]
+]
+const constantProviders: [string, () => Operation][] = [
+  ['pi', () => new PiConstant()],
+  ['e', () => new EConstant()]
+]
+
 export const whitespaces = [
   ' ',
   '\t',
@@ -64,25 +93,6 @@ const closingBrackets = [
   ']'
 ]
 const brackets = [ ...openingBrackets, ...closingBrackets ];
-/*const trigonometryFunctions = [
-  'sin',
-  'asin',
-  'cos',
-  'acos',
-  'tan',
-  'atan',
-  'sec',
-  'asec',
-  'csc',
-  'acsc',
-  'cot',
-  'acot'
-];
-const otherFunctions = [
-  'ln',
-  'sqrt'
-];
-const functions = [ ...trigonometryFunctions, ...otherFunctions ];*/
 const notNumbersVariablesOrFunctions = [ ...whitespaces, ...operations, ...brackets ];
 const stringMappings: [string, string][] = [
   ['**', '^'],
@@ -326,81 +336,21 @@ export class OperationsParser {
           // try to parse each node in the binary tree to an operation
           if (tree.first !== undefined && tree.second !== undefined) {
             // This branch is about the operations.
-            if (tree.value === '+') {
-              return new Addition(treeToOperation(tree.first), treeToOperation(tree.second));
-            }
-            else if (tree.value === '-') {
-              return new Subtraction(treeToOperation(tree.first), treeToOperation(tree.second));
-            }
-            else if (tree.value === '*') {
-              return new Multiplication(treeToOperation(tree.first), treeToOperation(tree.second));
-            }
-            else if (tree.value === '%') {
-              return new Modulo(treeToOperation(tree.first), treeToOperation(tree.second));
-            }
-            else if (tree.value === '/') {
-              return new Division(treeToOperation(tree.first), treeToOperation(tree.second));
-            }
-            else if (tree.value === '^') {
-              return new Pow(treeToOperation(tree.first), treeToOperation(tree.second));
+            for (let operationProvider of operationProviders) {
+              if (tree.value === operationProvider[0]) {
+                return operationProvider[1](treeToOperation(tree.first), treeToOperation(tree.second));
+              }
             }
           } else if (tree.first !== undefined && tree.second === undefined) {
             // Here, we are dealing with functions.
-            // First, the trigonometry functions.
-            if (tree.value === 'sin') {
-              return new Sinus(treeToOperation(tree.first));
-            }
-            else if (tree.value === 'asin') {
-              return new Arcussinus(treeToOperation(tree.first));
-            }
-            else if (tree.value === 'cos') {
-              return new Cosinus(treeToOperation(tree.first));
-            }
-            else if (tree.value === 'acos') {
-              return new Arcuscosinus(treeToOperation(tree.first));
-            }
-            else if (tree.value === 'tan') {
-              return new Tangens(treeToOperation(tree.first));
-            }
-            else if (tree.value === 'atan') {
-              return new Arcustangens(treeToOperation(tree.first));
-            }
-            else if (tree.value === 'sec') {
-              return new Secans(treeToOperation(tree.first));
-            }
-            else if (tree.value === 'asec') {
-              return new Arcussecans(treeToOperation(tree.first));
-            }
-            else if (tree.value === 'csc') {
-              return new Cosecans(treeToOperation(tree.first));
-            }
-            else if (tree.value === 'acsc') {
-              return new Arcuscosecans(treeToOperation(tree.first));
-            }
-            else if (tree.value === 'cot') {
-              return new Cotangens(treeToOperation(tree.first));
-            }
-            else if (tree.value === 'acot') {
-              return new Arcuscotangens(treeToOperation(tree.first));
-            }
-            // Then, other functions
-            else if (tree.value === 'ln') {
-              return new NaturalLogarithm(treeToOperation(tree.first));
-            }
-            else if (tree.value === 'sqrt') {
-              return new Root(treeToOperation(tree.first), new Constant(2));
-            }
-            else if (tree.value === 'abs') {
-              return new Absolute(treeToOperation(tree.first));
-            }
-            else if (tree.value === 'sgn') {
-              return new Signum(treeToOperation(tree.first));
+            for (let functionProvider of functionProviders) {
+              if (tree.value === functionProvider[0]) {
+                return functionProvider[1](treeToOperation(tree.first));
+              }
             }
 
             // Otherwise, use an ExternalFunction
-            else {
-              return new ExternalFunction(tree.value, this.funcProvider, treeToOperation(tree.first));
-            }
+            return new ExternalFunction(tree.value, this.funcProvider, treeToOperation(tree.first));
           } else if (tree.first === undefined && tree.second === undefined) {
             // Here, we are dealing with numbers, constants or Variables.
             if (isNumber(tree.value)) {
@@ -408,17 +358,14 @@ export class OperationsParser {
             }
 
             // constants
-            else if (tree.value === 'pi') {
-              return new PiConstant();
-            }
-            else if (tree.value === 'e') {
-              return new EConstant();
+            for (let constantProvider of constantProviders) {
+              if (tree.value === constantProvider[0]) {
+                return constantProvider[1]();
+              }
             }
 
             // else default to a variable
-            else {
-              return new Variable(tree.value);
-            }
+            return new Variable(tree.value);
           }
 
           // If we end up here, something didn't work out!
