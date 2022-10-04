@@ -3,7 +3,7 @@
 .text, .input {
   height: 30px;
   font-size: 14pt;
-  font-family: "Cambria Math", Cambria, serif;
+  font-family: "Cambria Math", Cambria, "CMU Serif", serif;
 }
 
 .text {

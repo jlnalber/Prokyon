@@ -30,9 +30,14 @@ export class CanvasComponent implements AfterViewInit {
     this.ctx = this.canvasEl?.getContext('2d') as CanvasRenderingContext2D | undefined;
 
     // Listen for resizing
-    new ResizeObserver(() => {
+    window.onresize = () => {
       this.drawerService.redraw();
-    }).observe(this.canvasEl);
+    }
+
+    // Listen for resizing
+    /*new ResizeObserver(() => {
+      this.drawerService.redraw();
+    }).observe(this.canvasEl);*/
 
     // Listen for pointer events. They then trigger zoom and translate behaviour on the drawer service
     new PointerController(this.canvasEl, {

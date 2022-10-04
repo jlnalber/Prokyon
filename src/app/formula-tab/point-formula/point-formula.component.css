@@ -17,6 +17,6 @@
   margin-bottom: 0;
   margin-left: calc(var(--buttonSize) + var(--margin));
   font-size: 14pt;
-  font-family: "Cambria Math", Cambria, serif;
+  font-family: "Cambria Math", Cambria, "CMU Serif", serif;
   user-select: none;
 }

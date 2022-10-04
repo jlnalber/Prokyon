@@ -36,7 +36,7 @@
   bottom: 0;
   height: calc(var(--buttonSize) - 2 * (var(--padding) + var(--border)));
   font-size: 14pt;
-  font-family: "Cambria Math", Cambria, serif;
+  font-family: "Cambria Math", Cambria, "CMU Serif", serif;
   padding: var(--padding);
   display: block;
   border: var(--border) solid transparent;
@@ -103,7 +103,7 @@
 .maths {
   font-size: 14pt;
   user-select: none;
-  font-family: "Cambria Math", Cambria, serif;
+  font-family: "Cambria Math", Cambria, "CMU Serif", serif;
 }
 
 .centered {

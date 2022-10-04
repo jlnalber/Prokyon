@@ -117,7 +117,7 @@ export class OperationsParser {
     if (!this.formattedString) {
       this.formattedString = this.str.trim();
       for (let mapping of stringMappings) {
-        this.formattedString = replaceAll(this.formattedString, mapping[0], mapping[1]);
+        this.formattedString = replaceAll(this.formattedString as string, mapping[0], mapping[1]);
       }
     }
 
@@ -313,7 +313,7 @@ export class OperationsParser {
     }
 
     // return the result
-    // console.log(this.parseTree);
+    console.log(this.parseTree);
     return this.parseTree;
   }
 
