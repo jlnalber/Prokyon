@@ -62,6 +62,9 @@ export class FuncAnalyserDialogComponent {
   evaluateExtremumPoints() {
     try {
       if (this.dialogData && this.dialogData.graph) {
+        // try to derive (throws an error, when derivation doesn't work) --> opens error snackbar
+        this.dialogData.graph.func.derive();
+
         // Create a dependency point elements canvas element, which will adapt to a change in the graph.
         const graph = this.dialogData.graph;
         this.createDependencyPointElements(graph, (from: number, to: number, depth: number) => {
@@ -77,6 +80,9 @@ export class FuncAnalyserDialogComponent {
   evaluateInflectionPoints() {
     try {
       if (this.dialogData && this.dialogData.graph) {
+        // try to derive (throws an error, when derivation doesn't work) --> opens error snackbar
+        this.dialogData.graph.func.derive();
+
         // Create a dependency point elements canvas element, which will adapt to a change in the graph.
         const graph = this.dialogData.graph;
         this.createDependencyPointElements(graph, (from: number, to: number, depth: number) => {
