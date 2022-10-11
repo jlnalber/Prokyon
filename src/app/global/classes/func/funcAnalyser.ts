@@ -1,6 +1,5 @@
 import {Func} from "./func";
 import {Point} from "../../interfaces/point";
-import {joinAsSets} from "../../essentials/utils";
 import {tryGetDerivative} from "../../essentials/funcUtils";
 
 export function newtonMethod(startValue: number, func: Func, dict: any, iterations: number): number {
@@ -13,7 +12,7 @@ function internalNewtonMethod(value: number, func: Func, derivative: Func, dict:
   return iterations === 1 ? newValue : internalNewtonMethod(newValue, func, derivative, dict, iterations - 1);
 }
 
-export function zerosInInterval(func: Func, dict: any, from: number, to: number, depth: number, respectChangeOfSign: boolean = false, checkWithDerivative: boolean = true): number[] {
+export function zerosInInterval(func: Func, dict: any, from: number, to: number, depth: number, respectChangeOfSign: boolean = false, checkWithDerivative: boolean = true, dontCheckLeft: boolean = false): number[] {
   // split the interval in many intervals
   // for each interval, check whether the outer values are already values>
   // if not, check whether they have different signs --> then the average is approximately considered as a zero
@@ -29,7 +28,7 @@ export function zerosInInterval(func: Func, dict: any, from: number, to: number,
       const y2 = func.evaluate(to, dict);
 
       // check for the outer values
-      if (y1 === 0
+      if (!dontCheckLeft && y1 === 0
         && (!respectChangeOfSign
           || func.evaluate(from - centerDiff, dict) * func.evaluate(from + centerDiff, dict) < 0)) {
         zeros.push(from);
@@ -63,7 +62,7 @@ export function zerosInInterval(func: Func, dict: any, from: number, to: number,
     }
   }
 
-  return joinAsSets(zerosInInterval(func, dict, from, average, depth - 1, respectChangeOfSign), zerosInInterval(func, dict, average, to, depth - 1, respectChangeOfSign, checkWithDerivative));
+  return [ ...zerosInInterval(func, dict, from, average, depth - 1, respectChangeOfSign, checkWithDerivative, dontCheckLeft), ...zerosInInterval(func, dict, average, to, depth - 1, respectChangeOfSign, checkWithDerivative, true) ];
 }
 
 // kinda useless, huh? zero points should actually always have 0 as y-values
