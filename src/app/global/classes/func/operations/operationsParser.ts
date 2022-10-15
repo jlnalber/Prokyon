@@ -323,7 +323,7 @@ export class OperationsParser {
     }
 
     // return the result
-    console.log(this.parseTree);
+    // console.log(this.parseTree);
     return this.parseTree;
   }
 
