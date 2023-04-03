@@ -7,6 +7,9 @@ import {isIn, isInRange} from "../../essentials/utils";
 import {GraphFormulaComponent} from "../../../formula-tab/graph-formula/graph-formula.component";
 import {getDistanceToStraightLine} from "../../essentials/straightLineUtils";
 
+export const TRANSPARENCY_RATIO = 0.3;
+export const LINE_WIDTH_SELECTED_RATIO = 2.5;
+
 export class Graph extends CanvasElement {
 
   public readonly componentType = GraphFormulaComponent;
@@ -41,8 +44,8 @@ export class Graph extends CanvasElement {
 
       // get the selection
       const selected = ctx.selection.indexOf(this) !== -1;
-      const colorSelected = colorAsTransparent(this._color, 0.3);
-      const lineWidthSelected = this.lineWidth * 2.5;
+      const colorSelected = colorAsTransparent(this._color, TRANSPARENCY_RATIO);
+      const lineWidthSelected = this.lineWidth * LINE_WIDTH_SELECTED_RATIO;
 
       // helper functions
       const splitDueToRapidElevationChange = (elevation: number, lastElevation?: number): boolean => {

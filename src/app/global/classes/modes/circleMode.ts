@@ -4,7 +4,13 @@ import {DrawerService} from "../../../services/drawer.service";
 import CircleElement from "../canvas-elements/circleElement";
 import {GREY} from "../../interfaces/color";
 
-export default class CircleMode extends TwoElementsSelectMode {
+export default class CircleMode extends TwoElementsSelectMode<PointElement, PointElement> {
+
+  public constructor() {
+    super(PointElement, PointElement);
+  }
+
+
   protected override addCanvasElement(drawerService: DrawerService, point1: PointElement, point2: PointElement) {
     drawerService.addCanvasElements(new CircleElement(() => point1.point,
       () => (point1.point !== undefined && point2.point !== undefined)

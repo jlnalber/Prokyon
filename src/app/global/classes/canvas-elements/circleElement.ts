@@ -1,9 +1,11 @@
 import {CanvasElement} from "../abstract/canvasElement";
 import {Point} from "../../interfaces/point";
-import {BLACK, Color, TRANSPARENT} from "../../interfaces/color";
+import {Color, colorAsTransparent, TRANSPARENT} from "../../interfaces/color";
 import {Type} from "@angular/core";
 import {CircleFormulaComponent} from "../../../formula-tab/circle-formula/circle-formula.component";
 import {RenderingContext} from "../renderingContext";
+import {getDistance} from "../../essentials/utils";
+import {LINE_WIDTH_SELECTED_RATIO, TRANSPARENCY_RATIO} from "./graph";
 
 export default class CircleElement extends CanvasElement {
 
@@ -52,8 +54,21 @@ export default class CircleElement extends CanvasElement {
     const radius = this.radius;
 
     if (point !== undefined && radius !== undefined) {
+      if (ctx.selection.indexOf(this) !== -1) {
+        ctx.drawCircle(point, radius, TRANSPARENT, colorAsTransparent(this._color, TRANSPARENCY_RATIO), this.lineWidth * LINE_WIDTH_SELECTED_RATIO);
+      }
       ctx.drawCircle(point, radius, TRANSPARENT, this.color, this.lineWidth);
     }
+  }
+
+  public override getDistance(p: Point, ctx: RenderingContext): number | undefined {
+    const point = this.point;
+    const radius = this.radius;
+    if (point !== undefined && radius !== undefined) {
+      return Math.abs(getDistance(point, p) - radius);
+    }
+
+    return undefined;
   }
 }
 

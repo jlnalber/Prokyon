@@ -4,7 +4,13 @@ import LineElement from "../canvas-elements/lineElement";
 import {GREY} from "../../interfaces/color";
 import TwoElementsSelectMode from "./twoElementsSelectMode";
 
-export default class LinesMode extends TwoElementsSelectMode {
+export default class LinesMode extends TwoElementsSelectMode<PointElement, PointElement> {
+
+  public constructor() {
+    super(PointElement, PointElement);
+  }
+
+
   protected override addCanvasElement(drawerService: DrawerService, point1: PointElement, point2: PointElement) {
     drawerService.addCanvasElements(new LineElement(() => [point1.point, point2.point], GREY));
   }
