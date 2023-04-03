@@ -25,6 +25,7 @@ import { DependencyPointElementsFormulaComponent } from './formula-tab/dependenc
 import { DefiniteIntegralFormulaComponent } from './formula-tab/definite-integral-formula/definite-integral-formula.component';
 import { IntervalComponent } from './formula-tab/global/interval/interval.component';
 import { ViewDependencyPointElementsDialogComponent } from './view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component';
+import { GeometryTabComponent } from './geometry-tab/geometry-tab.component';
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import { ViewDependencyPointElementsDialogComponent } from './view-dependency-po
     DependencyPointElementsFormulaComponent,
     DefiniteIntegralFormulaComponent,
     IntervalComponent,
-    ViewDependencyPointElementsDialogComponent
+    ViewDependencyPointElementsDialogComponent,
+    GeometryTabComponent
   ],
   imports: [
     BrowserModule,

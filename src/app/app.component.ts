@@ -4,6 +4,7 @@ import {FormulaTabComponent} from "./formula-tab/formula-tab.component";
 import {SettingsTabComponent} from "./settings-tab/settings-tab.component";
 import {DialogService} from "./dialog/dialog.service";
 import {SnackbarService} from "./snackbar/snackbar.service";
+import {GeometryTabComponent} from "./geometry-tab/geometry-tab.component";
 
 @Component({
   selector: 'app-root',
@@ -22,6 +23,11 @@ export class AppComponent {
       title: 'Formeln',
       icon: 'functions',
       componentType: FormulaTabComponent
+    },
+    {
+      title: 'Geometrie',
+      icon: 'radio_button_unchecked',
+      componentType: GeometryTabComponent
     },
     {
       title: 'Einstellungen',

@@ -26,6 +26,8 @@ import VariableElement from "../global/classes/canvas-elements/variableElement";
 import Selection from "../global/essentials/selection";
 import PointElement from "../global/classes/canvas-elements/pointElement";
 import {colors} from "../global/styles/colors";
+import {Mode} from "../global/classes/abstract/mode";
+import MoveMode from "../global/classes/modes/moveMode";
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +35,17 @@ import {colors} from "../global/styles/colors";
 export class DrawerService {
 
   // #region the properties of the canvas --> bgColor, elements in canvas, transformations and config
+  private _mode: Mode | undefined = new MoveMode();
+
+  public get mode(): Mode | undefined {
+    return this._mode;
+  }
+
+  public set mode(value: Mode | undefined) {
+    this._mode = value;
+    this.onModeChanged.emit(value);
+  }
+
   private _backgroundColor: Color = {
     r: 255,
     g: 255,
@@ -169,6 +182,7 @@ export class DrawerService {
   public readonly onCanvasConfigChanged: Event<CanvasConfig> = new Event<CanvasConfig>();
   public readonly onBeforeRedraw: Event<undefined> = new Event<undefined>();
   public readonly onAfterRedraw: Event<undefined> = new Event<undefined>();
+  public readonly onModeChanged: Event<Mode> = new Event<Mode>();
 
   // Event listeners
   private redrawListener = () => {
@@ -370,13 +384,12 @@ export class DrawerService {
   // #region further fields
   public setSelection(p: Point, empty: boolean = true) {
     let ctx = this.renderingContext;
-    let newP = ctx.transformPointFromCanvasToField(p);
     let minDist: number | undefined = undefined;
     let minCanvasElement: CanvasElement | undefined;
 
     // find out the element with the minimal distance
     for (let canvasElement of this.canvasElements) {
-      const dist = canvasElement.getDistance(newP, ctx);
+      const dist = canvasElement.getDistance(p, ctx);
       if (dist !== undefined && isFinite(dist)) {
         let closer = minDist === undefined;
         closer = closer || dist <= minDist!;

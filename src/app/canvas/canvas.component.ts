@@ -42,11 +42,15 @@ export class CanvasComponent implements AfterViewInit {
     // Listen for pointer events. They then trigger zoom and translate behaviour on the drawer service
     new PointerController(this.canvasEl, {
       pointerMove: (from: Point, to: Point, context: PointerContext) => {
-        this.drawerService.translateX += (to.x - from.x) / this.drawerService.zoom / context.pointerCount;
-        this.drawerService.translateY -= (to.y - from.y) / this.drawerService.zoom / context.pointerCount;
+        const rtx = this.drawerService.renderingContext;
+        const fromNew = rtx.transformPointFromCanvasToField(from);
+        const toNew: Point = rtx.transformPointFromCanvasToField(to);
+        this.drawerService.mode?.pointerMove(this.drawerService, rtx, fromNew, toNew, context);
       },
       click: (p: Point, context: PointerContext) => {
-        this.drawerService.setSelection(p, !context.ctrlKey);
+        const rtx = this.drawerService.renderingContext;
+        const newP = rtx.transformPointFromCanvasToField(p);
+        this.drawerService.mode?.click(this.drawerService, rtx, newP, context);
       },
       scroll: (p: Point, delta: number) => {
         if (delta != 0) {
