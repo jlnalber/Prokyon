@@ -14,7 +14,7 @@ export default class MovePointsMode extends MoveMode {
     }
     else {
       for (let c of drawerService.selection.toArray()) {
-        if (c instanceof PointElement && !c.dependent) {
+        if (c instanceof PointElement && c.x !== undefined && c.y !== undefined && !c.dependent) {
           c.x += to.x - from.x;
           c.y += to.y - from.y;
         }

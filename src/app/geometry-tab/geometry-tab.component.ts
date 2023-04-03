@@ -7,6 +7,7 @@ import MovePointsMode from "../global/classes/modes/movePointsMode";
 import LinesMode from "../global/classes/modes/linesMode";
 import LineSegmentsMode from "../global/classes/modes/lineSegmentsMode";
 import CircleMode from "../global/classes/modes/circleMode";
+import BisectionTwoPointsMode from "../global/classes/modes/bisectionTwoPointsMode";
 
 @Component({
   selector: 'app-geometry-tab',
@@ -38,7 +39,10 @@ export class GeometryTabComponent implements OnInit {
     }, 'Strecke', 'Erstelle eine neue Strecke zwischen zwei Punkten', ''),
     new ModeElement<CircleMode>(this.drawerService, () => {
       return new CircleMode();
-    }, 'Kreis', 'Erstelle einen neuen Kreis mit zwei Punkten', '')
+    }, 'Kreis', 'Erstelle einen neuen Kreis mit zwei Punkten', ''),
+    new ModeElement<BisectionTwoPointsMode>(this.drawerService, () => {
+      return new BisectionTwoPointsMode();
+    }, 'Mittelsenkrechte', 'Mache die Mittelsenkrechte zwischen zwei Punkten', '')
   ]
 
 }

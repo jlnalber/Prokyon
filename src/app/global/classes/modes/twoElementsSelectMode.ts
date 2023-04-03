@@ -5,10 +5,8 @@ import {RenderingContext} from "../renderingContext";
 import {Point} from "../../interfaces/point";
 import {PointerContext} from "../pointerController";
 import {CanvasElement} from "../abstract/canvasElement";
-import LineElement from "../canvas-elements/lineElement";
-import {GREY} from "../../interfaces/color";
 
-export default abstract class TwoPointSelectMode extends MoveMode {
+export default abstract class TwoElementsSelectMode extends MoveMode {
   protected selectedPoint: PointElement | undefined;
 
   // should add the canvas element between two points

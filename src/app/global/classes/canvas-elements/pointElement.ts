@@ -43,48 +43,57 @@ export default class PointElement extends CanvasElement {
     this.onChange.emit(value);
   }
 
-  private _x: number;
-  private _y: number;
-  public get x(): number {
+  private _x: number | undefined;
+  private _y: number | undefined;
+
+  public get x(): number | undefined {
     return this._x;
   }
-  public set x(value: number) {
-    this._x = value;
-    this.onMove.emit(this.point);
-    this.onChange.emit(value);
-  }
-  public get y(): number {
-    return this._y;
-  }
-  public set y(value: number) {
-    this._y = value;
-    this.onMove.emit(this.point);
-    this.onChange.emit(value);
+
+  public set x(value: number | undefined) {
+    if (!this.dependent) {
+      this._x = value;
+      this.onChange.emit(value);
+    }
   }
 
-  public set point(value: Point) {
-    this._x = value.x;
-    this._y = value.y;
-    this.onMove.emit(value);
-    this.onChange.emit(value);
+  public get y(): number | undefined {
+    return this._y;
   }
-  public get point(): Point {
-    return {
-      x: this.x,
-      y: this.y
+
+  public set y(value: number | undefined) {
+    if (!this.dependent) {
+      this._y = value;
+      this.onChange.emit(value);
     }
+  }
+
+  public set point(value: Point | undefined) {
+    if (!this.dependent) {
+      this._x = value?.x;
+      this._y = value?.y;
+      this.onChange.emit(value);
+    }
+  }
+
+  public get point(): Point | undefined {
+    if (this.x !== undefined && this.y !== undefined) {
+      return {
+        x: this.x,
+        y: this.y
+      }
+    }
+    return undefined;
   }
 
   // indicates whether this point is element of a selected dependencyPointElements
   public selected: boolean = false;
 
-  public onMove: Event<Point> = new Event<Point>();
-
   // the constructor, dependent means that the point is dependent of another canvas element
-  constructor(p: Point, color: Color = BLACK, public dependent = false, public readonly name?: string, visible: boolean = true) {
+  constructor(p: Point | undefined, color: Color = BLACK, public readonly dependent = false, public readonly name?: string, visible: boolean = true) {
     super();
-    this._x = p.x;
-    this._y = p.y;
+    this._x = p?.x;
+    this._y = p?.y;
     this._color = color;
     this._visible = visible;
   }
@@ -92,7 +101,7 @@ export default class PointElement extends CanvasElement {
   public override draw(ctx: RenderingContext): void {
     const selectionRadiusFactor = 1.75;
     const point = this.point;
-    if (this.visible && isIn(point, ctx.range, selectionRadiusFactor * this.radius / ctx.zoom)) {
+    if (this.visible && point !== undefined && isIn(point, ctx.range, selectionRadiusFactor * this.radius / ctx.zoom)) {
       if (this.selected || ctx.selection.indexOf(this) !== -1) {
         ctx.drawCircle(point, selectionRadiusFactor * this.radius / ctx.zoom, colorAsTransparent(this.color, 0.3))
       }
@@ -101,10 +110,12 @@ export default class PointElement extends CanvasElement {
   }
 
   public override getDistance(p: Point, ctx: RenderingContext): number | undefined {
-    // calculate the distance, subtract the radius --> point in canvas isn't a perfect geometric point but has a radius
-    return Math.sqrt((this.x - p.x) ** 2 + (this.y - p.y) ** 2) - this.radius / ctx.zoom;
+    const t = this.point;
+    if (t !== undefined) {
+      // calculate the distance, subtract the radius --> point in canvas isn't a perfect geometric point but has a radius
+      return Math.sqrt((t.x - p.x) ** 2 + (t.y - p.y) ** 2) - this.radius / ctx.zoom;
+    }
+    return undefined;
   }
 
 }
-
-type PointProvider = () => Point | undefined;

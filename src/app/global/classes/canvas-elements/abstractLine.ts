@@ -4,48 +4,61 @@ import {Point} from "../../interfaces/point";
 
 // a line of the form ax + by = c between two points
 export default abstract class AbstractLine extends CanvasElement {
-  private _point1Provider: PointProvider;
+  private _pointsProvider: PointsProvider;
 
   public get point1(): Point | undefined {
-    return this._point1Provider();
+    return this._pointsProvider()[0];
   }
-
-  public get point1Provider(): PointProvider {
-    return this._point1Provider;
-  }
-
-  public set point1Provider(value: PointProvider) {
-    this._point1Provider = value;
-    this.onChange.emit(value);
-  }
-
-
-  private _point2Provider: PointProvider;
 
   public get point2(): Point | undefined {
-    return this._point2Provider();
+    return this._pointsProvider()[1];
   }
 
-  public get point2Provider(): PointProvider {
-    return this._point2Provider;
+  public get pointsProvider(): PointsProvider {
+    return this._pointsProvider;
   }
 
-  public set point2Provider(value: PointProvider) {
-    this._point2Provider = value;
+  public set pointsProvider(value: PointsProvider) {
+    this._pointsProvider = value;
     this.onChange.emit(value);
   }
 
-  public constructor(p1Provider: PointProvider, p2Provider: PointProvider, color: Color = { r: 0, g: 0, b: 0 }, visible: boolean = true, public lineWidth: number = 3) {
+  public constructor(psProvider: PointsProvider, color: Color = { r: 0, g: 0, b: 0 }, visible: boolean = true, public lineWidth: number = 3) {
     super();
     this._color = color;
     this._visible = visible;
-    this._point1Provider = p1Provider;
-    this._point2Provider = p2Provider;
+    this._pointsProvider = psProvider;
   }
 
   public getABCFormLine(): ABCFormLine | undefined {
-    const point1 = this.point1;
-    const point2 = this.point2;
+    return AbstractLine.getABCFormLineFromTwoPoints(this.point1, this.point2);
+  }
+
+  public static getTwoPointsFromABCFormLine(abc: ABCFormLine | undefined): [Point, Point] | undefined {
+    if (abc === undefined || (abc.a === 0 && abc.b === 0)) {
+      return undefined;
+    }
+    else if (abc.a === 0) {
+      return [{
+        x: 0,
+        y: abc.c / abc.b
+      }, {
+        x: 1,
+        y: abc.c / abc.b
+      }]
+    }
+    else {
+      return [{
+        x: abc.c / abc.a,
+        y: 0
+      }, {
+        x: (abc.c - abc.b) / abc.a,
+        y: 1
+      }]
+    }
+  }
+
+  public static getABCFormLineFromTwoPoints(point1: Point | undefined, point2: Point | undefined): ABCFormLine | undefined {
     if (point1 !== undefined && point2 !== undefined) {
       const a = point2.y - point1.y;
       const b = point1.x - point2.x;
@@ -68,4 +81,4 @@ export type ABCFormLine = {
   c: number
 }
 
-type PointProvider = () => Point | undefined;
+type PointsProvider = () => ([Point | undefined, Point | undefined]);

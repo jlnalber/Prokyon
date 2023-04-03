@@ -22,7 +22,7 @@ export default class DependencyPointElements extends CanvasElement {
   private drawnVersion: number = 0;
 
   public get points(): Point[] {
-    return this.pointElements.map(pEl => pEl.point);
+    return this.pointElements.map(pEl => pEl.point!);
   }
 
   private _stroke: Color = {

@@ -9,13 +9,14 @@ export default class LineElement extends AbstractLine {
   readonly componentType: Type<LineFormulaComponent> = LineFormulaComponent;
 
   public draw(ctx: RenderingContext): void {
-    const point1 = this.point1;
-    const point2 = this.point2;
+    const points = this.pointsProvider();
+    const point1 = points[0];
+    const point2 = points[1];
     if (point1 !== undefined && point2 !== undefined && !areEqualPoints(point1, point2)) {
       const range = ctx.range;
       const abc = this.getABCFormLine() as ABCFormLine;
-      let pS: Point = {x: 0, y: 0};
-      let pE: Point = {x: 0, y: 0};
+      let pS: Point;
+      let pE: Point;
 
       // calculate the points where the line intersects the view port
       if (abc.a === 0) {

@@ -11,7 +11,7 @@ export class LineFormulaComponent extends FormulaElement implements OnInit {
 
   constructor() {
     super();
-    this.canvasElement = new LineElement(() => undefined, () => undefined);
+    this.canvasElement = new LineElement(() => [undefined, undefined]);
   }
 
   ngOnInit(): void {

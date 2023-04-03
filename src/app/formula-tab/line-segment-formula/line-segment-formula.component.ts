@@ -11,7 +11,7 @@ export class LineSegmentFormulaComponent extends FormulaElement implements OnIni
 
   constructor() {
     super();
-    this.canvasElement = new LineSegmentElement(() => undefined, () => undefined);
+    this.canvasElement = new LineSegmentElement(() => [undefined, undefined]);
   }
 
   ngOnInit(): void {

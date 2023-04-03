@@ -57,5 +57,5 @@ export default class CircleElement extends CanvasElement {
   }
 }
 
-type PointProvider = () => Point | undefined;
-type RadiusProvider = () => number | undefined;
+type PointProvider = () => (Point | undefined);
+type RadiusProvider = () => (number | undefined);
