@@ -1,6 +1,6 @@
 /* variables */
 .wrapper {
-  --size: 60px;
+  --size: 70px;
   --margin: 9px;
   --border: 1px;
   --borderColor: #aaa;
@@ -37,6 +37,7 @@
   margin: 0;
   text-align: center;
   line-height: 2.5;
+  font-size: smaller;
 }
 
 .tabHeader.active {

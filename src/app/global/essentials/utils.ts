@@ -88,6 +88,10 @@ export function getDistanceToRect(p: Point, rect: Rect): number {
   }
 }
 
+export function areEqualPoints(p1: Point, p2: Point): boolean {
+  return p1.x === p2.x && p1.y === p2.y;
+}
+
 export function getPosFromEvent(e: PointerEvent | WheelEvent | MouseEvent, el: Element): Point {
   const rect = el.getBoundingClientRect();
 

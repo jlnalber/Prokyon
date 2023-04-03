@@ -159,7 +159,7 @@ export default class DependencyPointElements extends CanvasElement {
   }
 
   private createPointElement(at: Point = {x: 0, y: 0}): PointElement {
-    const pointElement = new PointElement(at, this.color);
+    const pointElement = new PointElement(at, this.color, true);
     pointElement.radius = this.radius;
     pointElement.stroke = this.stroke;
     pointElement.strokeWidth = this.strokeWidth;

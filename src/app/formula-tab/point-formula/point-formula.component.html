@@ -1,8 +1,8 @@
 <div class="wrapper">
   <app-color-circle [(color)]="this.canvasElement.color" [(visible)]="this.canvasElement.visible"></app-color-circle>
   <p class="paragraph"><span></span>
-    {{ this.name }}( <span><input type="number" step="any" class="input" [(ngModel)]="this.canvasElement.x"></span> |
-    <span><input type="number" step="any" class="input" [(ngModel)]="this.canvasElement.y"></span> )
+    {{ this.name }}( <span><input type="number" step="any" class="input" [disabled]="canvasElement.dependent" [(ngModel)]="this.canvasElement.x"></span> |
+    <span><input type="number" step="any" class="input" [disabled]="canvasElement.dependent" [(ngModel)]="this.canvasElement.y"></span> )
   </p>
   <button class="iconButton depositionTop floatRight" (click)="this.threePointsClicked($event)"><span class="material-symbols-outlined">more_vert</span></button>
 </div>

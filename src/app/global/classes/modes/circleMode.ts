@@ -1,0 +1,13 @@
+import TwoPointSelectMode from "./twoPointSelectMode";
+import PointElement from "../canvas-elements/pointElement";
+import {DrawerService} from "../../../services/drawer.service";
+import CircleElement from "../canvas-elements/circleElement";
+import {GREY} from "../../interfaces/color";
+
+export default class CircleMode extends TwoPointSelectMode {
+  protected override addCanvasElement(drawerService: DrawerService, point1: PointElement, point2: PointElement) {
+    drawerService.addCanvasElements(new CircleElement(() => point1.point,
+      () => Math.sqrt((point1.point.x  - point2.point.x) ** 2 + (point1.point.y - point2.point.y) ** 2),
+      GREY))
+  }
+}

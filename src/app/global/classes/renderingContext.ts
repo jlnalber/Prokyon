@@ -139,9 +139,11 @@ export class RenderingContext {
     this.ctx.strokeStyle = getColorAsRgbaFunction(stroke);
     this.ctx.fillStyle = getColorAsRgbaFunction(fill);
     const realCenter = this.transformPointFromFieldToCanvas(center)
+    const realRadiusX = radiusX * this.zoom;
+    const realRadiusY = radiusY * this.zoom;
 
     this.ctx.beginPath();
-    this.ctx.ellipse(realCenter.x, realCenter.y, radiusX, radiusY, rotation, 0, 2 * Math.PI);
+    this.ctx.ellipse(realCenter.x, realCenter.y, realRadiusX, realRadiusY, rotation, 0, 2 * Math.PI);
     this.ctx.stroke();
     this.ctx.fill();
     this.ctx.closePath();

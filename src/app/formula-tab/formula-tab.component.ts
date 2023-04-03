@@ -69,7 +69,7 @@ export class FormulaTabComponent implements OnInit {
     const pointElement = new PointElement({
       x: 0,
       y: 0
-    }, this.drawerService.getNewColor());
+    }, this.drawerService.getNewColor(), true);
     this.drawerService.addCanvasElements(pointElement);
   }
 }

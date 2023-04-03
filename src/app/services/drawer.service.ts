@@ -26,7 +26,7 @@ import VariableElement from "../global/classes/canvas-elements/variableElement";
 import Selection from "../global/essentials/selection";
 import PointElement from "../global/classes/canvas-elements/pointElement";
 import {colors} from "../global/styles/colors";
-import {Mode} from "../global/classes/abstract/mode";
+import {Mode} from "../global/classes/modes/mode";
 import MoveMode from "../global/classes/modes/moveMode";
 
 @Injectable({
@@ -382,7 +382,7 @@ export class DrawerService {
   // #endregion
 
   // #region further fields
-  public setSelection(p: Point, empty: boolean = true) {
+  public getSelection(p: Point, filter: (cE: CanvasElement) => boolean = () => true): CanvasElement | undefined {
     let ctx = this.renderingContext;
     let minDist: number | undefined = undefined;
     let minCanvasElement: CanvasElement | undefined;
@@ -390,7 +390,7 @@ export class DrawerService {
     // find out the element with the minimal distance
     for (let canvasElement of this.canvasElements) {
       const dist = canvasElement.getDistance(p, ctx);
-      if (dist !== undefined && isFinite(dist)) {
+      if (dist !== undefined && isFinite(dist) && filter(canvasElement)) {
         let closer = minDist === undefined;
         closer = closer || dist <= minDist!;
         if (closer) {
@@ -406,6 +406,12 @@ export class DrawerService {
       minCanvasElement = undefined;
       minDist = undefined;
     }
+
+    return minCanvasElement;
+  }
+
+  public setSelection(p: Point, empty: boolean = true, filter: (cE: CanvasElement) => boolean = () => true) {
+    const minCanvasElement = this.getSelection(p, filter);
 
     // set the selection, or alternate the element, e.g. when ctrl is pressed
     if (empty) {

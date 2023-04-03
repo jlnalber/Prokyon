@@ -1,4 +1,4 @@
-import {Mode} from "../abstract/mode";
+import {Mode} from "./mode";
 import {Point} from "../../interfaces/point";
 import {PointerContext} from "../pointerController";
 import {RenderingContext} from "../renderingContext";

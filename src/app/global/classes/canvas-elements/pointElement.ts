@@ -6,6 +6,7 @@ import {Point} from "../../interfaces/point";
 import {FormulaElement} from "../abstract/formulaElement";
 import {BLACK, Color, colorAsTransparent} from "../../interfaces/color";
 import {isIn} from "../../essentials/utils";
+import {Event} from "../../essentials/event";
 
 export default class PointElement extends CanvasElement {
 
@@ -49,6 +50,7 @@ export default class PointElement extends CanvasElement {
   }
   public set x(value: number) {
     this._x = value;
+    this.onMove.emit(this.point);
     this.onChange.emit(value);
   }
   public get y(): number {
@@ -56,12 +58,14 @@ export default class PointElement extends CanvasElement {
   }
   public set y(value: number) {
     this._y = value;
+    this.onMove.emit(this.point);
     this.onChange.emit(value);
   }
 
   public set point(value: Point) {
     this._x = value.x;
     this._y = value.y;
+    this.onMove.emit(value);
     this.onChange.emit(value);
   }
   public get point(): Point {
@@ -71,9 +75,13 @@ export default class PointElement extends CanvasElement {
     }
   }
 
+  // indicates whether this point is element of a selected dependencyPointElements
   public selected: boolean = false;
 
-  constructor(p: Point, color: Color = BLACK, public readonly name?: string, visible: boolean = true) {
+  public onMove: Event<Point> = new Event<Point>();
+
+  // the constructor, dependent means that the point is dependent of another canvas element
+  constructor(p: Point, color: Color = BLACK, public dependent = false, public readonly name?: string, visible: boolean = true) {
     super();
     this._x = p.x;
     this._y = p.y;
@@ -86,9 +94,9 @@ export default class PointElement extends CanvasElement {
     const point = this.point;
     if (this.visible && isIn(point, ctx.range, selectionRadiusFactor * this.radius / ctx.zoom)) {
       if (this.selected || ctx.selection.indexOf(this) !== -1) {
-        ctx.drawCircle(point, selectionRadiusFactor * this.radius, colorAsTransparent(this.color, 0.3))
+        ctx.drawCircle(point, selectionRadiusFactor * this.radius / ctx.zoom, colorAsTransparent(this.color, 0.3))
       }
-      ctx.drawCircle(point, this.radius, this.color, this.stroke, this.strokeWidth);
+      ctx.drawCircle(point, this.radius / ctx.zoom, this.color, this.stroke, this.strokeWidth);
     }
   }
 
@@ -98,3 +106,5 @@ export default class PointElement extends CanvasElement {
   }
 
 }
+
+type PointProvider = () => Point | undefined;
