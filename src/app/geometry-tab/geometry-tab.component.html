@@ -1,6 +1,6 @@
 <div class="wrapper" >
     <div class="tabHeader" *ngFor="let modeElement of this.modeElements" (click)="modeElement.click()" tabindex="0" [title]="modeElement.tooltip" [ngClass]="{ 'active': modeElement.isActivated() }">
-      <span class="material-symbols-outlined">{{modeElement.icon}}</span>
+      <img [src]="'../../assets/' + modeElement.icon + '.svg'" class="icon"/>
       <p>{{modeElement.title}}</p>
     </div>
 </div>

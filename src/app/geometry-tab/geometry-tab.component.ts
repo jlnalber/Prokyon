@@ -27,34 +27,34 @@ export class GeometryTabComponent implements OnInit {
   public modeElements: ModeElement<Mode>[] = [
     new ModeElement<MoveMode>(this.drawerService, () => {
       return new MoveMode();
-    }, 'Bewegen', 'Bewege den Canvas und wähle Elemente aus', 'control_camera'),
+    }, 'Bewegen', 'Bewege den Canvas und wähle Elemente aus', 'move'),
     new ModeElement<MovePointsMode>(this.drawerService, () => {
       return new MovePointsMode();
-    }, 'Verschieben', 'Verschiebe Punkte', 'filter_center_focus'),
+    }, 'Verschieben', 'Verschiebe Punkte', 'movePoints'),
     new ModeElement<PointsMode>(this.drawerService, () => {
       return new PointsMode();
-    }, 'Punkte', 'Erstelle neue Punkte', 'adjust'),
+    }, 'Punkte', 'Erstelle neue Punkte', 'points'),
     new ModeElement<LinesMode>(this.drawerService, () => {
       return new LinesMode();
-    }, 'Gerade', 'Erstelle eine neue Gerade mit zwei Punkten', ''),
+    }, 'Gerade', 'Erstelle eine neue Gerade mit zwei Punkten', 'line'),
     new ModeElement<LineSegmentsMode>(this.drawerService, () => {
       return new LineSegmentsMode();
-    }, 'Strecke', 'Erstelle eine neue Strecke zwischen zwei Punkten', ''),
+    }, 'Strecke', 'Erstelle eine neue Strecke zwischen zwei Punkten', 'lineSegment'),
     new ModeElement<CircleMode>(this.drawerService, () => {
       return new CircleMode();
-    }, 'Kreis', 'Erstelle einen neuen Kreis mit zwei Punkten', ''),
+    }, 'Kreis', 'Erstelle einen neuen Kreis mit zwei Punkten', 'circle'),
     new ModeElement<BisectionTwoPointsMode>(this.drawerService, () => {
       return new BisectionTwoPointsMode();
-    }, 'Mittelsenkrechte', 'Mache die Mittelsenkrechte zwischen zwei Punkten', ''),
+    }, 'Mittelsenk.', 'Mache die Mittelsenkrechte zwischen zwei Punkten', 'bisection'),
     new ModeElement<ParallelMode>(this.drawerService, () => {
       return new ParallelMode();
-    }, 'Parallel', 'Mache die Parallele zu einer Geraden durch einen Punkt', ''),
+    }, 'Parallel', 'Mache die Parallele zu einer Geraden durch einen Punkt', 'parallel'),
     new ModeElement<OrthogonalMode>(this.drawerService, () => {
       return new OrthogonalMode();
-    }, 'Lot', 'Mache den Lot zu eine Geraden durch einen Punkt', ''),
+    }, 'Lot', 'Mache den Lot zu eine Geraden durch einen Punkt', 'orthogonal'),
     new ModeElement<IntersectionMode>(this.drawerService, () => {
       return new IntersectionMode();
-    }, 'Schnittpunkt', 'Mache den Schnittpunkt zwischen Geraden, Strecken und Kreisen', '')
+    }, 'Schnittpunkt', 'Mache den Schnittpunkt zwischen Geraden, Strecken und Kreisen', 'intersection')
   ]
 
 }
