@@ -7,7 +7,7 @@ import TwoElementsSelectMode from "./twoElementsSelectMode";
 export default class LinesMode extends TwoElementsSelectMode<PointElement, PointElement> {
 
   public constructor() {
-    super(PointElement, PointElement);
+    super([PointElement], [PointElement]);
   }
 
 

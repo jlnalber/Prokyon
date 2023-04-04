@@ -7,7 +7,7 @@ import {GREY} from "../../interfaces/color";
 export default class CircleMode extends TwoElementsSelectMode<PointElement, PointElement> {
 
   public constructor() {
-    super(PointElement, PointElement);
+    super([PointElement], [PointElement]);
   }
 
 

@@ -22,7 +22,7 @@ export default class DynamicPointElement extends PointElement {
     this.onChange.emit(value);
   }
 
-  constructor(pointProvider: PointProvider, color: Color = BLACK, public readonly name?: string, visible: boolean = true) {
+  constructor(pointProvider: PointProvider, color: Color = BLACK, name?: string, visible: boolean = true) {
     super({x: 0, y: 0}, color, true, name, visible);
     this._pointProvider = pointProvider;
   }

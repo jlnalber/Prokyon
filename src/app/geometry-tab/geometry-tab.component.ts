@@ -8,6 +8,9 @@ import LinesMode from "../global/classes/modes/linesMode";
 import LineSegmentsMode from "../global/classes/modes/lineSegmentsMode";
 import CircleMode from "../global/classes/modes/circleMode";
 import BisectionTwoPointsMode from "../global/classes/modes/bisectionTwoPointsMode";
+import ParallelMode from "../global/classes/modes/parallelMode";
+import OrthogonalMode from "../global/classes/modes/orthogonalMode";
+import IntersectionMode from "../global/classes/modes/intersectionMode";
 
 @Component({
   selector: 'app-geometry-tab',
@@ -42,7 +45,16 @@ export class GeometryTabComponent implements OnInit {
     }, 'Kreis', 'Erstelle einen neuen Kreis mit zwei Punkten', ''),
     new ModeElement<BisectionTwoPointsMode>(this.drawerService, () => {
       return new BisectionTwoPointsMode();
-    }, 'Mittelsenkrechte', 'Mache die Mittelsenkrechte zwischen zwei Punkten', '')
+    }, 'Mittelsenkrechte', 'Mache die Mittelsenkrechte zwischen zwei Punkten', ''),
+    new ModeElement<ParallelMode>(this.drawerService, () => {
+      return new ParallelMode();
+    }, 'Parallel', 'Mache die Parallele zu einer Geraden durch einen Punkt', ''),
+    new ModeElement<OrthogonalMode>(this.drawerService, () => {
+      return new OrthogonalMode();
+    }, 'Lot', 'Mache den Lot zu eine Geraden durch einen Punkt', ''),
+    new ModeElement<IntersectionMode>(this.drawerService, () => {
+      return new IntersectionMode();
+    }, 'Schnittpunkt', 'Mache den Schnittpunkt zwischen Geraden, Strecken und Kreisen', '')
   ]
 
 }

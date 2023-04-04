@@ -7,7 +7,7 @@ import {GREY} from "../../interfaces/color";
 export default class LineSegmentsMode extends TwoElementsSelectMode<PointElement, PointElement> {
 
   public constructor() {
-    super(PointElement, PointElement);
+    super([PointElement], [PointElement]);
   }
 
   protected override addCanvasElement(drawerService: DrawerService, point1: PointElement, point2: PointElement) {

@@ -3,7 +3,7 @@ import {Color} from "../../interfaces/color";
 import {Point} from "../../interfaces/point";
 import {
   getABCFormLineFromTwoPoints,
-  getIntersectionPoint,
+  getIntersectionPointLines,
   getOrthogonalToLineThroughPoint
 } from "../../essentials/lineUtils";
 import {getDistance} from "../../essentials/utils";
@@ -55,7 +55,7 @@ export default abstract class AbstractLine extends CanvasElement {
       return undefined;
     }
     const abcOrthogonal = getOrthogonalToLineThroughPoint(abcThis, p);
-    return getIntersectionPoint(abcThis, abcOrthogonal);
+    return getIntersectionPointLines(abcThis, abcOrthogonal);
   }
 }
 

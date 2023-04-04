@@ -8,7 +8,7 @@ import {CanvasElement} from "../abstract/canvasElement";
 
 export default abstract class TwoElementsSelectMode<T1 extends CanvasElement, T2 extends CanvasElement> extends MoveMode {
 
-  protected constructor(private type1: Constructor<T1>, private type2: Constructor<T2>) {
+  protected constructor(private types1: Constructor<T1>[], private types2: Constructor<T2>[]) {
     super();
   }
 
@@ -23,18 +23,18 @@ export default abstract class TwoElementsSelectMode<T1 extends CanvasElement, T2
     // choose two points and add the element between them
     // thus, only allow to select certain types
     const clickedElement = drawerService.getSelection(point, (c: CanvasElement) => {
-      return (this.selectedElement === undefined && (ofType(c, this.type1) || ofType(c, this.type2)))
-          || (ofType(this.selectedElement, this.type1) && ofType(c, this.type2))
-          || (ofType(this.selectedElement, this.type2) && ofType(c, this.type1))
+      return (this.selectedElement === undefined && (ofType(c, ...this.types1) || ofType(c, ...this.types2)))
+          || (ofType(this.selectedElement, ...this.types1) && ofType(c, ...this.types2))
+          || (ofType(this.selectedElement, ...this.types2) && ofType(c, ...this.types1))
     }) as T1 | T2 | undefined;
 
     if (clickedElement !== undefined && clickedElement !== this.selectedElement) {
       if (this.selectedElement !== undefined) {
         // after two selected elements, emit the addCanvasElement method
-        if (ofType(this.selectedElement, this.type1)) {
+        if (ofType(this.selectedElement, ...this.types1) && ofType(clickedElement, ...this.types2)) {
           this.addCanvasElement(drawerService, this.selectedElement as T1, clickedElement as T2);
         }
-        else {
+        else if (ofType(this.selectedElement, ...this.types2) && ofType(clickedElement, ...this.types1)) {
           this.addCanvasElement(drawerService, clickedElement as T1, this.selectedElement as T2);
         }
         this.selectedElement = undefined;
@@ -51,7 +51,12 @@ export default abstract class TwoElementsSelectMode<T1 extends CanvasElement, T2
 }
 
 
-type Constructor<T> = new (...args: any[]) => T;
-function ofType<TElement, TFilter extends TElement>(el: TElement, filterType: Constructor<TFilter>): boolean {
-  return el instanceof filterType;
+export type Constructor<T> = new (...args: any[]) => T;
+function ofType<TElement, TFilter extends TElement>(el: TElement, ...filterTypes: Constructor<TFilter>[]): boolean {
+  for (let filterType of filterTypes) {
+    if (el instanceof filterType) {
+      return true;
+    }
+  }
+  return false;
 }
