@@ -3,21 +3,22 @@ import LineElement from "../canvas-elements/lineElement";
 import LineSegmentElement from "../canvas-elements/lineSegmentElement";
 import CircleElement from "../canvas-elements/circleElement";
 import {DrawerService} from "../../../services/drawer.service";
-import CircleMode from "./circleMode";
 import AbstractLine from "../canvas-elements/abstractLine";
 import {
+  getIntersectionPointCircles,
   getIntersectionPointLineAndCircle,
   getIntersectionPointLines
 } from "../../essentials/lineUtils";
 import {isInRange} from "../../essentials/utils";
 import {GREY} from "../../interfaces/color";
 import DynamicPointElement from "../canvas-elements/dynamicPointElement";
+import {Point} from "../../interfaces/point";
 
 type Elements = LineElement | LineSegmentElement | CircleElement;
 
 export default class IntersectionMode extends TwoElementsSelectMode<Elements, Elements> {
   constructor() {
-    super([LineElement, LineSegmentElement, CircleElement] as Constructor<Elements>[], [LineElement, LineSegmentElement, CircleMode] as Constructor<Elements>[]);
+    super([LineElement, LineSegmentElement, CircleElement] as Constructor<Elements>[], [LineElement, LineSegmentElement, CircleElement] as Constructor<Elements>[]);
   }
 
   protected addCanvasElement(drawerService: DrawerService, e1: Elements, e2: Elements): void {
@@ -91,6 +92,24 @@ export default class IntersectionMode extends TwoElementsSelectMode<Elements, El
 
     // case: circle and circle
     if (e1 instanceof CircleElement && e2 instanceof CircleElement) {
+      const provider = (i: number) => (): undefined | Point => {
+        const center1 = (e1 as CircleElement).point;
+        const radius1 = (e1 as CircleElement).radius;
+        const center2 = (e2 as CircleElement).point;
+        const radius2 = (e2 as CircleElement).radius;
+
+        if (center1 === undefined || radius1 === undefined || center2 === undefined || radius2 === undefined) {
+          return undefined;
+        }
+
+        return getIntersectionPointCircles(center1, radius1, center2, radius2)[i];
+      }
+
+      drawerService.addCanvasElements(new DynamicPointElement(provider(0), GREY));
+      drawerService.addCanvasElements(new DynamicPointElement(provider(1), GREY));
+      //drawerService.addCanvasElements(new DynamicPointElement(provider(2), GREY));
+      //drawerService.addCanvasElements(new DynamicPointElement(provider(3), GREY));
+
       return;
     }
   }

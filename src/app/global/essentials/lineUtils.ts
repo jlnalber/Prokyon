@@ -68,6 +68,7 @@ export function getIntersectionPointLines(abc1: ABCFormLine, abc2: ABCFormLine):
 }
 
 export function getIntersectionPointLineAndCircle(abc: ABCFormLine, center: Point, radius: number): [Point | undefined, Point | undefined] {
+  // ensure that abc.a is unequal to 0
   if (abc.a === 0) {
     if (abc.b === 0) {
       return [undefined, undefined]
@@ -121,4 +122,84 @@ export function getIntersectionPointLineAndCircle(abc: ABCFormLine, center: Poin
       y: y2
     }]
   }
+}
+
+export function getIntersectionPointCircles(center1: Point, radius1: number, center2: Point, radius2: number): [Point | undefined, Point | undefined] {
+
+  const getPs = (y: number): [Point | undefined, Point | undefined] => {
+    const disc = radius1 ** 2 - y ** 2;
+    if (disc < 0) return [undefined, undefined];
+    if (disc === 0) {
+      return [{
+        x: 0,
+        y
+      }, undefined]
+    }
+
+    return [{
+      x: Math.sqrt(disc),
+      y
+    }, {
+      x: -Math.sqrt(disc),
+      y
+    }]
+  }
+
+  const score = (p: Point | undefined): number => {
+    if (p === undefined) return Number.MAX_VALUE;
+
+    return Math.abs((p.x - center2.x) ** 2 + (p.y - center2.y) ** 2 - radius2 * radius2);
+  }
+
+  if (center1.x !== 0 || center1.y !== 0) {
+    const res = getIntersectionPointCircles({
+      x: 0,
+      y: 0
+    }, radius1, {
+      x: center2.x - center1.x,
+      y: center2.y - center1.y
+    }, radius2);
+
+    return res.map(i => {
+      if (i === undefined) {
+        return undefined;
+      }
+      else {
+        return {
+          x: i.x + center1.x,
+          y: i.y + center1.y
+        }
+      }
+    }) as [Point | undefined, Point | undefined];
+  }
+
+  const a = center2.x;
+  const b = center2.y;
+  const d = radius2 * radius2 - radius1 * radius1 - a * a - b * b;
+  const am = 4 * (a * a) + 4 * (b * b);
+  const bm = 4 * d * b;
+  const cm = - 4 * (a * a) * (radius1 * radius1) + d * d;
+
+  const disc = bm ** 2 - 4 * am * cm;
+
+  if (am === 0 || disc < 0) {
+    return [undefined, undefined];
+  }
+  else if (disc === 0) {
+    const arr = getPs(-bm / (2 * am));
+    const arrSorted = arr.sort((p1, p2) => score(p1) - score(p2));
+    return [arrSorted[0], /*arrSorted[1]*/ undefined];
+  }
+
+  const arr: (Point | undefined)[] = [...getPs((-bm + Math.sqrt(disc)) / (2 * am)), ...getPs((-bm - Math.sqrt(disc)) / (2 * am))];
+
+  const arrSorted = arr.sort((p1, p2) => score(p1) - score(p2));
+  return [arrSorted[0], arrSorted[1]];
+  //arr.push(...getPs((-bm - Math.sqrt(disc)) / (2 * am)));
+
+  /*const res = arr.filter(i => i !== undefined);
+  while (res.length < 2) {
+    res.push(undefined);
+  }
+  return res as [Point | undefined, Point | undefined];*/
 }

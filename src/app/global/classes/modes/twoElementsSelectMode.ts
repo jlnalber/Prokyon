@@ -18,6 +18,7 @@ export default abstract class TwoElementsSelectMode<T1 extends CanvasElement, T2
   protected abstract addCanvasElement(drawerService: DrawerService, e1: T1, e2: T2): void;
 
   override click(drawerService: DrawerService, renderingContext: RenderingContext, point: Point, pointerContext: PointerContext) {
+
     drawerService.selection.empty();
 
     // choose two points and add the element between them
