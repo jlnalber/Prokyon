@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.1" baseProfile="full"
+     width="100px" height="100px">
+
+  <line x1="15" x2="95" y1="95" y2="15" stroke-linecap="round" stroke-width="5" stroke="black"></line>
+  <line x1="5" x2="95" y1="5" y2="95" stroke-linecap="round" stroke-width="5" stroke="black"></line>
+  <circle r="10" cx="15" cy="15"></circle>
+
+</svg>
