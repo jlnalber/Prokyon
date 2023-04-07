@@ -26,9 +26,7 @@ import { DefiniteIntegralFormulaComponent } from './formula-tab/definite-integra
 import { IntervalComponent } from './formula-tab/global/interval/interval.component';
 import { ViewDependencyPointElementsDialogComponent } from './view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component';
 import { GeometryTabComponent } from './geometry-tab/geometry-tab.component';
-import { LineFormulaComponent } from './formula-tab/line-formula/line-formula.component';
-import { LineSegmentFormulaComponent } from './formula-tab/line-segment-formula/line-segment-formula.component';
-import { CircleFormulaComponent } from './formula-tab/circle-formula/circle-formula.component';
+import { GeometricFormulaComponent } from './formula-tab/geometric-formula/geometric-formula.component';
 
 @NgModule({
   declarations: [
@@ -57,9 +55,7 @@ import { CircleFormulaComponent } from './formula-tab/circle-formula/circle-form
     IntervalComponent,
     ViewDependencyPointElementsDialogComponent,
     GeometryTabComponent,
-    LineFormulaComponent,
-    LineSegmentFormulaComponent,
-    CircleFormulaComponent
+    GeometricFormulaComponent
   ],
   imports: [
     BrowserModule,

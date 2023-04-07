@@ -101,6 +101,7 @@ export default class DependencyPointElements extends CanvasElement {
     this._to = to;
     this._depth = depth;
 
+    this.onRemove.addListener(this.removeListener);
     this.drawerService.onCanvasElementChanged.addListener(this.reloadListener);
   }
 
@@ -152,7 +153,7 @@ export default class DependencyPointElements extends CanvasElement {
     }
   }
 
-  private reloadListener = (value: any) => {
+  private readonly reloadListener = (value: any) => {
     if (value !== dependencyPointElementsKey) {
       this.reload().catch(e => console.error(e));
     }
@@ -190,7 +191,7 @@ export default class DependencyPointElements extends CanvasElement {
     }) as number[]);
   }
 
-  public override onRemove() {
+  private readonly removeListener = () => {
     // Remove the listener on the drawer service.
     this.drawerService.onCanvasElementChanged.removeListener(this.reloadListener);
   }

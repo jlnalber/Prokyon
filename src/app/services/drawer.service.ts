@@ -75,7 +75,7 @@ export class DrawerService {
       if (index >= 0) {
         this._canvasElements.splice(index, 1);
         canvasElement.onChange.removeListener(this.canvasElementOnChangeListener);
-        canvasElement.onRemove();
+        canvasElement.onRemove.emit(this);
       } else {
         worked = false;
       }
@@ -88,7 +88,7 @@ export class DrawerService {
   public emptyCanvasElements(): void {
     for (let canvasElement of this._canvasElements) {
       canvasElement.onChange.removeListener(this.canvasElementOnChangeListener);
-      canvasElement.onRemove();
+      canvasElement.onRemove.emit(this);
     }
     this._canvasElements = [];
     this.onCanvasElementChanged.emit();

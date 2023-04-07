@@ -1,6 +1,6 @@
 import AbstractLine, {ABCFormLine} from "./abstractLine";
 import {RenderingContext} from "../renderingContext";
-import {LineFormulaComponent} from "../../../formula-tab/line-formula/line-formula.component";
+import {GeometricFormulaComponent} from "../../../formula-tab/geometric-formula/geometric-formula.component";
 import {Type} from "@angular/core";
 import {Point} from "../../interfaces/point";
 import {areEqualPoints} from "../../essentials/utils";
@@ -8,14 +8,14 @@ import {colorAsTransparent} from "../../interfaces/color";
 import {LINE_WIDTH_SELECTED_RATIO, TRANSPARENCY_RATIO} from "./graph";
 
 export default class LineElement extends AbstractLine {
-  readonly componentType: Type<LineFormulaComponent> = LineFormulaComponent;
+  readonly componentType: Type<GeometricFormulaComponent> = GeometricFormulaComponent;
 
   public draw(ctx: RenderingContext): void {
     const points = this.pointsProvider();
     const point1 = points[0];
     const point2 = points[1];
 
-    if (point1 !== undefined && point2 !== undefined && !areEqualPoints(point1, point2)) {
+    if (this.visible && point1 !== undefined && point2 !== undefined && !areEqualPoints(point1, point2)) {
       const range = ctx.range;
       const abc = this.getABCFormLine() as ABCFormLine;
       let pS: Point;
@@ -32,7 +32,7 @@ export default class LineElement extends AbstractLine {
           y: abc.c / abc.b
         }
       }
-      else {
+      else if (abc.a > abc.b || abc.b === 0) {
         pS = {
           x: (abc.c - abc.b * range.y) / abc.a,
           y: range.y
@@ -40,6 +40,16 @@ export default class LineElement extends AbstractLine {
         pE = {
           x: (abc.c - abc.b * (range.y + range.height)) / abc.a,
           y: range.y + range.height
+        }
+      }
+      else {
+        pS = {
+          x: range.x,
+          y: (abc.c - abc.a * range.x) / abc.b
+        }
+        pE = {
+          x: range.x + range.width,
+          y: (abc.c - abc.a * (range.x + range.width)) / abc.b
         }
       }
 

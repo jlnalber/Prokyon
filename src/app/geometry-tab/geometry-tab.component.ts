@@ -7,10 +7,13 @@ import MovePointsMode from "../global/classes/modes/movePointsMode";
 import LinesMode from "../global/classes/modes/linesMode";
 import LineSegmentsMode from "../global/classes/modes/lineSegmentsMode";
 import CircleMode from "../global/classes/modes/circleMode";
-import BisectionTwoPointsMode from "../global/classes/modes/bisectionTwoPointsMode";
+import BisectionMode from "../global/classes/modes/bisectionMode";
 import ParallelMode from "../global/classes/modes/parallelMode";
 import OrthogonalMode from "../global/classes/modes/orthogonalMode";
 import IntersectionMode from "../global/classes/modes/intersectionMode";
+import MiddlePointMode from "../global/classes/modes/middlePointMode";
+import AngleBisectorMode from "../global/classes/modes/angleBisectorMode";
+import TangensMode from "../global/classes/modes/tangensMode";
 
 @Component({
   selector: 'app-geometry-tab',
@@ -24,37 +27,61 @@ export class GeometryTabComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  public modeElements: ModeElement<Mode>[] = [
-    new ModeElement<MoveMode>(this.drawerService, () => {
-      return new MoveMode();
-    }, 'Bewegen', 'Bewege den Canvas und wähle Elemente aus', 'move'),
-    new ModeElement<MovePointsMode>(this.drawerService, () => {
-      return new MovePointsMode();
-    }, 'Verschieben', 'Verschiebe Punkte', 'movePoints'),
-    new ModeElement<PointsMode>(this.drawerService, () => {
-      return new PointsMode();
-    }, 'Punkte', 'Erstelle neue Punkte', 'points'),
-    new ModeElement<LinesMode>(this.drawerService, () => {
-      return new LinesMode();
-    }, 'Gerade', 'Erstelle eine neue Gerade mit zwei Punkten', 'line'),
-    new ModeElement<LineSegmentsMode>(this.drawerService, () => {
-      return new LineSegmentsMode();
-    }, 'Strecke', 'Erstelle eine neue Strecke zwischen zwei Punkten', 'lineSegment'),
-    new ModeElement<CircleMode>(this.drawerService, () => {
-      return new CircleMode();
-    }, 'Kreis', 'Erstelle einen neuen Kreis mit zwei Punkten', 'circle'),
-    new ModeElement<BisectionTwoPointsMode>(this.drawerService, () => {
-      return new BisectionTwoPointsMode();
-    }, 'Mittelsenk.', 'Mache die Mittelsenkrechte zwischen zwei Punkten', 'bisection'),
-    new ModeElement<ParallelMode>(this.drawerService, () => {
-      return new ParallelMode();
-    }, 'Parallel', 'Mache die Parallele zu einer Geraden durch einen Punkt', 'parallel'),
-    new ModeElement<OrthogonalMode>(this.drawerService, () => {
-      return new OrthogonalMode();
-    }, 'Lot', 'Mache den Lot zu eine Geraden durch einen Punkt', 'orthogonal'),
-    new ModeElement<IntersectionMode>(this.drawerService, () => {
-      return new IntersectionMode();
-    }, 'Schnittpunkt', 'Mache den Schnittpunkt zwischen Geraden, Strecken und Kreisen', 'intersection')
+  public groups: Group[] = [
+    {
+      name: 'Bewege',
+      modes: [
+        new ModeElement<MoveMode>(this.drawerService, () => {
+          return new MoveMode();
+        }, 'Bewegen', 'Bewege den Canvas und wähle Elemente aus', 'move'),
+        new ModeElement<MovePointsMode>(this.drawerService, () => {
+          return new MovePointsMode();
+        }, 'Verschieben', 'Verschiebe Punkte', 'movePoints')
+      ]
+    },
+    {
+      name: 'Einfache Konstruktionen',
+      modes: [
+        new ModeElement<PointsMode>(this.drawerService, () => {
+          return new PointsMode();
+        }, 'Punkte', 'Erstelle neue Punkte', 'points'),
+        new ModeElement<LinesMode>(this.drawerService, () => {
+          return new LinesMode();
+        }, 'Gerade', 'Erstelle eine neue Gerade mit zwei Punkten', 'line'),
+        new ModeElement<LineSegmentsMode>(this.drawerService, () => {
+          return new LineSegmentsMode();
+        }, 'Strecke', 'Erstelle eine neue Strecke zwischen zwei Punkten', 'lineSegment'),
+        new ModeElement<CircleMode>(this.drawerService, () => {
+          return new CircleMode();
+        }, 'Kreis', 'Erstelle einen neuen Kreis mit zwei Punkten', 'circle')
+      ]
+    },
+    {
+      name: 'Weiter Konstruktionen',
+      modes: [
+        new ModeElement<IntersectionMode>(this.drawerService, () => {
+          return new IntersectionMode();
+        }, 'Schnittpunkt', 'Mache den Schnittpunkt zwischen Geraden, Strecken und Kreisen', 'intersection'),
+        new ModeElement<MiddlePointMode>(this.drawerService, () => {
+          return new MiddlePointMode();
+        }, 'Mittelpunkt', 'Mache den Mittelpunkt einer Strecke oder zwischen zwei Punkten', 'middlePoint'),
+        new ModeElement<BisectionMode>(this.drawerService, () => {
+          return new BisectionMode();
+        }, 'Mittelsenk.', 'Mache die Mittelsenkrechte einer Strecke oder zwischen zwei Punkten', 'bisection'),
+        new ModeElement<AngleBisectorMode>(this.drawerService, () => {
+          return new AngleBisectorMode();
+        }, 'Winkelhalb.', 'Mache die Winkelhalbierende von drei Punkten', 'angleBisector'),
+        new ModeElement<ParallelMode>(this.drawerService, () => {
+          return new ParallelMode();
+        }, 'Parallel', 'Mache die Parallele zu einer Geraden durch einen Punkt', 'parallel'),
+        new ModeElement<OrthogonalMode>(this.drawerService, () => {
+          return new OrthogonalMode();
+        }, 'Lot', 'Mache den Lot zu eine Geraden durch einen Punkt', 'orthogonal'),
+        new ModeElement<TangensMode>(this.drawerService, () => {
+          return new TangensMode();
+        }, 'Tangente', 'Mache die Tangente an einen Kreis durch einen Punkt', 'tangens')
+      ]
+    }
   ]
 
 }
@@ -69,4 +96,9 @@ class ModeElement<T extends Mode> {
   public isActivated(): boolean {
     return this.drawerService.mode?.constructor === this.getInstance(false).constructor;
   }
+}
+
+interface Group {
+  name: string,
+  modes: ModeElement<Mode>[]
 }

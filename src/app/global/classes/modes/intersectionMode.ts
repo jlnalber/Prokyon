@@ -8,7 +8,7 @@ import {
   getIntersectionPointCircles,
   getIntersectionPointLineAndCircle,
   getIntersectionPointLines
-} from "../../essentials/lineUtils";
+} from "../../essentials/geometryUtils";
 import {isInRange} from "../../essentials/utils";
 import {GREY} from "../../interfaces/color";
 import DynamicPointElement from "../canvas-elements/dynamicPointElement";
@@ -50,7 +50,7 @@ export default class IntersectionMode extends TwoElementsSelectMode<Elements, El
         }
 
         return iPoint
-      }, GREY))
+      }, [e1, e2], GREY))
       return;
     }
 
@@ -84,8 +84,8 @@ export default class IntersectionMode extends TwoElementsSelectMode<Elements, El
         }
       }
 
-      drawerService.addCanvasElements(new DynamicPointElement(provider(0), GREY));
-      drawerService.addCanvasElements(new DynamicPointElement(provider(1), GREY));
+      drawerService.addCanvasElements(new DynamicPointElement(provider(0), [e1, e2], GREY));
+      drawerService.addCanvasElements(new DynamicPointElement(provider(1), [e1, e2], GREY));
 
       return;
     }
@@ -105,8 +105,8 @@ export default class IntersectionMode extends TwoElementsSelectMode<Elements, El
         return getIntersectionPointCircles(center1, radius1, center2, radius2)[i];
       }
 
-      drawerService.addCanvasElements(new DynamicPointElement(provider(0), GREY));
-      drawerService.addCanvasElements(new DynamicPointElement(provider(1), GREY));
+      drawerService.addCanvasElements(new DynamicPointElement(provider(0), [e1, e2], GREY));
+      drawerService.addCanvasElements(new DynamicPointElement(provider(1), [e1, e2], GREY));
       //drawerService.addCanvasElements(new DynamicPointElement(provider(2), GREY));
       //drawerService.addCanvasElements(new DynamicPointElement(provider(3), GREY));
 

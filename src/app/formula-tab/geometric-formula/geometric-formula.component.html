@@ -1,0 +1,6 @@
+<div class="wrapper">
+  <app-color-circle [(color)]="this.canvasElement.color" [(visible)]="this.canvasElement.visible"></app-color-circle>
+  <p class="paragraph"><span>{{this.canvasElement.configuration.formula ?? ' '}}</span>
+  </p>
+  <button class="iconButton depositionTop floatRight" (click)="this.threePointsClicked($event)"><span class="material-symbols-outlined">more_vert</span></button>
+</div>

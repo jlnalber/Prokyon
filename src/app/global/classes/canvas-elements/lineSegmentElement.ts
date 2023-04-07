@@ -2,21 +2,21 @@ import AbstractLine from "./abstractLine";
 import {RenderingContext} from "../renderingContext";
 import {Type} from "@angular/core";
 import {areEqualPoints, isInRange} from "../../essentials/utils";
-import {LineSegmentFormulaComponent} from "../../../formula-tab/line-segment-formula/line-segment-formula.component";
 import {colorAsTransparent} from "../../interfaces/color";
 import {LINE_WIDTH_SELECTED_RATIO, TRANSPARENCY_RATIO} from "./graph";
 import {Point} from "../../interfaces/point";
 import {getDistance} from "../../essentials/utils";
+import {GeometricFormulaComponent} from "../../../formula-tab/geometric-formula/geometric-formula.component";
 
 export default class LineSegmentElement extends AbstractLine {
-  readonly componentType: Type<LineSegmentFormulaComponent> = LineSegmentFormulaComponent;
+  readonly componentType: Type<GeometricFormulaComponent> = GeometricFormulaComponent;
 
   public draw(ctx: RenderingContext): void {
     const points = this.pointsProvider();
     const point1 = points[0];
     const point2 = points[1];
 
-    if (point1 !== undefined && point2 !== undefined && !areEqualPoints(point1, point2)) {
+    if (this.visible && point1 !== undefined && point2 !== undefined && !areEqualPoints(point1, point2)) {
       if (ctx.selection.indexOf(this) !== -1) {
         ctx.drawPath([point1, point2], this.lineWidth * LINE_WIDTH_SELECTED_RATIO, colorAsTransparent(this._color, TRANSPARENCY_RATIO))
       }

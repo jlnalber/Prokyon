@@ -5,6 +5,7 @@ import {FormulaElement} from "./formulaElement";
 import {Point} from "../../interfaces/point";
 import {RenderingContext} from "../renderingContext";
 import {BLACK, Color} from "../../interfaces/color";
+import {DrawerService} from "../../../services/drawer.service";
 
 export interface CanvasElementConfiguration {
   label?: string,
@@ -15,6 +16,7 @@ export interface CanvasElementConfiguration {
 
 export abstract class CanvasElement extends CanvasDrawer {
   public readonly onChange: Event<any> = new Event<any>();
+  public readonly onRemove: Event<DrawerService> = new Event<DrawerService>();
 
   public abstract readonly componentType: Type<FormulaElement>;
 
@@ -23,8 +25,6 @@ export abstract class CanvasElement extends CanvasDrawer {
   }
 
   public configuration: CanvasElementConfiguration = {};
-
-  public onRemove(): void { }
 
   protected _color: Color = BLACK;
   public get color(): Color {

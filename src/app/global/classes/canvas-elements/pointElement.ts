@@ -6,9 +6,9 @@ import {Point} from "../../interfaces/point";
 import {FormulaElement} from "../abstract/formulaElement";
 import {BLACK, Color, colorAsTransparent} from "../../interfaces/color";
 import {isIn} from "../../essentials/utils";
-import {Event} from "../../essentials/event";
+import DynamicElement from "./dynamicElement";
 
-export default class PointElement extends CanvasElement {
+export default class PointElement extends DynamicElement {
 
   public readonly componentType: Type<FormulaElement> = PointFormulaComponent;
 
@@ -90,8 +90,8 @@ export default class PointElement extends CanvasElement {
   public selected: boolean = false;
 
   // the constructor, dependent means that the point is dependent of another canvas element
-  constructor(p: Point | undefined, color: Color = BLACK, public readonly dependent = false, public readonly name?: string, visible: boolean = true) {
-    super();
+  constructor(p: Point | undefined, color: Color = BLACK, public readonly dependent = false, dependencies: CanvasElement[] = [], public readonly name?: string, visible: boolean = true) {
+    super(dependencies);
     this._x = p?.x;
     this._y = p?.y;
     this._color = color;

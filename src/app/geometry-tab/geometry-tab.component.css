@@ -20,9 +20,23 @@
   line-height: var(--sizeHeader);
   border-radius: var(--borderRadius);
   transition: 0.1s all ease-in-out;
-  font-family: 'Segoe UI', Calibri, 'sans-serif';
   display: inline-block;
+}
+
+.tabHeader, .groupName {
+  font-family: 'Segoe UI', Calibri, 'sans-serif';
   user-select: none;
+}
+
+.groupName {
+  font-weight: bold;
+  font-size: large;
+  margin-top: 50px;
+  margin-bottom: 0;
+}
+
+.group:first-child .groupName {
+  margin-top: 0px;
 }
 
 .tabHeader:hover {
@@ -52,4 +66,5 @@
   width: 50px;
   height: 50px;
   margin-top: 10px;
+  user-select: none;
 }

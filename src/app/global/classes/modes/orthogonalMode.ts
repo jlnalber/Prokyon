@@ -6,15 +6,16 @@ import {
   getIntersectionPointLines,
   getOrthogonalToLineThroughPoint,
   getTwoPointsFromABCFormLine
-} from "../../essentials/lineUtils";
+} from "../../essentials/geometryUtils";
 import {Point} from "../../interfaces/point";
 import {GREY} from "../../interfaces/color";
 import LineSegmentElement from "../canvas-elements/lineSegmentElement";
 import {isIn, isInRange} from "../../essentials/utils";
+import DynamicPointElement from "../canvas-elements/dynamicPointElement";
 
-export default class OrthogonalMode extends TwoElementsSelectMode<PointElement, LineElement | LineSegmentElement> {
+export default class OrthogonalMode extends TwoElementsSelectMode<PointElement | DynamicPointElement, LineElement | LineSegmentElement> {
   constructor() {
-    super([PointElement], [LineElement, LineSegmentElement]);
+    super([PointElement, DynamicPointElement], [LineElement, LineSegmentElement]);
   }
 
   protected addCanvasElement(drawerService: DrawerService, e1: PointElement, e2: LineElement | LineSegmentElement): void {
@@ -36,6 +37,6 @@ export default class OrthogonalMode extends TwoElementsSelectMode<PointElement, 
       }
 
       return getTwoPointsFromABCFormLine(abcLine) ?? [undefined, undefined]
-    }, GREY))
+    }, [e1, e2], GREY, 'Lot'))
   }
 }

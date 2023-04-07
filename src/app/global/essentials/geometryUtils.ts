@@ -1,5 +1,10 @@
 import {Point} from "../interfaces/point";
 import {ABCFormLine} from "../classes/canvas-elements/abstractLine";
+import LineSegmentElement from "../classes/canvas-elements/lineSegmentElement";
+import CircleElement from "../classes/canvas-elements/circleElement";
+import {getDistance} from "./utils";
+
+type LineByPoints = [Point | undefined, Point | undefined];
 
 export function getABCFormLineFromTwoPoints(point1: Point | undefined, point2: Point | undefined): ABCFormLine | undefined {
   if (point1 !== undefined && point2 !== undefined) {
@@ -48,6 +53,80 @@ export function getOrthogonalToLineThroughPoint(abcFormLine: ABCFormLine, point:
     b,
     c: a * point.x + b * point.y
   }
+}
+
+export function getParallelToLineThroughPoint(abcFormLine: ABCFormLine | undefined, point: Point | undefined): LineByPoints {
+  if (abcFormLine === undefined || point === undefined) {
+    return [undefined, undefined]
+  }
+
+  const c = abcFormLine.a * point.x + abcFormLine.b * point.y;
+  return getTwoPointsFromABCFormLine({
+    a: abcFormLine.a,
+    b: abcFormLine.b,
+    c
+  }) ?? [undefined, undefined]
+}
+
+export function getMiddlePointByPoints(p1: Point | undefined, p2: Point | undefined): Point | undefined {
+  if (p1 === undefined || p2 === undefined) {
+    return undefined;
+  }
+  return {
+    x: (p1.x + p2.x) / 2,
+    y: (p1.y + p2.y) / 2
+  };
+}
+
+export function getMiddlePointsByLineSegment(lineSegment: LineSegmentElement): Point | undefined {
+  return getMiddlePointByPoints(lineSegment.point1, lineSegment.point2);
+}
+
+export function getBisectionByPoints(p1: Point | undefined, p2: Point | undefined): LineByPoints {
+  const abcAB = getABCFormLineFromTwoPoints(p1, p2);
+
+  if (abcAB === undefined || p1 === undefined || p2 === undefined) {
+    return [undefined, undefined];
+  }
+  const abc: ABCFormLine = getOrthogonalToLineThroughPoint(abcAB, getMiddlePointByPoints(p1, p2) as Point);
+
+  return getTwoPointsFromABCFormLine(abc) ?? [undefined, undefined];
+}
+
+export function getBisectionByLineSegment(lineSegment: LineSegmentElement): LineByPoints {
+  return getBisectionByPoints(lineSegment.point1, lineSegment.point2);
+}
+
+export function getAngleBisector(center: Point | undefined, p1: Point | undefined, p2: Point | undefined): LineByPoints {
+  const abcLine1 = getABCFormLineFromTwoPoints(p1, center);
+  const abcLine2 = getABCFormLineFromTwoPoints(p2, center);
+
+  if (abcLine1 === undefined || center === undefined || p1 === undefined || p2 === undefined || abcLine2 === undefined || center === undefined) {
+    return [undefined, undefined];
+  }
+
+  const d1 = p1.y - center.y;
+  const d2 = p2.y - center.y;
+  let s = Math.sign(d1 * d2);
+  s = s === 0 ? Math.sign(d1 + d2) : s;
+  const n = s > 0 ? 0 : 1;
+
+  const iP1 = getIntersectionPointLineAndCircle(abcLine1, center, 1)[0] as Point;
+  const iP2 = getIntersectionPointLineAndCircle(abcLine2, center, 1)[n] as Point;
+
+  return getBisectionByPoints(iP1,  iP2);
+}
+
+export function getTangens(point: Point | undefined, centerCircle: Point | undefined, radiusCircle: number | undefined): [LineByPoints, LineByPoints] {
+  const undef: [LineByPoints, LineByPoints] = [[undefined, undefined], [undefined, undefined]];
+  if (point === undefined || centerCircle === undefined || radiusCircle === undefined) {
+    return undef;
+  }
+
+  const middle = getMiddlePointByPoints(point, centerCircle) as Point;
+
+  const iPs = getIntersectionPointCircles(centerCircle, radiusCircle, middle, getDistance(middle, point));
+  return [[point, iPs[0]], [point, iPs[1]]];
 }
 
 export function getIntersectionPointLines(abc1: ABCFormLine, abc2: ABCFormLine): Point | undefined {

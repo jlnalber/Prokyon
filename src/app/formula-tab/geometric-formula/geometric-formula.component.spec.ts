@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LineFormulaComponent } from './line-formula.component';
+import { GeometricFormulaComponent } from './geometric-formula.component';
 
 describe('LineFormulaComponent', () => {
-  let component: LineFormulaComponent;
-  let fixture: ComponentFixture<LineFormulaComponent>;
+  let component: GeometricFormulaComponent;
+  let fixture: ComponentFixture<GeometricFormulaComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LineFormulaComponent ]
+      declarations: [ GeometricFormulaComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LineFormulaComponent);
+    fixture = TestBed.createComponent(GeometricFormulaComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,0 +1,18 @@
+@import url("../../global/styles/_global.css");
+
+.wrapper {
+  --buttonSize: 46px;
+  height: var(--buttonSize);
+}
+
+.paragraph {
+  --margin: 16px;
+  --buttonSize: 46px;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: calc(var(--buttonSize) + var(--margin));
+  font-size: 14pt;
+  user-select: none;
+  height: var(--buttonSize);
+  line-height: var(--buttonSize);
+}

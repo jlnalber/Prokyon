@@ -1,5 +1,4 @@
 import MoveMode from "./moveMode";
-import PointElement from "../canvas-elements/pointElement";
 import {DrawerService} from "../../../services/drawer.service";
 import {RenderingContext} from "../renderingContext";
 import {Point} from "../../interfaces/point";

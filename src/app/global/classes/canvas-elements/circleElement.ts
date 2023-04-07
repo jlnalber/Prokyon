@@ -2,14 +2,15 @@ import {CanvasElement} from "../abstract/canvasElement";
 import {Point} from "../../interfaces/point";
 import {Color, colorAsTransparent, TRANSPARENT} from "../../interfaces/color";
 import {Type} from "@angular/core";
-import {CircleFormulaComponent} from "../../../formula-tab/circle-formula/circle-formula.component";
 import {RenderingContext} from "../renderingContext";
 import {getDistance} from "../../essentials/utils";
 import {LINE_WIDTH_SELECTED_RATIO, TRANSPARENCY_RATIO} from "./graph";
+import {GeometricFormulaComponent} from "../../../formula-tab/geometric-formula/geometric-formula.component";
+import DynamicElement from "./dynamicElement";
 
-export default class CircleElement extends CanvasElement {
+export default class CircleElement extends DynamicElement {
 
-  public readonly componentType: Type<CircleFormulaComponent> = CircleFormulaComponent;
+  public readonly componentType: Type<GeometricFormulaComponent> = GeometricFormulaComponent;
 
   private _pointProvider: PointProvider;
 
@@ -41,8 +42,9 @@ export default class CircleElement extends CanvasElement {
     this.onChange.emit(value);
   }
 
-  constructor(pointProvider: PointProvider, radiusProvider: RadiusProvider, color: Color = { r: 0, g: 0, b: 0 }, visible: boolean = true, public lineWidth: number = 3) {
-    super();
+  constructor(pointProvider: PointProvider, radiusProvider: RadiusProvider, dependencies: CanvasElement[], color: Color = { r: 0, g: 0, b: 0 }, formula?: string, visible: boolean = true, public lineWidth: number = 3) {
+    super(dependencies);
+    this.configuration.formula = formula;
     this._color = color;
     this._visible = visible;
     this._pointProvider = pointProvider;
@@ -53,7 +55,7 @@ export default class CircleElement extends CanvasElement {
     const point = this.point;
     const radius = this.radius;
 
-    if (point !== undefined && radius !== undefined) {
+    if (this.visible && point !== undefined && radius !== undefined) {
       if (ctx.selection.indexOf(this) !== -1) {
         ctx.drawCircle(point, radius, TRANSPARENT, colorAsTransparent(this._color, TRANSPARENCY_RATIO), this.lineWidth * LINE_WIDTH_SELECTED_RATIO);
       }

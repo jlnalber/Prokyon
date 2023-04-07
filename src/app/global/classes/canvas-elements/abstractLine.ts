@@ -5,12 +5,13 @@ import {
   getABCFormLineFromTwoPoints,
   getIntersectionPointLines,
   getOrthogonalToLineThroughPoint
-} from "../../essentials/lineUtils";
+} from "../../essentials/geometryUtils";
 import {getDistance} from "../../essentials/utils";
 import {RenderingContext} from "../renderingContext";
+import DynamicElement from "./dynamicElement";
 
 // a line of the form ax + by = c between two points
-export default abstract class AbstractLine extends CanvasElement {
+export default abstract class AbstractLine extends DynamicElement {
   private _pointsProvider: PointsProvider;
 
   public get point1(): Point | undefined {
@@ -30,8 +31,9 @@ export default abstract class AbstractLine extends CanvasElement {
     this.onChange.emit(value);
   }
 
-  public constructor(psProvider: PointsProvider, color: Color = { r: 0, g: 0, b: 0 }, visible: boolean = true, public lineWidth: number = 3) {
-    super();
+  public constructor(psProvider: PointsProvider, dependencies: CanvasElement[], color: Color = { r: 0, g: 0, b: 0 }, formula?: string, visible: boolean = true, public lineWidth: number = 3) {
+    super(dependencies);
+    this.configuration.formula = formula;
     this._color = color;
     this._visible = visible;
     this._pointsProvider = psProvider;
