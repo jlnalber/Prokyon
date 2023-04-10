@@ -10,6 +10,15 @@ import {Graph} from "./graph";
 import {Rect} from "../../interfaces/rect";
 import {correctRect, correctRectTo, getDistanceToRect} from "../../essentials/utils";
 import {Point} from "../../interfaces/point";
+import {CanvasElementSerialized} from "../../essentials/serializer";
+
+type Data = {
+  graph: number,
+  secondGraph?: number,
+  h: number,
+  from: number,
+  to: number
+}
 
 export default class DefiniteIntegral extends CanvasElement {
 
@@ -175,6 +184,59 @@ export default class DefiniteIntegral extends CanvasElement {
 
   public override getDistance(p: Point, ctx: RenderingContext): number | undefined {
     return Math.min(...this.rects.map(rect => getDistanceToRect(p, rect)));
+  }
+
+  public override serialize(): CanvasElementSerialized {
+    const data: Data = {
+      graph: this.graph.id,
+      secondGraph: this.secondGraph === undefined ? undefined : this.secondGraph.id,
+      h: this.h,
+      from: this.from,
+      to: this.to
+    }
+
+    return {
+      data,
+      style: {
+        color: this.color,
+        stroke: this.stroke,
+        strokeWidth: this.strokeWidth,
+        visible: this.visible
+      }
+    }
+  }
+
+  public override loadFrom(canvasElements: {
+    [p: number]: CanvasElement | undefined
+  }, canvasElementSerialized: CanvasElementSerialized) {
+    if (canvasElementSerialized.data.graph !== undefined
+      && canvasElementSerialized.data.h !== undefined
+      && canvasElementSerialized.data.from !== undefined
+      && canvasElementSerialized.data.to !== undefined) {
+      const graph = canvasElements[canvasElementSerialized.data.graph];
+      const secondGraph = canvasElements[canvasElementSerialized.data.secondGraph];
+
+      if (graph instanceof Graph) {
+        this.graph = graph;
+      }
+      if (secondGraph instanceof Graph || secondGraph === undefined) {
+        this.secondGraph = secondGraph;
+      }
+      if (typeof canvasElementSerialized.data.h === 'number') {
+        this.h = canvasElementSerialized.data.h;
+      }
+      if (typeof canvasElementSerialized.data.from === 'number') {
+        this.from = canvasElementSerialized.data.from;
+      }
+      if (typeof canvasElementSerialized.data.to === 'number') {
+        this.to = canvasElementSerialized.data.to;
+      }
+    }
+
+    this.stroke = canvasElementSerialized.style.stroke ?? TRANSPARENT;
+    this.strokeWidth = canvasElementSerialized.style.strokeWidth ?? 0;
+    this.color = canvasElementSerialized.style.color;
+    this.visible = canvasElementSerialized.style.visible;
   }
 
 }

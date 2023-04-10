@@ -6,6 +6,8 @@ import {Point} from "../../interfaces/point";
 import {RenderingContext} from "../renderingContext";
 import {BLACK, Color} from "../../interfaces/color";
 import {DrawerService} from "../../../services/drawer.service";
+import getNewID from "../../essentials/idProvider";
+import {CanvasElementSerialized} from "../../essentials/serializer";
 
 export interface CanvasElementConfiguration {
   label?: string,
@@ -15,10 +17,15 @@ export interface CanvasElementConfiguration {
 }
 
 export abstract class CanvasElement extends CanvasDrawer {
+  public readonly id: number;
+
   public readonly onChange: Event<any> = new Event<any>();
   public readonly onRemove: Event<DrawerService> = new Event<DrawerService>();
 
   public abstract readonly componentType: Type<FormulaElement>;
+
+  public abstract serialize(): CanvasElementSerialized;
+  public abstract loadFrom(canvasElements: { [id: number]: CanvasElement | undefined }, canvasElementSerialized: CanvasElementSerialized): void;
 
   public getDistance(p: Point, ctx: RenderingContext): number | undefined {
     return undefined;
@@ -42,5 +49,10 @@ export abstract class CanvasElement extends CanvasDrawer {
   public set visible(value: boolean) {
     this._visible = value;
     this.onChange.emit(value);
+  }
+
+  protected constructor() {
+    super();
+    this.id = getNewID();
   }
 }

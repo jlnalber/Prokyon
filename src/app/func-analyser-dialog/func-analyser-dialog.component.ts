@@ -80,6 +80,8 @@ export class FuncAnalyserDialogComponent {
   evaluateInflectionPoints() {
     try {
       if (this.dialogData && this.dialogData.graph) {
+        const d = DependencyPointElements.createInflectionPoints(this.drawerService,)
+
         // try to derive (throws an error, when derivation doesn't work) --> opens error snackbar
         this.dialogData.graph.func.derive();
 

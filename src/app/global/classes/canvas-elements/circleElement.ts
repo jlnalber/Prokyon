@@ -3,10 +3,18 @@ import {Point} from "../../interfaces/point";
 import {Color, colorAsTransparent, TRANSPARENT} from "../../interfaces/color";
 import {Type} from "@angular/core";
 import {RenderingContext} from "../renderingContext";
-import {getDistance} from "../../essentials/utils";
+import {getDistance, getDistanceUndef} from "../../essentials/utils";
 import {LINE_WIDTH_SELECTED_RATIO, TRANSPARENCY_RATIO} from "./graph";
 import {GeometricFormulaComponent} from "../../../formula-tab/geometric-formula/geometric-formula.component";
 import DynamicElement from "./dynamicElement";
+import {CanvasElementSerialized} from "../../essentials/serializer";
+import {getElementToID} from "../../essentials/idProvider";
+import PointElement from "./pointElement";
+
+type Data = {
+  center: number,
+  scdPoint: number
+}
 
 export default class CircleElement extends DynamicElement {
 
@@ -42,7 +50,19 @@ export default class CircleElement extends DynamicElement {
     this.onChange.emit(value);
   }
 
-  constructor(pointProvider: PointProvider, radiusProvider: RadiusProvider, dependencies: CanvasElement[], color: Color = { r: 0, g: 0, b: 0 }, formula?: string, visible: boolean = true, public lineWidth: number = 3) {
+  constructor(pointProvider: PointProvider,
+              radiusProvider: RadiusProvider,
+              dependencies: CanvasElement[],
+              color: Color = { r: 0, g: 0, b: 0 },
+              protected dataProvider: () => Data = () => {
+                return {
+                  center: dependencies[0].id,
+                  scdPoint: dependencies[1].id
+                }
+              },
+              formula?: string,
+              visible: boolean = true,
+              public lineWidth: number = 3) {
     super(dependencies);
     this.configuration.formula = formula;
     this._color = color;
@@ -71,6 +91,33 @@ export default class CircleElement extends DynamicElement {
     }
 
     return undefined;
+  }
+
+  public override serialize(): CanvasElementSerialized {
+    return {
+      style: {
+        color: this.color,
+        size: this.lineWidth,
+        visible: this.visible
+      },
+      data: this.dataProvider()
+    }
+  }
+
+  public override loadFrom(canvasElements: { [id: number]: CanvasElement | undefined }, canvasElementSerialized: CanvasElementSerialized) {
+    if (canvasElementSerialized.data.center !== undefined && canvasElementSerialized.data.scdPoint !== undefined) {
+      const center = canvasElements[canvasElementSerialized.data.center];
+      const scdPoint = canvasElements[canvasElementSerialized.data.scdPoint];
+
+      if (center instanceof PointElement && scdPoint instanceof PointElement) {
+        this.pointProvider = () => center.point;
+        this.radiusProvider = () => getDistanceUndef(center.point, scdPoint.point);
+      }
+
+      this.color = canvasElementSerialized.style.color;
+      this.lineWidth = canvasElementSerialized.style.size ?? this.lineWidth;
+      this.visible = canvasElementSerialized.style.visible;
+    }
   }
 }
 

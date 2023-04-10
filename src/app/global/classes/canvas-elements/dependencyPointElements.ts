@@ -9,8 +9,33 @@ import {
   DependencyPointElementsFormulaComponent
 } from "../../../formula-tab/dependency-point-elements-formula/dependency-point-elements-formula.component";
 import {FormulaElement} from "../abstract/formulaElement";
+import {CanvasElementSerialized} from "../../essentials/serializer";
+import {extremumPointsInInterval, inflectionPointsInInterval, zeroPointsInInterval} from "../func/funcAnalyser";
+import {Graph} from "./graph";
+import {
+  getDependencyStillActiveListenerForGraphDependency,
+  getLabelForGraphDependency, openSnackbarWithMessageForSpecialPoints
+} from "../../essentials/analysingFunctionsUtils";
 
 const dependencyPointElementsKey = '__dependencyPointElements__';
+
+const ZEROPOINTS_SUBTYPE = 'zeropoints';
+const EXTREMUMPOINTS_SUBTYPE = 'extremumpoints';
+const INFLECTIONPOINTS_SUBTYPE = 'inflectionpoints';
+
+type Data = {
+  from: number,
+  to: number,
+  depth: number,
+  graph: number,
+  secondGraph?: number
+}
+
+type SubTypeAndGraphs = {
+  graph: number,
+  subType: string,
+  secondGraph?: number
+}
 
 export default class DependencyPointElements extends CanvasElement {
 
@@ -92,6 +117,7 @@ export default class DependencyPointElements extends CanvasElement {
               from: number, to: number, depth: number,
               private readonly dependencyStillActive: () => boolean,
               public description: [string, () => string | undefined],
+              protected subTypeAndGraphsProvider: () => SubTypeAndGraphs,
               color: Color = BLACK, visible: boolean = true,
               private readonly firstInit?: (points: Point[]) => void) {
     super();
@@ -194,6 +220,118 @@ export default class DependencyPointElements extends CanvasElement {
   private readonly removeListener = () => {
     // Remove the listener on the drawer service.
     this.drawerService.onCanvasElementChanged.removeListener(this.reloadListener);
+  }
+
+  public static createZeroPoints(drawerService: DrawerService,
+                                 graph: Graph,
+                                 from: number,
+                                 to: number,
+                                 depth: number,
+                                 firstInit?: (points: Point[]) => void): DependencyPointElements {
+    // create dependency point for zero points
+    return DependencyPointElements.createDependencyPointElements(drawerService,
+      graph,
+      (from: number, to: number, depth: number) => {
+        return zeroPointsInInterval(graph.func, drawerService.getVariables(), from, to, depth);
+      },
+      from,
+      to,
+      depth,
+      ZEROPOINTS_SUBTYPE,
+      'Nullpunkt',
+      firstInit);
+  }
+
+  public static createExtremumPoints(drawerService: DrawerService,
+                                 graph: Graph,
+                                 from: number,
+                                 to: number,
+                                 depth: number,
+                                 firstInit?: (points: Point[]) => void): DependencyPointElements {
+    // try to derive (throws an error, when derivation doesn't work) --> opens error snackbar
+    graph.func.derive();
+
+    // create dependency point for zero points
+    return DependencyPointElements.createDependencyPointElements(drawerService,
+      graph,
+      (from: number, to: number, depth: number) => {
+        return extremumPointsInInterval(graph.func, drawerService.getVariables(), from, to, depth);
+      },
+      from,
+      to,
+      depth,
+      EXTREMUMPOINTS_SUBTYPE,
+      'Extrempunkt',
+      firstInit);
+  }
+
+  public static createInflectionPoints(drawerService: DrawerService,
+                                 graph: Graph,
+                                 from: number,
+                                 to: number,
+                                 depth: number,
+                                 firstInit?: (points: Point[]) => void): DependencyPointElements {
+    // try to derive (throws an error, when derivation doesn't work) --> opens error snackbar
+    graph.func.derive();
+
+    // create dependency point for zero points
+    return DependencyPointElements.createDependencyPointElements(drawerService,
+      graph,
+      (from: number, to: number, depth: number) => {
+        return inflectionPointsInInterval(graph.func, drawerService.getVariables(), from, to, depth);
+      },
+      from,
+      to,
+      depth,
+      INFLECTIONPOINTS_SUBTYPE,
+      'Wendepunkt',
+      firstInit);
+  }
+
+  private static createDependencyPointElements(drawerService: DrawerService,
+                                               graph: Graph,
+                                               pointsProvider: (from: number, to: number, depth: number) => Point[],
+                                               from: number,
+                                               to: number,
+                                               depth: number,
+                                               subType: string,
+                                               name: string,
+                                               firstInit?: (points: Point[]) => void): DependencyPointElements {
+    // Create a dependency point elements canvas elements, which will adapt to change on the graph.
+    return new DependencyPointElements(drawerService, pointsProvider,
+      from, to, depth,
+      getDependencyStillActiveListenerForGraphDependency(drawerService, graph),
+      getLabelForGraphDependency(`${name}e`, graph),
+      () => {
+        return {
+          graph: graph.id,
+          subType
+        }
+      },
+      graph.color, true, firstInit);
+  }
+
+  public override serialize(): CanvasElementSerialized {
+    const subTypeAndGraphs = this.subTypeAndGraphsProvider();
+    const data: Data = {
+      graph: subTypeAndGraphs.graph,
+      secondGraph: subTypeAndGraphs.secondGraph,
+      depth: this.depth,
+      from: this.from,
+      to: this.to
+    }
+
+    return {
+      subType: subTypeAndGraphs.subType,
+      data,
+      style: {
+        color: this.color,
+        stroke: this.stroke,
+        strokeWidth: this.strokeWidth,
+        size: this.radius,
+        visible: this.visible
+      }
+    }
   }
 
 }
