@@ -70,10 +70,14 @@ export default class PointElement extends DynamicElement {
 
   public set point(value: Point | undefined) {
     if (!this.dependent) {
-      this._x = value?.x;
-      this._y = value?.y;
-      this.onChange.emit(value);
+      this.forceSetPoint(value);
     }
+  }
+
+  public forceSetPoint(value: Point | undefined) {
+    this._x = value?.x;
+    this._y = value?.y;
+    this.onChange.emit(value);
   }
 
   public get point(): Point | undefined {
@@ -101,7 +105,7 @@ export default class PointElement extends DynamicElement {
   public override draw(ctx: RenderingContext): void {
     const selectionRadiusFactor = 1.75;
     const point = this.point;
-    if (this.visible && point !== undefined && isIn(point, ctx.range, selectionRadiusFactor * this.radius / ctx.zoom)) {
+    if (point !== undefined && isIn(point, ctx.range, selectionRadiusFactor * this.radius / ctx.zoom)) {
       if (this.selected || ctx.selection.indexOf(this) !== -1) {
         ctx.drawCircle(point, selectionRadiusFactor * this.radius / ctx.zoom, colorAsTransparent(this.color, 0.3))
       }

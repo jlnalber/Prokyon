@@ -67,4 +67,5 @@
   height: 50px;
   margin-top: 10px;
   user-select: none;
+  pointer-events: none;
 }

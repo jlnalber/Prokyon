@@ -7,7 +7,8 @@ import {CanvasElement} from "./abstract/canvasElement";
 export interface Config {
   showGrid?: boolean,
   gridColor?: Color,
-  showNumbers?: boolean
+  showNumbers?: boolean,
+  transformColor?: (c: Color) => Color
 }
 
 export class RenderingContext {
@@ -68,6 +69,11 @@ export class RenderingContext {
     })
   }
 
+  private getRightColor(c: Color): Color {
+    if (this.config?.transformColor === undefined) return c;
+    return this.config.transformColor(c);
+  }
+
   public drawPath(points: Point[], lineWidth: number, stroke: Color, fill?: Color): void {
     let realPoints = points.map(p => {
       return this.transformPointFromFieldToCanvas(p);
@@ -80,7 +86,7 @@ export class RenderingContext {
 
     this.ctx.beginPath();
     this.ctx.lineWidth = lineWidth;
-    this.ctx.strokeStyle = getColorAsRgbaFunction(stroke);
+    this.ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
 
     if (realPoints.length != 0) {
       let firstP = realPoints[0];
@@ -94,7 +100,7 @@ export class RenderingContext {
       this.ctx.stroke();
 
       if (fill) {
-        this.ctx.fillStyle = getColorAsRgbaFunction(fill);
+        this.ctx.fillStyle = getColorAsRgbaFunction(this.getRightColor(fill));
         this.ctx.fill();
       }
 
@@ -121,7 +127,7 @@ export class RenderingContext {
     ctx.textAlign = textAlign;
     ctx.textBaseline = textBaseline;
     ctx.direction = direction;
-    ctx.fillStyle = getColorAsRgbaFunction(color);
+    ctx.fillStyle = getColorAsRgbaFunction(this.getRightColor(color));
 
     // draw the text
     ctx.fillText(text, realP.x, realP.y, maxWidth);
@@ -136,8 +142,8 @@ export class RenderingContext {
                      strokeWidth: number = 0): void {
     // draw an ellipse around the center point
     this.ctx.lineWidth = strokeWidth;
-    this.ctx.strokeStyle = getColorAsRgbaFunction(stroke);
-    this.ctx.fillStyle = getColorAsRgbaFunction(fill);
+    this.ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
+    this.ctx.fillStyle = getColorAsRgbaFunction(this.getRightColor(fill));
     const realCenter = this.transformPointFromFieldToCanvas(center)
     const realRadiusX = radiusX * this.zoom;
     const realRadiusY = radiusY * this.zoom;
@@ -159,8 +165,8 @@ export class RenderingContext {
 
   public drawRect(rect: Rect, fill: Color = BLACK, stroke: Color = TRANSPARENT, strokeWidth: number = 0): void {
     this.ctx.lineWidth = strokeWidth;
-    this.ctx.strokeStyle = getColorAsRgbaFunction(stroke);
-    this.ctx.fillStyle = getColorAsRgbaFunction(fill);
+    this.ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
+    this.ctx.fillStyle = getColorAsRgbaFunction(this.getRightColor(fill));
     const realRect = this.transformRectFromFieldToCanvas(rect);
     this.ctx.fillRect(realRect.x, realRect.y, realRect.width, realRect.height);
   }

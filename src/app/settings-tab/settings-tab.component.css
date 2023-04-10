@@ -1,3 +1,5 @@
+@import "../global/styles/_global.css";
+
 .wrapper {
   padding: 16px;
   font-family: 'Segoe UI', Calibri, 'sans-serif';

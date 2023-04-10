@@ -134,7 +134,7 @@ export default class DependencyPointElements extends CanvasElement {
 
             // Then, set the points to the point elements
             for (let i = 0; i < points.length; i++) {
-              this.pointElements[i].point = points[i];
+              this.pointElements[i].forceSetPoint(points[i]);
             }
 
             // Trigger the redraw flow.
@@ -170,7 +170,7 @@ export default class DependencyPointElements extends CanvasElement {
 
   public override draw(ctx: RenderingContext): void {
     // Draw, but only if the version is up-to-date, meaning there is no execution still running.
-    if (this.visible && this.correctVersion === this.drawnVersion) {
+    if (this.correctVersion === this.drawnVersion) {
       const selected = ctx.selection.indexOf(this) !== -1;
       for (let pointElement of this.pointElements) {
         pointElement.color = this.color;

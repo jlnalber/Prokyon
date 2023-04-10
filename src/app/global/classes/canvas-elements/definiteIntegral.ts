@@ -163,14 +163,12 @@ export default class DefiniteIntegral extends CanvasElement {
     const selected = ctx.selection.indexOf(this) !== -1;
 
     // Then draw the surface.
-    if (this.visible) {
-      const range = ctx.range;
-      const color = colorAsTransparent(this.color, selected ? 0.5 : 0.3);
-      for (let rect of this.rects) {
-        const correctRect = correctRectTo(rect, range);
-        if (correctRect) {
-          ctx.drawRect(correctRect, color, this.stroke)
-        }
+    const range = ctx.range;
+    const color = colorAsTransparent(this.color, selected ? 0.5 : 0.3);
+    for (let rect of this.rects) {
+      const correctRect = correctRectTo(rect, range);
+      if (correctRect) {
+        ctx.drawRect(correctRect, color, this.stroke)
       }
     }
   }

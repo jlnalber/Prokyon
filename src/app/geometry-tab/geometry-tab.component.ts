@@ -14,6 +14,7 @@ import IntersectionMode from "../global/classes/modes/intersectionMode";
 import MiddlePointMode from "../global/classes/modes/middlePointMode";
 import AngleBisectorMode from "../global/classes/modes/angleBisectorMode";
 import TangensMode from "../global/classes/modes/tangensMode";
+import ChangeVisibilityMode from "../global/classes/modes/changeVisibilityMode";
 
 @Component({
   selector: 'app-geometry-tab',
@@ -29,14 +30,17 @@ export class GeometryTabComponent implements OnInit {
 
   public groups: Group[] = [
     {
-      name: 'Bewege',
+      name: 'Bewegungen und Sichtbarkeiten',
       modes: [
         new ModeElement<MoveMode>(this.drawerService, () => {
           return new MoveMode();
         }, 'Bewegen', 'Bewege den Canvas und wähle Elemente aus', 'move'),
         new ModeElement<MovePointsMode>(this.drawerService, () => {
           return new MovePointsMode();
-        }, 'Verschieben', 'Verschiebe Punkte', 'movePoints')
+        }, 'Verschieben', 'Verschiebe Punkte', 'movePoints'),
+        new ModeElement<ChangeVisibilityMode>(this.drawerService, () => {
+          return new ChangeVisibilityMode();
+        }, 'Anzeigen', 'Mache Elemente (un-)sichtbar', 'changeVisibility')
       ]
     },
     {

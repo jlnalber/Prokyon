@@ -20,6 +20,7 @@
   align-items: center;
   justify-content: center;
   animation: animateFillerDialog 0.1s ease-in-out;
+  overflow: auto;
 }
 
 .wrapper {

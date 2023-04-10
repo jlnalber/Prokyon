@@ -14,6 +14,7 @@ export default class VariableElement extends CanvasElement {
     super();
     this._key = key;
     this._value = value;
+    this.visible = false;
   }
 
   private _value: number;

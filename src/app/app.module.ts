@@ -27,6 +27,7 @@ import { IntervalComponent } from './formula-tab/global/interval/interval.compon
 import { ViewDependencyPointElementsDialogComponent } from './view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component';
 import { GeometryTabComponent } from './geometry-tab/geometry-tab.component';
 import { GeometricFormulaComponent } from './formula-tab/geometric-formula/geometric-formula.component';
+import { ScreenshotDialogComponent } from './screenshot-dialog/screenshot-dialog.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { GeometricFormulaComponent } from './formula-tab/geometric-formula/geome
     IntervalComponent,
     ViewDependencyPointElementsDialogComponent,
     GeometryTabComponent,
-    GeometricFormulaComponent
+    GeometricFormulaComponent,
+    ScreenshotDialogComponent
   ],
   imports: [
     BrowserModule,

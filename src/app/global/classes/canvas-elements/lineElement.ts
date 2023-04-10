@@ -15,7 +15,7 @@ export default class LineElement extends AbstractLine {
     const point1 = points[0];
     const point2 = points[1];
 
-    if (this.visible && point1 !== undefined && point2 !== undefined && !areEqualPoints(point1, point2)) {
+    if (point1 !== undefined && point2 !== undefined && !areEqualPoints(point1, point2)) {
       const range = ctx.range;
       const abc = this.getABCFormLine() as ABCFormLine;
       let pS: Point;

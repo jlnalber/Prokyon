@@ -1,0 +1,20 @@
+<div class="wrapper">
+  <p class="paragraph heading">Screenshot machen</p>
+  <p class="paragraph">Startpunkt:</p>
+  <p class="centered maths">
+    (<input class="input" type="number" [(ngModel)]="this.x" title="x">|
+    <input class="input" type="number" [(ngModel)]="this.y" title="y">)
+  </p>
+  <p class="paragraph">Breite und Höhe:</p>
+  <p class="centered maths">
+    <input class="input" type="number" [(ngModel)]="this.width" title="Breite">
+    <input class="input leftMargin" type="number" [(ngModel)]="this.height" title="Höhe">
+  </p>
+  <p class="paragraph">Zoom:</p>
+  <p class="centered maths">
+    <input class="input" type="number" [(ngModel)]="this.zoom" title="Zoom">
+  </p>
+  <div #wrapper class="canvasWrapper"><canvas #canvas class="canvas" id="canvas"></canvas></div>
+  <button class="button floatRight close" (click)="this.dialog.close()" title="Dialog schließen">Schließen</button>
+  <button class="button floatRight" (click)="this.download()" title="Download">Download</button>
+</div>

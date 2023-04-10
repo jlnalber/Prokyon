@@ -28,6 +28,7 @@ import PointElement from "../global/classes/canvas-elements/pointElement";
 import {colors} from "../global/styles/colors";
 import {Mode} from "../global/classes/modes/mode";
 import MoveMode from "../global/classes/modes/moveMode";
+import {Rect} from "../global/interfaces/rect";
 
 @Injectable({
   providedIn: 'root'
@@ -203,6 +204,7 @@ export class DrawerService {
     this.onTransformationsChanged.addListener(this.redrawListener);
     this.onMetaDrawersChanged.addListener(this.redrawListener);
     this.onCanvasConfigChanged.addListener(this.redrawListener);
+    this.onModeChanged.addListener(this.redrawListener);
     this.selection.onSelectionChanged.addListener(this.redrawListener);
 
     this.onCanvasElementChanged.addListener(this.emptyCacheListener);
@@ -211,33 +213,50 @@ export class DrawerService {
 
   // #region fields for rendering
   public get renderingContext(): RenderingContext {
-    return new RenderingContext(this.canvas?.ctx as CanvasRenderingContext2D, this._transformations, this.getVariables(), this.selection.toArray(), this.canvasConfig);
+    return this.getRenderingContextFor(this.canvas?.ctx as CanvasRenderingContext2D, this._transformations);
+  }
+
+  public getRenderingContextFor(ctx: CanvasRenderingContext2D, transformations: Transformations): RenderingContext {
+    return new RenderingContext(ctx, transformations, this.getVariables(), this.selection.toArray(), this.canvasConfig);
   }
 
   public redraw(): void {
     if (this.canvas && this.canvas.canvasEl && this.canvas.wrapperEl && this.canvas.ctx) {
       this.onBeforeRedraw.emit();
 
-      // resize canvas
-      let boundingRect = this.canvas.wrapperEl.getBoundingClientRect();
-      this.canvas.ctx.canvas.width = boundingRect.width;
-      this.canvas.ctx.canvas.height = boundingRect.height;
-
-      // first: draw the background
-      this.canvas.ctx.fillStyle = getColorAsRgbaFunction(this.backgroundColor);
-      this.canvas.ctx.fillRect(0, 0, this.canvas.canvasEl.width, this.canvas.canvasEl.height);
-
-      // then: draw the elements (first metaDrawers, then canvasElements)
-      let renderingContext = this.renderingContext;
-      for (let metaDrawer of this._metaDrawers) {
-        metaDrawer.draw(renderingContext);
-      }
-      for (let canvasElement of this._canvasElements) {
-        canvasElement.draw(renderingContext);
-      }
+      // draw to canvas
+      this.drawToCanvas(this.canvas.canvasEl, this.canvas.wrapperEl.getBoundingClientRect(), this._transformations);
 
       this.onAfterRedraw.emit();
     }
+  }
+
+  public drawToCanvas(canvas: HTMLCanvasElement, boundingRect: Rect, transformations: Transformations): void {
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+
+    // resize canvas
+    ctx.canvas.width = boundingRect.width;
+    ctx.canvas.height = boundingRect.height;
+
+    // first: draw the background
+    ctx.fillStyle = getColorAsRgbaFunction(this.backgroundColor);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // then: draw the elements (first metaDrawers, then canvasElements)
+    let renderingContext = this.getRenderingContextFor(ctx, transformations);
+    for (let metaDrawer of this._metaDrawers) {
+      metaDrawer.draw(renderingContext);
+    }
+    for (let canvasElement of this._canvasElements) {
+      if (!canvasElement.visible && renderingContext.config) {
+        renderingContext.config.transformColor = this.mode?.transformInvisibleColor;
+      }
+
+      if (canvasElement.visible || renderingContext.config?.transformColor) {
+        canvasElement.draw(renderingContext);
+      }
+    }
+
   }
 
   public zoomToBy(p: Point, factor: number): void {
@@ -382,7 +401,7 @@ export class DrawerService {
   // #endregion
 
   // #region further fields
-  public getSelection(p: Point, filter: (cE: CanvasElement) => boolean = () => true): CanvasElement | undefined {
+  public getSelection(p: Point, filter: (cE: CanvasElement) => boolean = () => true, omitInvisible: boolean = true): CanvasElement | undefined {
     let ctx = this.renderingContext;
     let minDist: number | undefined = undefined;
     let minCanvasElement: CanvasElement | undefined;
@@ -390,7 +409,7 @@ export class DrawerService {
     // find out the element with the minimal distance
     for (let canvasElement of this.canvasElements) {
       const dist = canvasElement.getDistance(p, ctx);
-      if (dist !== undefined && isFinite(dist) && filter(canvasElement) && canvasElement.visible) {
+      if (dist !== undefined && isFinite(dist) && filter(canvasElement) && (canvasElement.visible || !omitInvisible)) {
         let closer = minDist === undefined;
         closer = closer || dist <= minDist!;
         if (closer) {
