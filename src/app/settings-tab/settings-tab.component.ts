@@ -23,13 +23,25 @@ export class SettingsTabComponent implements OnInit {
   }
 
   download() {
+    const content = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(this.drawerService.serialize()));
+    const a = document.createElement('a');
+    a.href = content;
+    a.download = 'download.json';
+    a.click();
+
     localStorage.setItem(STORAGE_CACHE, JSON.stringify(this.drawerService.serialize()));
   }
 
-  open() {
-    const cache = localStorage.getItem(STORAGE_CACHE);
-    if (cache !== null) {
-      this.drawerService.loadFrom(JSON.parse(cache) as Serialized);
+  openFile() {
+    let inp = document.getElementById('inp') as HTMLInputElement;
+
+    if (inp.files) {
+      const file = inp.files?.item(0);
+      file?.text().then(t => {
+        try {
+          this.drawerService.loadFrom(JSON.parse(t) as Serialized);
+        } catch {}
+      })
     }
   }
 }

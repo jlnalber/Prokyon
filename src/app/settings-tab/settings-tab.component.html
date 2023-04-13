@@ -8,12 +8,15 @@
     <label for="showGridNumbers">Achsenbeschriftung anzeigen</label>
   </div>
   <div class="screenshotDiv settingsContainer">
-    <button class="button" (click)="this.screenshot()">Screenshot</button>
+    <button title="Mache ein Screenshot" class="button" (click)="this.screenshot()">Screenshot</button>
   </div>
   <div class="downloadDiv settingsContainer">
-    <button class="button" (click)="this.download()">Herunterladen</button>
+    <button title="Speicher in einer Datei" class="button" (click)="this.download()">Herunterladen</button>
   </div>
   <div class="openDiv settingsContainer">
-    <button class="button" (click)="this.open()">Öffnen</button>
+    <button class="button inpButton">
+      Öffnen
+      <input title="Lade aus einer Datei" id="inp" type="file" (change)="this.openFile()" accept=".json">
+    </button>
   </div>
 </div>
