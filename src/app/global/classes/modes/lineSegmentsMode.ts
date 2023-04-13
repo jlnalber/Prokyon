@@ -12,6 +12,11 @@ export default class LineSegmentsMode extends TwoElementsSelectMode<PointElement
   }
 
   protected override addCanvasElement(drawerService: DrawerService, point1: PointElement, point2: PointElement) {
-    drawerService.addCanvasElements(new LineSegmentElement(() => [point1.point, point2.point], [point1, point2], GREY, 'Verbindungsstrecke'))
+    drawerService.addCanvasElements(new LineSegmentElement(() => [point1.point, point2.point], [point1, point2], () => {
+      return {
+        p1: point1.id,
+        p2: point2.id
+      }
+    }, GREY, 'Verbindungsstrecke'))
   }
 }

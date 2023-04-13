@@ -29,6 +29,7 @@ import {colors} from "../global/styles/colors";
 import {Mode} from "../global/classes/modes/mode";
 import MoveMode from "../global/classes/modes/moveMode";
 import {Rect} from "../global/interfaces/rect";
+import {loadFrom, serialize, Serialized} from "../global/essentials/serializer";
 
 @Injectable({
   providedIn: 'root'
@@ -120,7 +121,7 @@ export class DrawerService {
     return this._metaDrawers.slice();
   }
 
-  private _transformations: Transformations = {
+  private readonly _transformations: Transformations = {
     translateX: 7,
     translateY: -5,
     zoom: 100
@@ -145,6 +146,21 @@ export class DrawerService {
   }
   public get zoom(): number {
     return this._transformations.zoom;
+  }
+
+  public get transformations(): Transformations {
+    return {
+      translateX: this.translateX,
+      translateY: this.translateY,
+      zoom: this.zoom
+    }
+  }
+
+  public set transformations(value: Transformations) {
+    this._transformations.zoom = value.zoom;
+    this._transformations.translateX = value.translateX;
+    this._transformations.translateY = value.translateY;
+    this.onTransformationsChanged.emit(value);
   }
 
   private _showGrid: boolean = true;
@@ -179,7 +195,7 @@ export class DrawerService {
   public readonly onBackgroundColorChanged: Event<Color> = new Event<Color>();
   public readonly onCanvasElementChanged: Event<any> = new Event<any>();
   public readonly onMetaDrawersChanged: Event<CanvasDrawer> = new Event<CanvasDrawer>();
-  public readonly onTransformationsChanged: Event<number> = new Event<number>();
+  public readonly onTransformationsChanged: Event<number | Transformations> = new Event<number | Transformations>();
   public readonly onCanvasConfigChanged: Event<CanvasConfig> = new Event<CanvasConfig>();
   public readonly onBeforeRedraw: Event<undefined> = new Event<undefined>();
   public readonly onAfterRedraw: Event<undefined> = new Event<undefined>();
@@ -225,13 +241,13 @@ export class DrawerService {
       this.onBeforeRedraw.emit();
 
       // draw to canvas
-      this.drawToCanvas(this.canvas.canvasEl, this.canvas.wrapperEl.getBoundingClientRect(), this._transformations);
+      this.drawToCanvas(this.canvas.canvasEl, this.canvas.wrapperEl.getBoundingClientRect(), this._transformations, true);
 
       this.onAfterRedraw.emit();
     }
   }
 
-  public drawToCanvas(canvas: HTMLCanvasElement, boundingRect: Rect, transformations: Transformations): void {
+  public drawToCanvas(canvas: HTMLCanvasElement, boundingRect: Rect, transformations: Transformations, withTransformColor: boolean = false): void {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
     // resize canvas
@@ -248,8 +264,12 @@ export class DrawerService {
       metaDrawer.draw(renderingContext);
     }
     for (let canvasElement of this._canvasElements) {
-      if (!canvasElement.visible && renderingContext.config) {
-        renderingContext.config.transformColor = this.mode?.transformInvisibleColor;
+      if (renderingContext.config && withTransformColor) {
+        if (!canvasElement.visible) {
+          renderingContext.config.transformColor = this.mode?.transformInvisibleColor;
+        } else {
+          renderingContext.config.transformColor = undefined;
+        }
       }
 
       if (canvasElement.visible || renderingContext.config?.transformColor) {
@@ -441,5 +461,13 @@ export class DrawerService {
     }
   }
   // #endregion
+
+  public serialize(): Serialized {
+    return serialize(this);
+  }
+
+  public loadFrom(serialized: Serialized): void {
+    loadFrom(this, serialized);
+  }
 
 }

@@ -10,15 +10,26 @@ import {
 } from "../../../formula-tab/dependency-point-elements-formula/dependency-point-elements-formula.component";
 import {FormulaElement} from "../abstract/formulaElement";
 import {CanvasElementSerialized} from "../../essentials/serializer";
-import {extremumPointsInInterval, inflectionPointsInInterval, zeroPointsInInterval} from "../func/funcAnalyser";
+import {
+  extremumPointsInInterval,
+  inflectionPointsInInterval,
+  zeroPointsInInterval,
+  zerosInInterval
+} from "../func/funcAnalyser";
 import {Graph} from "./graph";
 import {
   getDependencyStillActiveListenerForGraphDependency,
-  getLabelForGraphDependency, openSnackbarWithMessageForSpecialPoints
+  getLabelForGraphDependency
 } from "../../essentials/analysingFunctionsUtils";
+import {countDerivatives} from "../func/funcInspector";
+import {Func} from "../func/func";
+import {Subtraction} from "../func/operations/elementary-operations/subtraction";
+import {ExternalFunction} from "../func/operations/externalFunction";
+import {Variable} from "../func/operations/variable";
 
 const dependencyPointElementsKey = '__dependencyPointElements__';
 
+const INTERSECTIONPOINTS_SUBTYPE = 'intersectionpoints';
 const ZEROPOINTS_SUBTYPE = 'zeropoints';
 const EXTREMUMPOINTS_SUBTYPE = 'extremumpoints';
 const INFLECTIONPOINTS_SUBTYPE = 'inflectionpoints';
@@ -113,9 +124,9 @@ export default class DependencyPointElements extends CanvasElement {
   }
 
   constructor(private readonly drawerService: DrawerService,
-              private readonly pointsProvider: (from: number, to: number, depth: number) => Point[],
+              private pointsProvider: (from: number, to: number, depth: number) => Point[],
               from: number, to: number, depth: number,
-              private readonly dependencyStillActive: () => boolean,
+              private dependencyStillActive: () => boolean,
               public description: [string, () => string | undefined],
               protected subTypeAndGraphsProvider: () => SubTypeAndGraphs,
               color: Color = BLACK, visible: boolean = true,
@@ -180,7 +191,7 @@ export default class DependencyPointElements extends CanvasElement {
   }
 
   private readonly reloadListener = (value: any) => {
-    if (value !== dependencyPointElementsKey) {
+    if (value !== dependencyPointElementsKey && value !== this) {
       this.reload().catch(e => console.error(e));
     }
   }
@@ -220,6 +231,73 @@ export default class DependencyPointElements extends CanvasElement {
   private readonly removeListener = () => {
     // Remove the listener on the drawer service.
     this.drawerService.onCanvasElementChanged.removeListener(this.reloadListener);
+  }
+
+  public static createIntersectionPoints(drawerService: DrawerService,
+                                         graph: Graph,
+                                         secondGraph: Graph,
+                                         from: number,
+                                         to: number,
+                                         depth: number,
+                                         color?: Color,
+                                         firstInit?: (points: Point[]) => void): DependencyPointElements {
+    // Collect the data.
+    color = color ?? drawerService.getNewColor();
+    const variableKey = 'x';
+
+    return new DependencyPointElements(drawerService, (from: number, to: number, depth: number) => {
+      // Helper function:
+      const getFuncProviderFor: (graph: Graph) => ((key: string) => Func) = (graph: Graph) => {
+        return (key: string) => {
+          let f = graph.func;
+
+          // Try to count how often the function needs to be derived.
+          const derivativesKey = countDerivatives(key);
+          const derivativesFunc = graph.func.name ? countDerivatives(graph.func.name) : 0;
+          const diff = derivativesKey - derivativesFunc;
+          if (diff < 0) {
+            throw 'can\'t integrate';
+          }
+
+          for (let i = 0; i < diff; i++) {
+            f = f.derive();
+          }
+          return f;
+        }
+      }
+
+      // First, prepare a difference function.
+      const diffFunc = new Func(new Subtraction(new ExternalFunction(graph.func.name ?? '', getFuncProviderFor(graph), new Variable(variableKey)),
+        new ExternalFunction(secondGraph.func.name ?? '', getFuncProviderFor(secondGraph), new Variable(variableKey)),
+      ), undefined, variableKey);
+
+      // Then, calculate the zeros.
+      const variables = drawerService.getVariables();
+      return zerosInInterval(diffFunc, variables, from, to, depth).map(x => {
+        return {
+          x,
+          y: graph.func.evaluate(x, variables)
+        }
+      })
+    }, from, to, depth, () => {
+      // Check whether both of the graphs are still available.
+      let graph1Found: boolean = false;
+      let graph2Found: boolean = false;
+      for (let canvasElement of drawerService.canvasElements) {
+        if (canvasElement === graph) graph1Found = true;
+        else if (canvasElement === secondGraph) graph2Found = true;
+      }
+      return graph1Found && graph2Found;
+    }, ['Schnittpunkte', () => {
+      // Provide a label for the component in the panel.
+      return graph.func.name && secondGraph.func.name ? `${graph.func.name}, ${secondGraph.func.name}` : undefined
+    }], () => {
+      return {
+        graph: graph.id,
+        secondGraph: secondGraph.id,
+        subType: INTERSECTIONPOINTS_SUBTYPE
+      }
+    }, color, true, firstInit);
   }
 
   public static createZeroPoints(drawerService: DrawerService,
@@ -311,6 +389,15 @@ export default class DependencyPointElements extends CanvasElement {
       graph.color, true, firstInit);
   }
 
+  public static getDefaultInstance(drawerService: DrawerService): DependencyPointElements {
+    return new DependencyPointElements(drawerService, () => [], 0, 0, 1, () => true, ['', () => undefined], () => {
+      return {
+        subType: '',
+        graph: -1
+      }
+    })
+  }
+
   public override serialize(): CanvasElementSerialized {
     const subTypeAndGraphs = this.subTypeAndGraphsProvider();
     const data: Data = {
@@ -332,6 +419,49 @@ export default class DependencyPointElements extends CanvasElement {
         visible: this.visible
       }
     }
+  }
+
+  public override loadFrom(canvasElements: {
+    [p: number]: CanvasElement | undefined
+  }, canvasElementSerialized: CanvasElementSerialized) {
+    const data = canvasElementSerialized.data as Data;
+
+    // set styles
+    this.color = canvasElementSerialized.style.color;
+    this.stroke = canvasElementSerialized.style.stroke as Color;
+    this.radius = canvasElementSerialized.style.size as number;
+    this.strokeWidth = canvasElementSerialized.style.strokeWidth as number;
+    this.visible = canvasElementSerialized.style.visible;
+
+    this.depth = data.depth;
+    this.from = data.from;
+    this.to = data.to;
+
+    const graph = canvasElements[data.graph];
+    const secondGraph = data.secondGraph === undefined ? undefined : canvasElements[data.secondGraph];
+
+    let d: DependencyPointElements;
+
+    if (canvasElementSerialized.subType === INTERSECTIONPOINTS_SUBTYPE && graph instanceof Graph && secondGraph instanceof Graph) {
+      d = DependencyPointElements.createIntersectionPoints(this.drawerService,
+        graph, secondGraph, data.from, data.to, data.depth);
+    } else if (canvasElementSerialized.subType === ZEROPOINTS_SUBTYPE && graph instanceof Graph) {
+      d = DependencyPointElements.createZeroPoints(this.drawerService,
+        graph, data.from, data.to, data.depth);
+    } else if (canvasElementSerialized.subType === EXTREMUMPOINTS_SUBTYPE && graph instanceof Graph) {
+      d = DependencyPointElements.createExtremumPoints(this.drawerService,
+        graph, data.from, data.to, data.depth);
+    } else if (canvasElementSerialized.subType === INFLECTIONPOINTS_SUBTYPE && graph instanceof Graph) {
+      d = DependencyPointElements.createInflectionPoints(this.drawerService,
+        graph, data.from, data.to, data.depth);
+    } else {
+      throw 'not known subtype';
+    }
+
+    this.pointsProvider = d.pointsProvider;
+    this.dependencyStillActive = d.dependencyStillActive;
+    this.description = d.description;
+    this.subTypeAndGraphsProvider = d.subTypeAndGraphsProvider;
   }
 
 }

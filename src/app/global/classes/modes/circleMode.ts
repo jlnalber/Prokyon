@@ -16,7 +16,12 @@ export default class CircleMode extends TwoElementsSelectMode<PointElement | Dyn
     drawerService.addCanvasElements(new CircleElement(() => point1.point,
       () => (point1.point !== undefined && point2.point !== undefined)
         ? Math.sqrt((point1.point.x  - point2.point.x) ** 2 + (point1.point.y - point2.point.y) ** 2)
-        : undefined, [point1, point2],
+        : undefined, [point1, point2], () => {
+        return {
+          center: point1.id,
+          scdPoint: point2.id
+        }
+      },
       GREY, 'Verbindungskreis'))
   }
 }

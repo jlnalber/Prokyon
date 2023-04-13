@@ -1,14 +1,7 @@
 import { Component } from '@angular/core';
-import {
-  extremumPointsInInterval,
-  inflectionPointsInInterval,
-  zeroPointsInInterval
-} from "../global/classes/func/funcAnalyser";
 import {DrawerService} from "../services/drawer.service";
 import {SnackbarService} from "../snackbar/snackbar.service";
 import {
-  getDependencyStillActiveListenerForGraphDependency,
-  getLabelForGraphDependency,
   openErrorSnackbar,
   openSnackbarWithMessageForSpecialPoints
 } from "../global/essentials/analysingFunctionsUtils";
@@ -47,11 +40,11 @@ export class FuncAnalyserDialogComponent {
   evaluateZeroPoints() {
     try {
       if (this.dialogData && this.dialogData.graph) {
-        // Create a dependency point elements canvas element, which will adapt to a change in the graph.
-        const graph = this.dialogData.graph;
-        this.createDependencyPointElements(graph, (from: number, to: number, depth: number) => {
-          return zeroPointsInInterval(graph.func, this.drawerService.getVariables(), from, to, depth);
-        }, 'Nullpunkt');
+        // create a dependency point element for extremum points
+        this.drawerService.addCanvasElements(DependencyPointElements.createZeroPoints(this.drawerService,
+          this.dialogData.graph, this.from, this.to, this.depth, (result: Point[]) => {
+            openSnackbarWithMessageForSpecialPoints(this.snackbarService, 'Nullpunkt', result.length);
+          }));
       }
     } catch {
       openErrorSnackbar(this.snackbarService);
@@ -62,14 +55,11 @@ export class FuncAnalyserDialogComponent {
   evaluateExtremumPoints() {
     try {
       if (this.dialogData && this.dialogData.graph) {
-        // try to derive (throws an error, when derivation doesn't work) --> opens error snackbar
-        this.dialogData.graph.func.derive();
-
-        // Create a dependency point elements canvas element, which will adapt to a change in the graph.
-        const graph = this.dialogData.graph;
-        this.createDependencyPointElements(graph, (from: number, to: number, depth: number) => {
-          return extremumPointsInInterval(graph.func, this.drawerService.getVariables(), from, to, depth);
-        }, 'Extrempunkt');
+        // create a dependency point element for extremum points
+        this.drawerService.addCanvasElements(DependencyPointElements.createExtremumPoints(this.drawerService,
+          this.dialogData.graph, this.from, this.to, this.depth, (result: Point[]) => {
+            openSnackbarWithMessageForSpecialPoints(this.snackbarService, 'Extrempunkt', result.length);
+          }));
       }
     } catch {
       openErrorSnackbar(this.snackbarService);
@@ -80,32 +70,16 @@ export class FuncAnalyserDialogComponent {
   evaluateInflectionPoints() {
     try {
       if (this.dialogData && this.dialogData.graph) {
-        const d = DependencyPointElements.createInflectionPoints(this.drawerService,)
-
-        // try to derive (throws an error, when derivation doesn't work) --> opens error snackbar
-        this.dialogData.graph.func.derive();
-
-        // Create a dependency point elements canvas element, which will adapt to a change in the graph.
-        const graph = this.dialogData.graph;
-        this.createDependencyPointElements(graph, (from: number, to: number, depth: number) => {
-          return inflectionPointsInInterval(graph.func, this.drawerService.getVariables(), from, to, depth);
-        }, 'Wendepunkt');
+        // create a dependency point element for inflection points
+        const d = DependencyPointElements.createInflectionPoints(this.drawerService, this.dialogData.graph,
+          this.from, this.to, this.depth, (result: Point[]) => {
+            openSnackbarWithMessageForSpecialPoints(this.snackbarService, 'Wendepunkt', result.length);
+          });
+        this.drawerService.addCanvasElements(d);
       }
     } catch {
       openErrorSnackbar(this.snackbarService);
     }
     this.dialog.close();
-  }
-
-  private createDependencyPointElements(graph: Graph, pointsProvider: (from: number, to: number, depth: number) => Point[], name: string): DependencyPointElements {
-    // Create a dependency point elements canvas elements, which will adapt to change on the graph.
-    const dependencyPointElements = new DependencyPointElements(this.drawerService, pointsProvider,
-      this.from, this.to, this.depth,
-      getDependencyStillActiveListenerForGraphDependency(this.drawerService, graph),
-      getLabelForGraphDependency(`${name}e`, graph), graph.color, true, (result: Point[]) => {
-      openSnackbarWithMessageForSpecialPoints(this.snackbarService, name, result.length);
-    });
-    this.drawerService.addCanvasElements(dependencyPointElements);
-    return dependencyPointElements;
   }
 }

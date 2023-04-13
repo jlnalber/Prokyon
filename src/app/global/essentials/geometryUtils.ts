@@ -1,7 +1,6 @@
 import {Point} from "../interfaces/point";
 import {ABCFormLine} from "../classes/canvas-elements/abstractLine";
 import LineSegmentElement from "../classes/canvas-elements/lineSegmentElement";
-import CircleElement from "../classes/canvas-elements/circleElement";
 import {getDistance} from "./utils";
 
 type LineByPoints = [Point | undefined, Point | undefined];
@@ -78,7 +77,7 @@ export function getMiddlePointByPoints(p1: Point | undefined, p2: Point | undefi
   };
 }
 
-export function getMiddlePointsByLineSegment(lineSegment: LineSegmentElement): Point | undefined {
+export function getMiddlePointByLineSegment(lineSegment: LineSegmentElement): Point | undefined {
   return getMiddlePointByPoints(lineSegment.point1, lineSegment.point2);
 }
 
@@ -101,7 +100,7 @@ export function getAngleBisector(center: Point | undefined, p1: Point | undefine
   const abcLine1 = getABCFormLineFromTwoPoints(p1, center);
   const abcLine2 = getABCFormLineFromTwoPoints(p2, center);
 
-  if (abcLine1 === undefined || center === undefined || p1 === undefined || p2 === undefined || abcLine2 === undefined || center === undefined) {
+  if (abcLine1 === undefined || center === undefined || p1 === undefined || p2 === undefined || abcLine2 === undefined) {
     return [undefined, undefined];
   }
 

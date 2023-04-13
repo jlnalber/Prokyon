@@ -186,6 +186,10 @@ export default class DefiniteIntegral extends CanvasElement {
     return Math.min(...this.rects.map(rect => getDistanceToRect(p, rect)));
   }
 
+  public static getDefaultInstance(): DefiniteIntegral {
+    return new DefiniteIntegral(undefined!, undefined, 0, 0);
+  }
+
   public override serialize(): CanvasElementSerialized {
     const data: Data = {
       graph: this.graph.id,

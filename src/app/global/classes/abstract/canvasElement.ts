@@ -25,7 +25,7 @@ export abstract class CanvasElement extends CanvasDrawer {
   public abstract readonly componentType: Type<FormulaElement>;
 
   public abstract serialize(): CanvasElementSerialized;
-  public abstract loadFrom(canvasElements: { [id: number]: CanvasElement | undefined }, canvasElementSerialized: CanvasElementSerialized): void;
+  public abstract loadFrom(canvasElements: { [id: number]: CanvasElement | undefined }, canvasElementSerialized: CanvasElementSerialized, drawerService: DrawerService): void;
 
   public getDistance(p: Point, ctx: RenderingContext): number | undefined {
     return undefined;

@@ -68,4 +68,4 @@ export type ABCFormLine = {
   c: number
 }
 
-type PointsProvider = () => ([Point | undefined, Point | undefined]);
+export type PointsProvider = () => ([Point | undefined, Point | undefined]);

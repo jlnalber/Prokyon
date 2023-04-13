@@ -13,7 +13,12 @@ export class GeometricFormulaComponent extends FormulaElement implements OnInit 
 
   constructor() {
     super();
-    this.canvasElement = new LineElement(() => [undefined, undefined], []);
+    this.canvasElement = new LineElement(() => [undefined, undefined], [], () => {
+      return {
+        subType: '',
+        els: []
+      }
+    });
   }
 
   ngOnInit(): void {

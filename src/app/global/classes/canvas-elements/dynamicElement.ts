@@ -4,14 +4,18 @@ import {DrawerService} from "../../../services/drawer.service";
 export default abstract class DynamicElement extends CanvasElement {
   protected constructor(dependencies: CanvasElement[]) {
     super();
-    for (let i of dependencies) {
-      i.onRemove.addListener(this.removeListener);
-    }
+    this.addDependency(...dependencies);
   }
 
   private readonly removeListener = (drawerService?: DrawerService) => {
     if (drawerService !== undefined) {
       drawerService.removeCanvasElements(this);
+    }
+  }
+
+  protected addDependency(...dependencies: CanvasElement[]) {
+    for (let i of dependencies) {
+      i.onRemove.addListener(this.removeListener);
     }
   }
 }

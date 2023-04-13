@@ -1,12 +1,20 @@
-import AbstractLine from "./abstractLine";
+import AbstractLine, {PointsProvider} from "./abstractLine";
 import {RenderingContext} from "../renderingContext";
 import {Type} from "@angular/core";
 import {areEqualPoints, isInRange} from "../../essentials/utils";
-import {colorAsTransparent} from "../../interfaces/color";
+import {Color, colorAsTransparent} from "../../interfaces/color";
 import {LINE_WIDTH_SELECTED_RATIO, TRANSPARENCY_RATIO} from "./graph";
 import {Point} from "../../interfaces/point";
 import {getDistance} from "../../essentials/utils";
 import {GeometricFormulaComponent} from "../../../formula-tab/geometric-formula/geometric-formula.component";
+import {CanvasElement} from "../abstract/canvasElement";
+import {CanvasElementSerialized} from "../../essentials/serializer";
+import PointElement from "./pointElement";
+
+type Data = {
+  p1: number,
+  p2: number
+}
 
 export default class LineSegmentElement extends AbstractLine {
   readonly componentType: Type<GeometricFormulaComponent> = GeometricFormulaComponent;
@@ -37,6 +45,60 @@ export default class LineSegmentElement extends AbstractLine {
       }
     }
     return undefined;
+  }
+
+  constructor(psProvider: PointsProvider,
+              dependencies: CanvasElement[],
+              protected dataProvider: () => Data,
+              color: Color = { r: 0, g: 0, b: 0 },
+              formula?: string,
+              visible: boolean = true,
+              lineWidth: number = 3) {
+    super(psProvider, dependencies, color, formula, visible, lineWidth);
+  }
+
+  public static getDefaultInstance(): LineSegmentElement {
+    return new LineSegmentElement(() => [undefined, undefined], [], () => {
+      return {
+        p1: -1,
+        p2: -1
+      }
+    })
+  }
+
+  public override serialize(): CanvasElementSerialized {
+    return {
+      data: this.dataProvider(),
+      style: {
+        color: this.color,
+        visible: this.visible,
+        size: this.lineWidth
+      }
+    }
+  }
+
+  public override loadFrom(canvasElements: {
+    [p: number]: CanvasElement | undefined
+  }, canvasElementSerialized: CanvasElementSerialized) {
+    this.color = canvasElementSerialized.style.color;
+    this.visible = canvasElementSerialized.style.visible;
+    this.lineWidth = canvasElementSerialized.style.size ?? this.lineWidth;
+
+    const data: Data = canvasElementSerialized.data as Data;
+    const p1 = canvasElements[data.p1];
+    const p2 = canvasElements[data.p2];
+
+    if (p1 instanceof PointElement && p2 instanceof PointElement) {
+      this.pointsProvider = () => [p1.point, p2.point];
+      this.dataProvider = () => {
+        return {
+          p1: p1.id,
+          p2: p2.id
+        }
+      }
+
+      this.addDependency(p1, p2);
+    }
   }
 
 }

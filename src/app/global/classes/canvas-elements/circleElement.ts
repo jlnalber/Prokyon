@@ -8,7 +8,6 @@ import {LINE_WIDTH_SELECTED_RATIO, TRANSPARENCY_RATIO} from "./graph";
 import {GeometricFormulaComponent} from "../../../formula-tab/geometric-formula/geometric-formula.component";
 import DynamicElement from "./dynamicElement";
 import {CanvasElementSerialized} from "../../essentials/serializer";
-import {getElementToID} from "../../essentials/idProvider";
 import PointElement from "./pointElement";
 
 type Data = {
@@ -53,13 +52,8 @@ export default class CircleElement extends DynamicElement {
   constructor(pointProvider: PointProvider,
               radiusProvider: RadiusProvider,
               dependencies: CanvasElement[],
+              protected dataProvider: () => Data,
               color: Color = { r: 0, g: 0, b: 0 },
-              protected dataProvider: () => Data = () => {
-                return {
-                  center: dependencies[0].id,
-                  scdPoint: dependencies[1].id
-                }
-              },
               formula?: string,
               visible: boolean = true,
               public lineWidth: number = 3) {
@@ -93,6 +87,15 @@ export default class CircleElement extends DynamicElement {
     return undefined;
   }
 
+  public static getDefaultInstance(): CircleElement {
+    return new CircleElement(() => undefined, () => undefined, [], () => {
+      return {
+        center: -1,
+        scdPoint: -1
+      }
+    });
+  }
+
   public override serialize(): CanvasElementSerialized {
     return {
       style: {
@@ -112,6 +115,14 @@ export default class CircleElement extends DynamicElement {
       if (center instanceof PointElement && scdPoint instanceof PointElement) {
         this.pointProvider = () => center.point;
         this.radiusProvider = () => getDistanceUndef(center.point, scdPoint.point);
+        this.dataProvider = () => {
+          return {
+            center: center.id,
+            scdPoint: scdPoint.id
+          }
+        }
+
+        this.addDependency(center, scdPoint);
       }
 
       this.color = canvasElementSerialized.style.color;

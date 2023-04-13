@@ -6,6 +6,12 @@ import {Point} from "../../interfaces/point";
 import {isIn, isInRange} from "../../essentials/utils";
 import {GraphFormulaComponent} from "../../../formula-tab/graph-formula/graph-formula.component";
 import {getDistanceToStraightLine} from "../../essentials/straightLineUtils";
+import {CanvasElementSerialized} from "../../essentials/serializer";
+import {DrawerService} from "../../../services/drawer.service";
+
+type Data = {
+  formula?: string
+}
 
 export const TRANSPARENCY_RATIO = 0.3;
 export const LINE_WIDTH_SELECTED_RATIO = 2.5;
@@ -197,6 +203,43 @@ export class Graph extends CanvasElement {
       return Math.abs(p.y - this.func.evaluate(p.x, ctx.variables));
     } catch { }
     return undefined;
+  }
+
+  public static getDefaultInstance(): Graph {
+    return new Graph(undefined!);
+  }
+
+  public override serialize(): CanvasElementSerialized {
+    const data: Data = {
+      formula: this.configuration.formula
+    }
+    return {
+      data,
+      style: {
+        color: this.color,
+        visible: this.visible,
+        size: this.lineWidth
+      }
+    }
+  }
+
+  public override loadFrom(canvasElements: {
+    [p: number]: CanvasElement | undefined
+  }, canvasElementSerialized: CanvasElementSerialized, drawerService: DrawerService) {
+    this.color = canvasElementSerialized.style.color;
+    this.visible = canvasElementSerialized.style.visible;
+    this.lineWidth = canvasElementSerialized.style.size ?? this.lineWidth;
+
+    const data: Data = canvasElementSerialized.data as Data;
+    if (data.formula !== undefined) {
+      const res = drawerService.parseAndValidateFunc(data.formula, false);
+      if (res instanceof Func) {
+        this.func = res;
+        this.func.stopEvaluation = false;
+      } else {
+        this.func.stopEvaluation = true;
+      }
+    }
   }
 
 }

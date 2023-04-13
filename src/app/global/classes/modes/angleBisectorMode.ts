@@ -1,13 +1,10 @@
 import MoveMode from "./moveMode";
-import {CanvasElement} from "../abstract/canvasElement";
 import {DrawerService} from "../../../services/drawer.service";
 import {Point} from "../../interfaces/point";
 import {PointerContext} from "../pointerController";
 import {RenderingContext} from "../renderingContext";
 import PointElement from "../canvas-elements/pointElement";
 import LineElement from "../canvas-elements/lineElement";
-import {getAngleBisector} from "../../essentials/geometryUtils";
-import {GREY} from "../../interfaces/color";
 
 export default class AngleBisectorMode extends MoveMode {
   private clickedElement1: PointElement | undefined;
@@ -45,9 +42,7 @@ export default class AngleBisectorMode extends MoveMode {
         const center = this.clickedElement2;
         const p1 = this.clickedElement1;
         const p2 = clickedElement;
-        drawerService.addCanvasElements(new LineElement(() => {
-          return getAngleBisector(center.point, p1.point, p2.point);
-        }, [center, p1, p2], GREY, 'Winkelhalbierende'))
+        drawerService.addCanvasElements(LineElement.createAngleBisector(center, p1, p2))
       }
     } else {
       drawerService.selection.empty();

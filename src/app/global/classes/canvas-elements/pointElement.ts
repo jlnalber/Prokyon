@@ -7,6 +7,16 @@ import {FormulaElement} from "../abstract/formulaElement";
 import {BLACK, Color, colorAsTransparent} from "../../interfaces/color";
 import {isIn} from "../../essentials/utils";
 import DynamicElement from "./dynamicElement";
+import {CanvasElementSerialized, Style} from "../../essentials/serializer";
+import {DrawerService} from "../../../services/drawer.service";
+
+
+type Data = {
+  x: number | undefined,
+  y: number | undefined,
+  dependent: boolean,
+  name?: string
+}
 
 export default class PointElement extends DynamicElement {
 
@@ -94,7 +104,7 @@ export default class PointElement extends DynamicElement {
   public selected: boolean = false;
 
   // the constructor, dependent means that the point is dependent of another canvas element
-  constructor(p: Point | undefined, color: Color = BLACK, public readonly dependent = false, dependencies: CanvasElement[] = [], public readonly name?: string, visible: boolean = true) {
+  constructor(p: Point | undefined, color: Color = BLACK, public dependent = false, dependencies: CanvasElement[] = [], public name?: string, visible: boolean = true) {
     super(dependencies);
     this._x = p?.x;
     this._y = p?.y;
@@ -120,6 +130,51 @@ export default class PointElement extends DynamicElement {
       return Math.sqrt((t.x - p.x) ** 2 + (t.y - p.y) ** 2) - this.radius / ctx.zoom;
     }
     return undefined;
+  }
+
+  public static getDefaultInstance(): PointElement {
+    return new PointElement(undefined);
+  }
+
+  public override serialize(): CanvasElementSerialized {
+    const data: Data = {
+      x: this.x,
+      y: this.y,
+      name: this.name,
+      dependent: this.dependent
+    };
+    return {
+      data,
+      style: {
+        color: this.color,
+        stroke: this.stroke,
+        size: this.radius,
+        strokeWidth: this.strokeWidth,
+        visible: this.visible
+      }
+    };
+  }
+
+  public override loadFrom(canvasElements: {
+    [p: number]: CanvasElement | undefined
+  }, canvasElementSerialized: CanvasElementSerialized, drawerService: DrawerService) {
+    const data: Data = canvasElementSerialized.data as Data;
+    this.forceSetPoint(data.x === undefined || data.y === undefined ? undefined : {
+      x: data.x,
+      y: data.y
+    });
+    this.name = data.name;
+    this.dependent = data.dependent;
+
+    this.loadStyle(canvasElementSerialized.style);
+  }
+
+  protected loadStyle(style: Style): void {
+    this.color = style.color;
+    this.visible = style.visible;
+    this.radius = style.size ?? this.radius;
+    this.stroke = style.stroke ?? this.stroke;
+    this.strokeWidth = style.strokeWidth ?? this.strokeWidth;
   }
 
 }
