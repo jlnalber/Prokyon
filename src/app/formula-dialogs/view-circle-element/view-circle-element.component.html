@@ -1,0 +1,24 @@
+<div class="wrapper">
+  <p class="paragraph heading">Kreis:</p>
+  <p class="paragraph maths nameInput"><span></span>
+    <input [(ngModel)]="this.name" type="text" title="Name" class="input"> :
+  </p>
+  <table *ngIf="this.isDefined()">
+    <tr>
+      <td><p class="paragraph">Radius:</p></td>
+      <td>
+        <p class="paragraph maths centered">
+          <span>{{ this.radius }}</span>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td><p class="paragraph">Mittelpunkt:</p></td>
+      <td><p class="paragraph maths centered">( {{ this.pointX }} | {{ this.pointY }} )</p></td>
+    </tr>
+  </table>
+  <div *ngIf="!this.isDefined()">
+    <p class="paragraph maths centered">Kreis konnte nicht konstruiert werden.</p>
+  </div>
+  <button class="button floatRight close" (click)="this.dialog.close()" title="Dialog schließen">Schließen</button>
+</div>

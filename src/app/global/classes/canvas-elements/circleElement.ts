@@ -9,6 +9,7 @@ import {GeometricFormulaComponent} from "../../../formula-tab/geometric-formula/
 import DynamicElement from "./dynamicElement";
 import {CanvasElementSerialized} from "../../essentials/serializer";
 import PointElement from "./pointElement";
+import {ViewCircleElementComponent} from "../../../formula-dialogs/view-circle-element/view-circle-element.component";
 
 type Data = {
   center: number,
@@ -18,7 +19,7 @@ type Data = {
 export default class CircleElement extends DynamicElement {
 
   public readonly componentType: Type<GeometricFormulaComponent> = GeometricFormulaComponent;
-  public override formulaDialogType = undefined;
+  public override formulaDialogType = ViewCircleElementComponent;
 
   private _pointProvider: PointProvider;
 
@@ -57,9 +58,11 @@ export default class CircleElement extends DynamicElement {
               color: Color = { r: 0, g: 0, b: 0 },
               formula?: string,
               visible: boolean = true,
-              public lineWidth: number = 3) {
+              public lineWidth: number = 3,
+              showLabel: boolean = true) {
     super(dependencies);
     this.configuration.formula = formula;
+    this.configuration.showLabel = showLabel;
     this._color = color;
     this._visible = visible;
     this._pointProvider = pointProvider;
@@ -75,6 +78,21 @@ export default class CircleElement extends DynamicElement {
         ctx.drawCircle(point, radius, TRANSPARENT, colorAsTransparent(this._color, TRANSPARENCY_RATIO), this.lineWidth * LINE_WIDTH_SELECTED_RATIO);
       }
       ctx.drawCircle(point, radius, TRANSPARENT, this.color, this.lineWidth);
+    }
+  }
+
+  public override getPositionForLabel(rtx: RenderingContext): Point | undefined {
+    const depos = 15 / rtx.zoom;
+    const center = this.point;
+    const radius = this.radius;
+
+    if (center === undefined || radius === undefined) {
+      return undefined;
+    }
+
+    return {
+      x: center.x + radius / Math.SQRT2 + depos,
+      y: center.y + radius / Math.SQRT2 + depos
     }
   }
 

@@ -30,6 +30,7 @@ import { GeometricFormulaComponent } from './formula-tab/geometric-formula/geome
 import { ScreenshotDialogComponent } from './screenshot-dialog/screenshot-dialog.component';
 import { ViewPointElementComponent } from './formula-dialogs/view-point-element/view-point-element.component';
 import { ViewAbstractLineElementComponent } from './formula-dialogs/view-abstract-line-element/view-abstract-line-element.component';
+import { ViewCircleElementComponent } from './formula-dialogs/view-circle-element/view-circle-element.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +62,8 @@ import { ViewAbstractLineElementComponent } from './formula-dialogs/view-abstrac
     GeometricFormulaComponent,
     ScreenshotDialogComponent,
     ViewPointElementComponent,
-    ViewAbstractLineElementComponent
+    ViewAbstractLineElementComponent,
+    ViewCircleElementComponent
   ],
   imports: [
     BrowserModule,
