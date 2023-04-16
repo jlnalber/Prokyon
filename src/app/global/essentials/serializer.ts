@@ -11,6 +11,7 @@ import PointElement from "../classes/canvas-elements/pointElement";
 import {DrawerService} from "../../services/drawer.service";
 import {Transformations} from "../interfaces/transformations";
 import VariableElement from "../classes/canvas-elements/variableElement";
+import {Point} from "../interfaces/point";
 
 export interface Style {
   color: Color,
@@ -29,7 +30,8 @@ export interface CanvasElementSerialized {
 type CanvasElementSerializedComplete = {
   id: number,
   configuration: CanvasElementConfiguration
-  type: string
+  type: string,
+  translateLabel: Point
 } & CanvasElementSerialized;
 
 export type Serialized = {
@@ -49,7 +51,8 @@ export function serialize(drawerService: DrawerService): Serialized {
       ...s,
       id: canvasElement.id,
       configuration: canvasElement.configuration,
-      type: getType(canvasElement)
+      type: getType(canvasElement),
+      translateLabel: canvasElement.labelTranslate
     }
     canvasElements.push(c);
   }
@@ -131,6 +134,7 @@ export function loadFrom(drawerService: DrawerService, serialized: Serialized): 
 
     if (canvasElement !== undefined) {
       canvasElement.configuration = c.configuration;
+      canvasElement.labelTranslate = c.translateLabel;
       canvasElements[c.id] = canvasElement;
     }
   }

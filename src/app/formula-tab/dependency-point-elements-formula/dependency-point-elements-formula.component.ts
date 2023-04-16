@@ -31,24 +31,4 @@ export class DependencyPointElementsFormulaComponent extends FormulaElement {
     }
   }
 
-  public override get contextMenu(): ContextMenu {
-    return {
-      elements: () => {
-        const elements: ContextMenuElement[] = [{
-          header: 'Anzeigen',
-          click: () => {
-            this.dialogService.createDialog(ViewDependencyPointElementsDialogComponent)?.open({
-              dependencyPointElements: this.canvasElement
-            })
-          },
-          icon: 'visibility',
-          title: 'Elemente anzeigen und bearbeiten.'
-        }]
-
-        return elements;
-      },
-      additionalEvent: this.threePointsClickedEvent
-    }
-  }
-
 }

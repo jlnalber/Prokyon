@@ -26,6 +26,9 @@ import {Func} from "../func/func";
 import {Subtraction} from "../func/operations/elementary-operations/subtraction";
 import {ExternalFunction} from "../func/operations/externalFunction";
 import {Variable} from "../func/operations/variable";
+import {
+  ViewDependencyPointElementsDialogComponent
+} from "../../../view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component";
 
 const dependencyPointElementsKey = '__dependencyPointElements__';
 
@@ -51,6 +54,7 @@ type SubTypeAndGraphs = {
 export default class DependencyPointElements extends CanvasElement {
 
   readonly componentType: Type<FormulaElement> = DependencyPointElementsFormulaComponent;
+  public override formulaDialogType = ViewDependencyPointElementsDialogComponent;
 
   private pointElements: PointElement[] = [];
   private initializedYet: boolean = false;
@@ -130,7 +134,8 @@ export default class DependencyPointElements extends CanvasElement {
               public description: [string, () => string | undefined],
               protected subTypeAndGraphsProvider: () => SubTypeAndGraphs,
               color: Color = BLACK, visible: boolean = true,
-              private readonly firstInit?: (points: Point[]) => void) {
+              private readonly firstInit?: (points: Point[]) => void,
+              addElement: boolean = true) {
     super();
     this._color = color;
     this._visible = visible;
@@ -138,8 +143,10 @@ export default class DependencyPointElements extends CanvasElement {
     this._to = to;
     this._depth = depth;
 
-    this.onRemove.addListener(this.removeListener);
-    this.drawerService.onCanvasElementChanged.addListener(this.reloadListener);
+    if (addElement) {
+      this.onRemove.addListener(this.removeListener);
+      this.drawerService.onCanvasElementChanged.addListener(this.reloadListener);
+    }
   }
 
   private async reload(): Promise<void> {
@@ -240,7 +247,8 @@ export default class DependencyPointElements extends CanvasElement {
                                          to: number,
                                          depth: number,
                                          color?: Color,
-                                         firstInit?: (points: Point[]) => void): DependencyPointElements {
+                                         firstInit?: (points: Point[]) => void,
+                                         addElement: boolean = true): DependencyPointElements {
     // Collect the data.
     color = color ?? drawerService.getNewColor();
     const variableKey = 'x';
@@ -297,7 +305,7 @@ export default class DependencyPointElements extends CanvasElement {
         secondGraph: secondGraph.id,
         subType: INTERSECTIONPOINTS_SUBTYPE
       }
-    }, color, true, firstInit);
+    }, color, true, firstInit, addElement);
   }
 
   public static createZeroPoints(drawerService: DrawerService,
@@ -305,7 +313,8 @@ export default class DependencyPointElements extends CanvasElement {
                                  from: number,
                                  to: number,
                                  depth: number,
-                                 firstInit?: (points: Point[]) => void): DependencyPointElements {
+                                 firstInit?: (points: Point[]) => void,
+                                 addElement: boolean = true): DependencyPointElements {
     // create dependency point for zero points
     return DependencyPointElements.createDependencyPointElements(drawerService,
       graph,
@@ -317,7 +326,7 @@ export default class DependencyPointElements extends CanvasElement {
       depth,
       ZEROPOINTS_SUBTYPE,
       'Nullpunkt',
-      firstInit);
+      firstInit, addElement);
   }
 
   public static createExtremumPoints(drawerService: DrawerService,
@@ -325,7 +334,8 @@ export default class DependencyPointElements extends CanvasElement {
                                  from: number,
                                  to: number,
                                  depth: number,
-                                 firstInit?: (points: Point[]) => void): DependencyPointElements {
+                                 firstInit?: (points: Point[]) => void,
+                                 addElement: boolean = true): DependencyPointElements {
     // try to derive (throws an error, when derivation doesn't work) --> opens error snackbar
     graph.func.derive();
 
@@ -340,7 +350,7 @@ export default class DependencyPointElements extends CanvasElement {
       depth,
       EXTREMUMPOINTS_SUBTYPE,
       'Extrempunkt',
-      firstInit);
+      firstInit, addElement);
   }
 
   public static createInflectionPoints(drawerService: DrawerService,
@@ -348,7 +358,8 @@ export default class DependencyPointElements extends CanvasElement {
                                  from: number,
                                  to: number,
                                  depth: number,
-                                 firstInit?: (points: Point[]) => void): DependencyPointElements {
+                                 firstInit?: (points: Point[]) => void,
+                                 addElement: boolean = true): DependencyPointElements {
     // try to derive (throws an error, when derivation doesn't work) --> opens error snackbar
     graph.func.derive();
 
@@ -363,7 +374,7 @@ export default class DependencyPointElements extends CanvasElement {
       depth,
       INFLECTIONPOINTS_SUBTYPE,
       'Wendepunkt',
-      firstInit);
+      firstInit, addElement);
   }
 
   private static createDependencyPointElements(drawerService: DrawerService,
@@ -374,7 +385,8 @@ export default class DependencyPointElements extends CanvasElement {
                                                depth: number,
                                                subType: string,
                                                name: string,
-                                               firstInit?: (points: Point[]) => void): DependencyPointElements {
+                                               firstInit?: (points: Point[]) => void,
+                                               addElement: boolean = true): DependencyPointElements {
     // Create a dependency point elements canvas elements, which will adapt to change on the graph.
     return new DependencyPointElements(drawerService, pointsProvider,
       from, to, depth,
@@ -386,7 +398,7 @@ export default class DependencyPointElements extends CanvasElement {
           subType
         }
       },
-      graph.color, true, firstInit);
+      graph.color, true, firstInit, addElement);
   }
 
   public static getDefaultInstance(drawerService: DrawerService): DependencyPointElements {
@@ -395,7 +407,7 @@ export default class DependencyPointElements extends CanvasElement {
         subType: '',
         graph: -1
       }
-    })
+    }, BLACK, true, undefined, false);
   }
 
   public override serialize(): CanvasElementSerialized {
@@ -444,16 +456,16 @@ export default class DependencyPointElements extends CanvasElement {
 
     if (canvasElementSerialized.subType === INTERSECTIONPOINTS_SUBTYPE && graph instanceof Graph && secondGraph instanceof Graph) {
       d = DependencyPointElements.createIntersectionPoints(this.drawerService,
-        graph, secondGraph, data.from, data.to, data.depth);
+        graph, secondGraph, data.from, data.to, data.depth, undefined, undefined, false);
     } else if (canvasElementSerialized.subType === ZEROPOINTS_SUBTYPE && graph instanceof Graph) {
       d = DependencyPointElements.createZeroPoints(this.drawerService,
-        graph, data.from, data.to, data.depth);
+        graph, data.from, data.to, data.depth, undefined, false);
     } else if (canvasElementSerialized.subType === EXTREMUMPOINTS_SUBTYPE && graph instanceof Graph) {
       d = DependencyPointElements.createExtremumPoints(this.drawerService,
-        graph, data.from, data.to, data.depth);
+        graph, data.from, data.to, data.depth, undefined, false);
     } else if (canvasElementSerialized.subType === INFLECTIONPOINTS_SUBTYPE && graph instanceof Graph) {
       d = DependencyPointElements.createInflectionPoints(this.drawerService,
-        graph, data.from, data.to, data.depth);
+        graph, data.from, data.to, data.depth, undefined, false);
     } else {
       throw 'not known subtype';
     }
@@ -465,3 +477,4 @@ export default class DependencyPointElements extends CanvasElement {
   }
 
 }
+

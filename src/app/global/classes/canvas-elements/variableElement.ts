@@ -11,6 +11,7 @@ type Data = {
 
 export default class VariableElement extends CanvasElement {
   public readonly componentType: Type<FormulaElement> = VariableFormulaComponent;
+  public override formulaDialogType = undefined;
 
   public override draw(): void {
     return;

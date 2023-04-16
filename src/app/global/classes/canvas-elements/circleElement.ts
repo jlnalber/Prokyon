@@ -18,6 +18,7 @@ type Data = {
 export default class CircleElement extends DynamicElement {
 
   public readonly componentType: Type<GeometricFormulaComponent> = GeometricFormulaComponent;
+  public override formulaDialogType = undefined;
 
   private _pointProvider: PointProvider;
 

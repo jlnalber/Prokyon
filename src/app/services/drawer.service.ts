@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {CanvasComponent} from "../canvas/canvas.component";
 import {CanvasElement} from "../global/classes/abstract/canvasElement";
-import {Color, getColorAsRgbaFunction} from "../global/interfaces/color";
+import {Color, colorAsTransparent, getColorAsRgbaFunction, WHITE} from "../global/interfaces/color";
 import {Event} from "../global/essentials/event";
 import {RenderingContext} from "../global/classes/renderingContext";
 import {Transformations} from "../global/interfaces/transformations";
@@ -9,7 +9,7 @@ import {Point, Vector} from "../global/interfaces/point";
 import { CanvasDrawer } from '../global/classes/abstract/canvasDrawer';
 import {Grid} from "../global/classes/grid";
 import {Graph} from "../global/classes/canvas-elements/graph";
-import {getNew, sameColors} from "../global/essentials/utils";
+import {getDistanceToRect, getMinUndef, getNew, isIn, sameColors} from "../global/essentials/utils";
 import {Config as CanvasConfig} from "../global/classes/renderingContext";
 import {FuncProvider} from "../global/classes/func/operations/externalFunction";
 import {Func} from "../global/classes/func/func";
@@ -30,6 +30,11 @@ import {Mode} from "../global/classes/modes/mode";
 import MoveMode from "../global/classes/modes/moveMode";
 import {Rect} from "../global/interfaces/rect";
 import {loadFrom, serialize, Serialized} from "../global/essentials/serializer";
+
+export const STORAGE_CACHE = 'serialized'
+
+const LABEL_FONT_SIZE = 18;
+const LABEL_FONT = LABEL_FONT_SIZE + 'px "Cambria Math", Cambria, "CMU Serif", serif';
 
 @Injectable({
   providedIn: 'root'
@@ -212,6 +217,10 @@ export class DrawerService {
     this.funcCache.empty();
   }
 
+  private saveListener = () => {
+    localStorage[STORAGE_CACHE] = JSON.stringify(this.serialize());
+  }
+
   constructor() {
     this.addMetaDrawer(new Grid());
 
@@ -225,6 +234,8 @@ export class DrawerService {
 
     this.onCanvasElementChanged.addListener(this.emptyCacheListener);
     this.onCanvasElementChanged.addListener(this.emptyCacheListener);
+
+    this.onAfterRedraw.addListener(this.saveListener);
   }
 
   // #region fields for rendering
@@ -274,6 +285,15 @@ export class DrawerService {
 
       if (canvasElement.visible || renderingContext.config?.transformColor) {
         canvasElement.draw(renderingContext);
+
+        // draw label
+        const labelPoint = this.getLabelPoint(canvasElement, renderingContext);
+        if (labelPoint !== undefined && canvasElement.configuration.label !== undefined) {
+          renderingContext.drawText(canvasElement.configuration.label, labelPoint,
+            LABEL_FONT, 'start', 'alphabetic', 'inherit',
+            canvasElement.color,
+            this.selection.contains(canvasElement) ? colorAsTransparent(canvasElement.color, 0.2) : WHITE, 3);
+        }
       }
     }
 
@@ -421,15 +441,48 @@ export class DrawerService {
   // #endregion
 
   // #region further fields
+  private getLabelPoint(canvasElement: CanvasElement, ctx: RenderingContext): Point | undefined {
+    const labelPoint = canvasElement.getPositionForLabel(ctx);
+    if (labelPoint !== undefined && canvasElement.configuration.label !== undefined && canvasElement.configuration.showLabel) {
+      const range = ctx.range;
+      const realTranslate = {
+        x: Math.abs(range.width) * canvasElement.labelTranslate.x,
+        y: Math.abs(range.height) * canvasElement.labelTranslate.y
+      }
+
+      return {
+        x: labelPoint.x + realTranslate.x,
+        y: labelPoint.y + realTranslate.y
+      };
+    }
+
+    return undefined;
+  }
+
   public getSelection(p: Point, filter: (cE: CanvasElement) => boolean = () => true, omitInvisible: boolean = true): CanvasElement | undefined {
     let ctx = this.renderingContext;
     let minDist: number | undefined = undefined;
     let minCanvasElement: CanvasElement | undefined;
 
+    const getDistToLabel = (canvasElement: CanvasElement): number | undefined => {
+      const labelPoint = this.getLabelPoint(canvasElement, ctx);
+      if (canvasElement.configuration.label === undefined || labelPoint === undefined) {
+        return undefined;
+      }
+      const measureText = ctx.measureText(canvasElement.configuration.label, LABEL_FONT);
+      const fieldWidth = measureText.width / ctx.zoom;
+      const fieldHeight = LABEL_FONT_SIZE / ctx.zoom;
+      return getDistanceToRect(p, {
+        ...labelPoint,
+        width: fieldWidth,
+        height: fieldHeight
+      })
+    }
+
     // find out the element with the minimal distance
     for (let canvasElement of this.canvasElements) {
-      const dist = canvasElement.getDistance(p, ctx);
-      if (dist !== undefined && isFinite(dist) && filter(canvasElement) && (canvasElement.visible || !omitInvisible)) {
+      const dist = getMinUndef(canvasElement.getDistance(p, ctx), getDistToLabel(canvasElement));
+      if (dist !== undefined && dist !== null && isFinite(dist) && filter(canvasElement) && (canvasElement.visible || !omitInvisible)) {
         let closer = minDist === undefined;
         closer = closer || dist <= minDist!;
         if (closer) {

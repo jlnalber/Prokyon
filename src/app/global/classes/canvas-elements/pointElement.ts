@@ -21,6 +21,7 @@ type Data = {
 export default class PointElement extends DynamicElement {
 
   public readonly componentType: Type<FormulaElement> = PointFormulaComponent;
+  public override formulaDialogType = undefined;
 
   private _stroke: Color = {
     r: 100,

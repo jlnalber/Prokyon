@@ -3,6 +3,10 @@ import {ContextMenu, ContextMenuElement} from "../../context-menu/context-menu.d
 import {CanvasElement} from "../../global/classes/abstract/canvasElement";
 import {DrawerService} from "../../services/drawer.service";
 import {FormulaElement} from "../../global/classes/abstract/formulaElement";
+import {
+  ViewDependencyPointElementsDialogComponent
+} from "../../view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component";
+import {DialogService} from "../../dialog/dialog.service";
 
 @Component({
   selector: 'app-formula-element',
@@ -12,10 +16,11 @@ import {FormulaElement} from "../../global/classes/abstract/formulaElement";
 export class FormulaElementComponent implements AfterViewInit {
 
   @Input() canvasElement!: CanvasElement;
-  @ViewChild('formula', { read: ViewContainerRef }) formula!: ViewContainerRef;
+  @ViewChild('formula', {read: ViewContainerRef}) formula!: ViewContainerRef;
   private formulaElementComp?: FormulaElement;
 
-  constructor(private readonly drawerService: DrawerService) { }
+  constructor(private readonly drawerService: DrawerService, private readonly dialogService: DialogService) {
+  }
 
   ngAfterViewInit() {
     setTimeout(() => {
@@ -34,11 +39,22 @@ export class FormulaElementComponent implements AfterViewInit {
     }
     return [];
   }
+
   get completeContextMenu(): ContextMenu {
     return {
       elements: () => {
+        const dialog: ContextMenuElement[] = this.canvasElement.formulaDialogType !== undefined ? [{
+          header: 'Anzeigen',
+          click: () => {
+            this.dialogService.createDialog(this.canvasElement.formulaDialogType!)?.open(this.canvasElement)
+          },
+          icon: 'visibility',
+          title: 'Element anzeigen und bearbeiten.'
+        }] : [];
+
         const selected = this.selected;
         const elements = [
+          ...dialog,
           ...this.getContextMenuElementsFromFormulaElement(),
           {
             header: selected ? 'Auswahl entfernen' : 'Auswählen',

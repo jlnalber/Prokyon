@@ -23,6 +23,7 @@ type Data = {
 export default class DefiniteIntegral extends CanvasElement {
 
   public readonly componentType: Type<FormulaElement> = DefiniteIntegralFormulaComponent;
+  public override formulaDialogType = undefined;
 
   private _value: number = 0;
   public get value(): number {

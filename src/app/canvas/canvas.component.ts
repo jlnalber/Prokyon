@@ -1,7 +1,8 @@
 import {AfterViewInit, Component, ElementRef, ViewChild} from '@angular/core';
-import {DrawerService} from "../services/drawer.service";
+import {DrawerService, STORAGE_CACHE} from "../services/drawer.service";
 import {PointerContext, PointerController} from "../global/classes/pointerController";
 import {Point} from "../global/interfaces/point";
+import {Serialized} from "../global/essentials/serializer";
 
 // This component is responsible for providing a canvas for the graphs.
 
@@ -64,6 +65,12 @@ export class CanvasComponent implements AfterViewInit {
         this.drawerService.zoomToBy(p, factor);
     }
     });
+
+
+    // load from last session
+    try {
+      this.drawerService.loadFrom(JSON.parse(localStorage[STORAGE_CACHE]) as Serialized);
+    } catch {}
 
     // Initial drawing.
     this.drawerService.redraw();

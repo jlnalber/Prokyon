@@ -1,22 +1,22 @@
-<div class="wrapper" *ngIf="this.dialogData?.dependencyPointElements !== undefined">
+<div class="wrapper" *ngIf="this.dialogData !== undefined">
   <p class="paragraph heading">
-    {{ this.dialogData?.dependencyPointElements?.description![0] }}<span *ngIf="this.dialogData?.dependencyPointElements?.description![1]() !== undefined"> von <span class="maths">{{ this.dialogData?.dependencyPointElements?.description![1]() }}</span></span>
+    {{ this.dialogData.description![0] }}<span *ngIf="this.dialogData.description![1]() !== undefined"> von <span class="maths">{{ this.dialogData.description![1]() }}</span></span>
   </p>
   <p class="paragraph">Im Intervall</p>
   <p class="centered">
-    <app-interval [(from)]="this.dialogData!.dependencyPointElements!.from" [(to)]="this.dialogData!.dependencyPointElements!.to"></app-interval>
+    <app-interval [(from)]="this.dialogData.from" [(to)]="this.dialogData.to"></app-interval>
   </p>
   <p class="paragraph">mit der Suchtiefe:</p>
   <p class="centered maths">
-    <input class="input" type="number" [(ngModel)]="this.dialogData!.dependencyPointElements!.depth" title="Suchtiefe">
+    <input class="input" type="number" [(ngModel)]="this.dialogData.depth" title="Suchtiefe">
   </p>
-  <div class="pointWrappers" *ngIf="this.dialogData?.dependencyPointElements?.size !== 0">
+  <div class="pointWrappers" *ngIf="this.dialogData.size !== 0">
     <p class="paragraph">Ergebnisse:</p>
-    <div class="point" *ngFor="let point of this.dialogData?.dependencyPointElements?.points; let l = last" [ngClass]="{'notLast': !l}">
+    <div class="point" *ngFor="let point of this.dialogData.points; let l = last" [ngClass]="{'notLast': !l}">
       <p class="maths paragraph pointParagraph">({{point.x.toLocaleString()}}|{{point.y.toLocaleString()}})</p>
       <button class="iconButton depositionTop floatRight" (click)="this.addPointToDrawerService(point)"><span class="material-symbols-outlined">add</span></button>
     </div>
   </div>
-  <div class="paragraph defaultMargin pointsNotFoundMessage" *ngIf="this.dialogData?.dependencyPointElements?.size === 0">Es wurden keine Elemente gefunden.</div>
+  <div class="paragraph defaultMargin pointsNotFoundMessage" *ngIf="this.dialogData.size === 0">Es wurden keine Elemente gefunden.</div>
   <button class="button floatRight close" (click)="this.dialog.close()" title="Dialog schließen">Schließen</button>
 </div>

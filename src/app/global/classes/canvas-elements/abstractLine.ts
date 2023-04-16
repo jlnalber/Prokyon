@@ -12,6 +12,8 @@ import DynamicElement from "./dynamicElement";
 
 // a line of the form ax + by = c between two points
 export default abstract class AbstractLine extends DynamicElement {
+  public override formulaDialogType = undefined;
+
   private _pointsProvider: PointsProvider;
 
   public get point1(): Point | undefined {

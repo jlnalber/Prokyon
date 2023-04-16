@@ -15,6 +15,8 @@ import MiddlePointMode from "../global/classes/modes/middlePointMode";
 import AngleBisectorMode from "../global/classes/modes/angleBisectorMode";
 import TangensMode from "../global/classes/modes/tangensMode";
 import ChangeVisibilityMode from "../global/classes/modes/changeVisibilityMode";
+import ShowLabelVisibilityMode from "../global/classes/modes/showLabelVisibilityMode";
+import MoveLabelsMode from "../global/classes/modes/moveLabelsMode";
 
 @Component({
   selector: 'app-geometry-tab',
@@ -40,7 +42,13 @@ export class GeometryTabComponent implements OnInit {
         }, 'Verschieben', 'Verschiebe Punkte', 'movePoints'),
         new ModeElement<ChangeVisibilityMode>(this.drawerService, () => {
           return new ChangeVisibilityMode();
-        }, 'Anzeigen', 'Mache Elemente (un-)sichtbar', 'changeVisibility')
+        }, 'Anzeigen', 'Mache Elemente (un-)sichtbar', 'changeVisibility'),
+        new ModeElement<ShowLabelVisibilityMode>(this.drawerService, () => {
+          return new ShowLabelVisibilityMode();
+        }, 'Label anzeigen', 'Mache Labels (un-)sichtbar', 'showLabelVisibility'),
+        new ModeElement<MoveLabelsMode>(this.drawerService, () => {
+          return new MoveLabelsMode();
+        }, 'Label bewegen', 'Verschiebe Labels', 'moveLabels')
       ]
     },
     {

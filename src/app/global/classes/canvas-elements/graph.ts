@@ -3,7 +3,7 @@ import {RenderingContext} from "../renderingContext";
 import {Func} from "../func/func";
 import {Color, colorAsTransparent} from "../../interfaces/color";
 import {Point} from "../../interfaces/point";
-import {isIn, isInRange} from "../../essentials/utils";
+import {correctRect, isIn, isInRange} from "../../essentials/utils";
 import {GraphFormulaComponent} from "../../../formula-tab/graph-formula/graph-formula.component";
 import {getDistanceToStraightLine} from "../../essentials/straightLineUtils";
 import {CanvasElementSerialized} from "../../essentials/serializer";
@@ -19,6 +19,7 @@ export const LINE_WIDTH_SELECTED_RATIO = 2.5;
 export class Graph extends CanvasElement {
 
   public readonly componentType = GraphFormulaComponent;
+  public override formulaDialogType = undefined;
 
   private _func: Func;
   public get func(): Func {
@@ -26,12 +27,15 @@ export class Graph extends CanvasElement {
   }
   public set func(value: Func) {
     this._func = value;
+    this.configuration.label = value.name;
     this.onChange.emit(value);
   }
 
   constructor(func: Func, color: Color = { r: 0, g: 0, b: 0 }, visible: boolean = true, public lineWidth: number = 3) {
     super();
     this._func = func;
+    this.configuration.label = func?.name;
+    this.configuration.showLabel = true;
     this._color = color;
     this._visible = visible;
   }
@@ -239,6 +243,22 @@ export class Graph extends CanvasElement {
       } else {
         this.func.stopEvaluation = true;
       }
+    }
+  }
+
+  public override getPositionForLabel(rtx: RenderingContext): Point | undefined {
+    const rect = correctRect(rtx.range);
+    try {
+      const distX = 0.1;
+      const distY = 0.05;
+      const x = rect.x + rect.width - rect.width * distX;
+      const y = this.func.evaluate(x) + rect.height * distY;
+      return {
+        x,
+        y
+      }
+    } catch {
+      return undefined;
     }
   }
 

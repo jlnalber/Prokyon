@@ -99,6 +99,16 @@ export function getDistanceUndef(p1: Point | undefined, p2: Point | undefined): 
   return undefined;
 }
 
+export function getMinUndef(...vals: (number | undefined | null)[]): number | undefined | null {
+  let min: number | undefined | null = undefined;
+  for (let v of vals) {
+    if (min === undefined || min === null || isNaN(min) || (v !== undefined && v !== null && !isNaN(v) && v < min)) {
+      min = v;
+    }
+  }
+  return min;
+}
+
 export function areEqualPoints(p1: Point, p2: Point): boolean {
   return p1.x === p2.x && p1.y === p2.y;
 }

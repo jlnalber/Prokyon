@@ -1,7 +1,7 @@
 import {Transformations} from "../interfaces/transformations";
 import {Point} from "../interfaces/point";
 import {Rect} from "../interfaces/rect";
-import {BLACK, Color, getColorAsRgbaFunction, TRANSPARENT} from "../interfaces/color";
+import {BLACK, Color, getColorAsRgbaFunction, RED, TRANSPARENT} from "../interfaces/color";
 import {CanvasElement} from "./abstract/canvasElement";
 
 export interface Config {
@@ -118,19 +118,44 @@ export class RenderingContext {
                   textBaseline: CanvasTextBaseline = 'alphabetic',
                   direction: CanvasDirection = 'inherit',
                   color: Color = { r: 0, g: 0, b: 0 },
+                  stroke: Color = TRANSPARENT,
+                  lineWidth: number = 3,
                   maxWidth?: number): void {
     let realP = this.transformPointFromFieldToCanvas(p);
 
     // set the ctx up
     let ctx = this.ctx;
+
     ctx.font = font;
     ctx.textAlign = textAlign;
     ctx.textBaseline = textBaseline;
     ctx.direction = direction;
     ctx.fillStyle = getColorAsRgbaFunction(this.getRightColor(color));
+    ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
+    ctx.lineWidth = lineWidth;
 
     // draw the text
+    ctx.strokeText(text, realP.x, realP.y, maxWidth);
     ctx.fillText(text, realP.x, realP.y, maxWidth);
+  }
+
+  public measureText(text: string,
+                  font: string = '10px sans-serif',
+                  textAlign: CanvasTextAlign = 'start',
+                  textBaseline: CanvasTextBaseline = 'alphabetic',
+                  direction: CanvasDirection = 'inherit',
+                  lineWidth: number = 3): TextMetrics {
+    // set the ctx up
+    let ctx = this.ctx;
+
+    ctx.font = font;
+    ctx.textAlign = textAlign;
+    ctx.textBaseline = textBaseline;
+    ctx.direction = direction;
+    ctx.lineWidth = lineWidth;
+
+    // draw the text
+    return ctx.measureText(text);
   }
 
   public drawEllipse(center: Point,
