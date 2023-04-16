@@ -3,7 +3,7 @@ import {RenderingContext} from "../renderingContext";
 import {GeometricFormulaComponent} from "../../../formula-tab/geometric-formula/geometric-formula.component";
 import {Type} from "@angular/core";
 import {Point} from "../../interfaces/point";
-import {areEqualPoints, isInRange} from "../../essentials/utils";
+import {areEqualPoints, correctRect, isIn, isInRange} from "../../essentials/utils";
 import {Color, colorAsTransparent, GREY} from "../../interfaces/color";
 import {LINE_WIDTH_SELECTED_RATIO, TRANSPARENCY_RATIO} from "./graph";
 import {CanvasElement} from "../abstract/canvasElement";
@@ -18,6 +18,7 @@ import {
 } from "../../essentials/geometryUtils";
 import LineSegmentElement from "./lineSegmentElement";
 import CircleElement from "./circleElement";
+import {Rect} from "../../interfaces/rect";
 
 const ANGLE_BISECTOR_SUBTYPE = 'angle_bisector';
 const BISECTION_SUBTYPE = 'bisection';
@@ -86,14 +87,65 @@ export default class LineElement extends AbstractLine {
     }
   }
 
+  public override getPositionForLabel(rtx: RenderingContext): Point | undefined {
+    const range = correctRect(rtx.range);
+    const depos = 50 / rtx.zoom;
+    const abc = this.getABCFormLine();
+
+    if (abc === undefined) {
+      return undefined;
+    }
+
+    const rect: Rect = {
+      x: range.x + depos,
+      y: range.y + depos,
+      width: range.width - 2 * depos,
+      height: range.height - 2 * depos
+    }
+
+    const iPointBottom = getIntersectionPointLines(abc, {
+      a: 0,
+      b: 1,
+      c: rect.y
+    })
+    const iPointTop = getIntersectionPointLines(abc, {
+      a: 0,
+      b: 1,
+      c: rect.y + rect.height
+    })
+    const inRangeTop = iPointTop !== undefined && isInRange(iPointTop.x, rect.x, rect.x + rect.width);
+    const iPointRight = getIntersectionPointLines(abc, {
+      a: 1,
+      b: 0,
+      c: rect.x + rect.width
+    })
+    const inRangeBottom = iPointBottom !== undefined && isInRange(iPointBottom.x, rect.x, rect.x + rect.width);
+
+    if (iPointRight !== undefined && isInRange(iPointRight.y, rect.y, rect.y + rect.height)) {
+      return iPointRight;
+    } else if (inRangeTop && inRangeBottom) {
+      if (iPointTop!.x > iPointBottom!.x) {
+        return iPointTop;
+      } else {
+        return iPointBottom;
+      }
+    } else if (inRangeTop) {
+      return iPointTop;
+    } else if (inRangeBottom) {
+      return iPointBottom;
+    }
+    return undefined;
+  }
+
   constructor(psProvider: PointsProvider,
               dependencies: CanvasElement[],
               protected subTypeAndDataProvider: () => SubTypeAndData,
               color: Color = {r: 0, g: 0, b: 0},
               formula?: string,
               visible: boolean = true,
-              lineWidth: number = 3) {
-    super(psProvider, dependencies, color, formula, visible, lineWidth);
+              lineWidth: number = 3,
+              showLabel: boolean = true) {
+    super(psProvider, dependencies, color, formula, visible, lineWidth, showLabel);
   }
 
   public static createAngleBisector(center: PointElement, p1: PointElement, p2: PointElement): LineElement {

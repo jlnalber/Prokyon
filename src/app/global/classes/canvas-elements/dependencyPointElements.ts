@@ -28,7 +28,7 @@ import {ExternalFunction} from "../func/operations/externalFunction";
 import {Variable} from "../func/operations/variable";
 import {
   ViewDependencyPointElementsDialogComponent
-} from "../../../view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component";
+} from "../../../formula-dialogs/view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component";
 
 const dependencyPointElementsKey = '__dependencyPointElements__';
 

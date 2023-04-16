@@ -31,11 +31,11 @@ export class Graph extends CanvasElement {
     this.onChange.emit(value);
   }
 
-  constructor(func: Func, color: Color = { r: 0, g: 0, b: 0 }, visible: boolean = true, public lineWidth: number = 3) {
+  constructor(func: Func, color: Color = { r: 0, g: 0, b: 0 }, visible: boolean = true, public lineWidth: number = 3, showLabel: boolean = true) {
     super();
     this._func = func;
     this.configuration.label = func?.name;
-    this.configuration.showLabel = true;
+    this.configuration.showLabel = showLabel;
     this._color = color;
     this._visible = visible;
   }

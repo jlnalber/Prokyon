@@ -24,10 +24,12 @@ import { IntersectionDialogComponent } from './intersection-dialog/intersection-
 import { DependencyPointElementsFormulaComponent } from './formula-tab/dependency-point-elements-formula/dependency-point-elements-formula.component';
 import { DefiniteIntegralFormulaComponent } from './formula-tab/definite-integral-formula/definite-integral-formula.component';
 import { IntervalComponent } from './formula-tab/global/interval/interval.component';
-import { ViewDependencyPointElementsDialogComponent } from './view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component';
+import { ViewDependencyPointElementsDialogComponent } from './formula-dialogs/view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component';
 import { GeometryTabComponent } from './geometry-tab/geometry-tab.component';
 import { GeometricFormulaComponent } from './formula-tab/geometric-formula/geometric-formula.component';
 import { ScreenshotDialogComponent } from './screenshot-dialog/screenshot-dialog.component';
+import { ViewPointElementComponent } from './formula-dialogs/view-point-element/view-point-element.component';
+import { ViewAbstractLineElementComponent } from './formula-dialogs/view-abstract-line-element/view-abstract-line-element.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +59,9 @@ import { ScreenshotDialogComponent } from './screenshot-dialog/screenshot-dialog
     ViewDependencyPointElementsDialogComponent,
     GeometryTabComponent,
     GeometricFormulaComponent,
-    ScreenshotDialogComponent
+    ScreenshotDialogComponent,
+    ViewPointElementComponent,
+    ViewAbstractLineElementComponent
   ],
   imports: [
     BrowserModule,

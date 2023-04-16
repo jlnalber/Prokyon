@@ -5,7 +5,7 @@ import {ContextMenu, ContextMenuElement} from "../../context-menu/context-menu.d
 import {DialogService} from "../../dialog/dialog.service";
 import {
   ViewDependencyPointElementsDialogComponent
-} from "../../view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component";
+} from "../../formula-dialogs/view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component";
 
 @Component({
   selector: 'app-dependency-point-element-formula',

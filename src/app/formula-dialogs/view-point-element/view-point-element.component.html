@@ -1,0 +1,8 @@
+<div class="wrapper">
+  <p class="paragraph heading">Punkt bearbeiten</p>
+  <p class="paragraph maths"><span></span>
+    <input [(ngModel)]="this.name" title="Name" type="text" class="input"> ( <span><input type="number" step="any" class="input" [disabled]="this.dialogData.dependent" [(ngModel)]="this.dialogData.x"></span> |
+    <span><input type="number" step="any" class="input" [disabled]="this.dialogData.dependent" [(ngModel)]="this.dialogData.y"></span> )
+  </p>
+  <button class="button floatRight close" (click)="this.dialog.close()" title="Dialog schließen">Schließen</button>
+</div>

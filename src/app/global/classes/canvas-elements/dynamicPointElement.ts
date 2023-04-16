@@ -55,7 +55,7 @@ export default class DynamicPointElement extends PointElement {
               color: Color = BLACK,
               name?: string,
               visible: boolean = true) {
-    super({x: 0, y: 0}, color, true, dependencies, name, visible);
+    super({x: 0, y: 0}, color, true, dependencies, visible);
     this._pointProvider = pointProvider;
   }
 

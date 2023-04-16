@@ -20,8 +20,8 @@ export class PointFormulaComponent extends FormulaElement {
   }
 
   public get name(): string {
-    return this.canvasElement.name
-      ? this.canvasElement.name
+    return this.canvasElement.configuration.name
+      ? this.canvasElement.configuration.name + ' '
       : '';
   }
 

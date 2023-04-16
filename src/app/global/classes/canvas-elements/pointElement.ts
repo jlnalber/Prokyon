@@ -5,10 +5,11 @@ import {PointFormulaComponent} from "../../../formula-tab/point-formula/point-fo
 import {Point} from "../../interfaces/point";
 import {FormulaElement} from "../abstract/formulaElement";
 import {BLACK, Color, colorAsTransparent} from "../../interfaces/color";
-import {isIn} from "../../essentials/utils";
+import {correctRect, isIn} from "../../essentials/utils";
 import DynamicElement from "./dynamicElement";
 import {CanvasElementSerialized, Style} from "../../essentials/serializer";
 import {DrawerService} from "../../../services/drawer.service";
+import {ViewPointElementComponent} from "../../../formula-dialogs/view-point-element/view-point-element.component";
 
 
 type Data = {
@@ -21,7 +22,7 @@ type Data = {
 export default class PointElement extends DynamicElement {
 
   public readonly componentType: Type<FormulaElement> = PointFormulaComponent;
-  public override formulaDialogType = undefined;
+  public override formulaDialogType = ViewPointElementComponent;
 
   private _stroke: Color = {
     r: 100,
@@ -105,12 +106,13 @@ export default class PointElement extends DynamicElement {
   public selected: boolean = false;
 
   // the constructor, dependent means that the point is dependent of another canvas element
-  constructor(p: Point | undefined, color: Color = BLACK, public dependent = false, dependencies: CanvasElement[] = [], public name?: string, visible: boolean = true) {
+  constructor(p: Point | undefined, color: Color = BLACK, public dependent = false, dependencies: CanvasElement[] = [], visible: boolean = true, showLabel: boolean = true) {
     super(dependencies);
     this._x = p?.x;
     this._y = p?.y;
     this._color = color;
     this._visible = visible;
+    this.configuration.showLabel = showLabel;
   }
 
   public override draw(ctx: RenderingContext): void {
@@ -133,6 +135,19 @@ export default class PointElement extends DynamicElement {
     return undefined;
   }
 
+  public override getPositionForLabel(rtx: RenderingContext): Point | undefined {
+    const depos = 15;
+    const x = this.x;
+    const y = this.y;
+    if (x !== undefined && y !== undefined) {
+      return {
+        x: x + depos / rtx.zoom,
+        y: y + depos / rtx.zoom
+      }
+    }
+    return undefined;
+  }
+
   public static getDefaultInstance(): PointElement {
     return new PointElement(undefined);
   }
@@ -141,7 +156,6 @@ export default class PointElement extends DynamicElement {
     const data: Data = {
       x: this.x,
       y: this.y,
-      name: this.name,
       dependent: this.dependent
     };
     return {
@@ -164,7 +178,6 @@ export default class PointElement extends DynamicElement {
       x: data.x,
       y: data.y
     });
-    this.name = data.name;
     this.dependent = data.dependent;
 
     this.loadStyle(canvasElementSerialized.style);

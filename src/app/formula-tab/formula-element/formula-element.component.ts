@@ -5,7 +5,7 @@ import {DrawerService} from "../../services/drawer.service";
 import {FormulaElement} from "../../global/classes/abstract/formulaElement";
 import {
   ViewDependencyPointElementsDialogComponent
-} from "../../view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component";
+} from "../../formula-dialogs/view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component";
 import {DialogService} from "../../dialog/dialog.service";
 
 @Component({

@@ -9,10 +9,13 @@ import {
 import {getDistance} from "../../essentials/utils";
 import {RenderingContext} from "../renderingContext";
 import DynamicElement from "./dynamicElement";
+import {
+  ViewAbstractLineElementComponent
+} from "../../../formula-dialogs/view-abstract-line-element/view-abstract-line-element.component";
 
 // a line of the form ax + by = c between two points
 export default abstract class AbstractLine extends DynamicElement {
-  public override formulaDialogType = undefined;
+  public override formulaDialogType = ViewAbstractLineElementComponent;
 
   private _pointsProvider: PointsProvider;
 
@@ -33,9 +36,16 @@ export default abstract class AbstractLine extends DynamicElement {
     this.onChange.emit(value);
   }
 
-  public constructor(psProvider: PointsProvider, dependencies: CanvasElement[], color: Color = { r: 0, g: 0, b: 0 }, formula?: string, visible: boolean = true, public lineWidth: number = 3) {
+  protected constructor(psProvider: PointsProvider,
+                     dependencies: CanvasElement[],
+                     color: Color = { r: 0, g: 0, b: 0 },
+                     formula?: string,
+                     visible: boolean = true,
+                     public lineWidth: number = 3,
+                     showLabel: boolean = true) {
     super(dependencies);
     this.configuration.formula = formula;
+    this.configuration.showLabel = showLabel;
     this._color = color;
     this._visible = visible;
     this._pointsProvider = psProvider;

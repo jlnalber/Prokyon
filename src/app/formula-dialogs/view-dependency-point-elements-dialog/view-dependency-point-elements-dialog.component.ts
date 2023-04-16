@@ -1,10 +1,10 @@
 import {Component} from '@angular/core';
-import DependencyPointElements from "../global/classes/canvas-elements/dependencyPointElements";
-import {Dialog} from "../dialog/dialog";
-import {DrawerService} from "../services/drawer.service";
-import {Point} from "../global/interfaces/point";
-import PointElement from "../global/classes/canvas-elements/pointElement";
-import FormulaDialogElement from "../global/classes/abstract/formulaDialogElement";
+import DependencyPointElements from "../../global/classes/canvas-elements/dependencyPointElements";
+import {Dialog} from "../../dialog/dialog";
+import {DrawerService} from "../../services/drawer.service";
+import {Point} from "../../global/interfaces/point";
+import PointElement from "../../global/classes/canvas-elements/pointElement";
+import FormulaDialogElement from "../../global/classes/abstract/formulaDialogElement";
 
 export interface ViewDependencyPointElementsDialogData {
   dependencyPointElements?: DependencyPointElements

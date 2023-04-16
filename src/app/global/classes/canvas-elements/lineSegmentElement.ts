@@ -10,6 +10,7 @@ import {GeometricFormulaComponent} from "../../../formula-tab/geometric-formula/
 import {CanvasElement} from "../abstract/canvasElement";
 import {CanvasElementSerialized} from "../../essentials/serializer";
 import PointElement from "./pointElement";
+import {getMiddlePointByPoints} from "../../essentials/geometryUtils";
 
 type Data = {
   p1: number,
@@ -47,14 +48,30 @@ export default class LineSegmentElement extends AbstractLine {
     return undefined;
   }
 
+  public override getPositionForLabel(rtx: RenderingContext): Point | undefined {
+    const zoom = rtx.zoom;
+    const depos = 15;
+
+    const middlePoint = getMiddlePointByPoints(this.point1, this.point2);
+    if (middlePoint === undefined) {
+      return undefined;
+    }
+
+    return {
+      x: middlePoint.x + depos / zoom,
+      y: middlePoint.y + depos / zoom
+    }
+  }
+
   constructor(psProvider: PointsProvider,
               dependencies: CanvasElement[],
               protected dataProvider: () => Data,
               color: Color = { r: 0, g: 0, b: 0 },
               formula?: string,
               visible: boolean = true,
-              lineWidth: number = 3) {
-    super(psProvider, dependencies, color, formula, visible, lineWidth);
+              lineWidth: number = 3,
+              showLabel: boolean = true) {
+    super(psProvider, dependencies, color, formula, visible, lineWidth, showLabel);
   }
 
   public static getDefaultInstance(): LineSegmentElement {
