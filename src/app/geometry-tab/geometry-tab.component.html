@@ -2,7 +2,7 @@
   <div class="group" *ngFor="let group of this.groups">
     <p class="groupName">{{group.name}}</p>
     <div class="tabHeader" *ngFor="let modeElement of group.modes" (click)="modeElement.click()" tabindex="0" [title]="modeElement.tooltip" [ngClass]="{ 'active': modeElement.isActivated() }">
-      <img [src]="'../../assets/' + modeElement.icon + '.svg'" class="icon"/>
+      <img [src]="'/assets/' + modeElement.icon + '.svg'" class="icon"/>
       <p>{{modeElement.title}}</p>
     </div>
   </div>

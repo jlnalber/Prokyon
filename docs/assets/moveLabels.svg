@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.1" baseProfile="full"
+     width="100px" height="100px">
+
+  <line x1="50" x2="95" y1="50" y2="5" stroke-linecap="round" stroke-width="5" stroke="black"></line>
+  <line x1="95" x2="80" y1="5" y2="5" stroke-linecap="round" stroke-width="5" stroke="black"></line>
+  <line x1="95" x2="95" y1="5" y2="20" stroke-linecap="round" stroke-width="5" stroke="black"></line>
+  <path d="M15,90 32.5,50 50,90" stroke-width="5" fill="none" stroke="black" stroke-linecap="round"></path>
+  <path d="M23.25,70 41.75,70" stroke-width="5" fill="none" stroke="black"></path>
+
+</svg>
