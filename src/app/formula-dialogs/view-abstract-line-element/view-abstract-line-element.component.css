@@ -26,3 +26,13 @@
 .nameInput {
   margin-bottom: 16px;
 }
+
+.dashedDiv {
+  font-family: 'Segoe UI', Calibri, 'sans-serif';
+  padding: 8px;
+  user-select: none;
+}
+
+.dashedDiv label {
+  padding-left: 6px;
+}

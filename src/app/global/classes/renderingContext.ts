@@ -1,8 +1,10 @@
 import {Transformations} from "../interfaces/transformations";
 import {Point} from "../interfaces/point";
 import {Rect} from "../interfaces/rect";
-import {BLACK, Color, getColorAsRgbaFunction, RED, TRANSPARENT} from "../interfaces/color";
+import {BLACK, Color, getColorAsRgbaFunction, TRANSPARENT} from "../interfaces/color";
 import {CanvasElement} from "./abstract/canvasElement";
+
+const LINE_DASH = [10, 10]
 
 export interface Config {
   showGrid?: boolean,
@@ -74,7 +76,7 @@ export class RenderingContext {
     return this.config.transformColor(c);
   }
 
-  public drawPath(points: Point[], lineWidth: number, stroke: Color, fill?: Color): void {
+  public drawPath(points: Point[], lineWidth: number, stroke: Color, fill?: Color, dashed?: boolean): void {
     let realPoints = points.map(p => {
       return this.transformPointFromFieldToCanvas(p);
     });
@@ -87,6 +89,12 @@ export class RenderingContext {
     this.ctx.beginPath();
     this.ctx.lineWidth = lineWidth;
     this.ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
+
+    if (dashed) {
+      this.ctx.setLineDash(LINE_DASH)
+    } else {
+      this.ctx.setLineDash([])
+    }
 
     if (realPoints.length != 0) {
       let firstP = realPoints[0];
@@ -108,8 +116,8 @@ export class RenderingContext {
     }
   }
 
-  public drawLine(from: Point, to: Point, lineWidth: number, stroke: Color): void {
-    this.drawPath([ from, to ], lineWidth, stroke);
+  public drawLine(from: Point, to: Point, lineWidth: number, stroke: Color, dashed?: boolean): void {
+    this.drawPath([ from, to ], lineWidth, stroke, undefined, dashed);
   }
 
   public drawText(text: string, p: Point,
@@ -120,11 +128,17 @@ export class RenderingContext {
                   color: Color = { r: 0, g: 0, b: 0 },
                   stroke: Color = TRANSPARENT,
                   lineWidth: number = 3,
-                  maxWidth?: number): void {
+                  maxWidth?: number, dashed?: boolean): void {
     let realP = this.transformPointFromFieldToCanvas(p);
 
     // set the ctx up
     let ctx = this.ctx;
+
+    if (dashed) {
+      this.ctx.setLineDash(LINE_DASH)
+    } else {
+      this.ctx.setLineDash([])
+    }
 
     ctx.font = font;
     ctx.textAlign = textAlign;
@@ -164,8 +178,16 @@ export class RenderingContext {
                      rotation: number,
                      fill: Color = BLACK,
                      stroke: Color = TRANSPARENT,
-                     strokeWidth: number = 0): void {
+                     strokeWidth: number = 0,
+                     dashed? : boolean): void {
     // draw an ellipse around the center point
+
+    if (dashed) {
+      this.ctx.setLineDash(LINE_DASH)
+    } else {
+      this.ctx.setLineDash([])
+    }
+
     this.ctx.lineWidth = strokeWidth;
     this.ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
     this.ctx.fillStyle = getColorAsRgbaFunction(this.getRightColor(fill));
@@ -184,11 +206,50 @@ export class RenderingContext {
                     radius: number,
                     fill: Color = BLACK,
                     stroke: Color = TRANSPARENT,
-                    strokeWidth: number = 0): void {
-    this.drawEllipse(center, radius, radius, 0, fill, stroke, strokeWidth);
+                    strokeWidth: number = 0,
+                    dashed?: boolean): void {
+    this.drawEllipse(center, radius, radius, 0, fill, stroke, strokeWidth, dashed);
   }
 
-  public drawRect(rect: Rect, fill: Color = BLACK, stroke: Color = TRANSPARENT, strokeWidth: number = 0): void {
+  public drawCircleSector(center: Point,
+                    radius: number,
+                    fill: Color = BLACK,
+                    stroke: Color = TRANSPARENT,
+                    strokeWidth: number = 0,
+                    startAngle: number,
+                    endAngle: number,
+                    dashed?: boolean): void {
+    // draw an ellipse around the center point
+    this.ctx.lineWidth = strokeWidth;
+    this.ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
+    this.ctx.fillStyle = getColorAsRgbaFunction(this.getRightColor(fill));
+    const realCenter = this.transformPointFromFieldToCanvas(center)
+    const realRadius = radius * this.zoom;
+
+    if (dashed) {
+      this.ctx.setLineDash(LINE_DASH)
+    } else {
+      this.ctx.setLineDash([])
+    }
+    
+    this.ctx.closePath();
+    this.ctx.beginPath();
+    this.ctx.moveTo(realCenter.x, realCenter.y);
+    this.ctx.arc(realCenter.x, realCenter.y, realRadius, startAngle, endAngle);
+    this.ctx.lineTo(realCenter.x, realCenter.y);
+    this.ctx.stroke();
+    this.ctx.fill();
+    this.ctx.closePath();
+  }
+
+  public drawRect(rect: Rect, fill: Color = BLACK, stroke: Color = TRANSPARENT, strokeWidth: number = 0, dashed?: boolean): void {
+
+    if (dashed) {
+      this.ctx.setLineDash(LINE_DASH)
+    } else {
+      this.ctx.setLineDash([])
+    }
+    
     this.ctx.lineWidth = strokeWidth;
     this.ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
     this.ctx.fillStyle = getColorAsRgbaFunction(this.getRightColor(fill));

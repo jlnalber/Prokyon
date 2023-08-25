@@ -27,9 +27,9 @@ export default class LineSegmentElement extends AbstractLine {
 
     if (point1 !== undefined && point2 !== undefined && !areEqualPoints(point1, point2)) {
       if (ctx.selection.indexOf(this) !== -1) {
-        ctx.drawPath([point1, point2], this.lineWidth * LINE_WIDTH_SELECTED_RATIO, colorAsTransparent(this._color, TRANSPARENCY_RATIO))
+        ctx.drawPath([point1, point2], this.lineWidth * LINE_WIDTH_SELECTED_RATIO, colorAsTransparent(this._color, TRANSPARENCY_RATIO), undefined, this.configuration.dashed)
       }
-      ctx.drawPath([point1, point2], this.lineWidth, this.color);
+      ctx.drawPath([point1, point2], this.lineWidth, this.color, undefined, this.configuration.dashed);
     }
   }
 

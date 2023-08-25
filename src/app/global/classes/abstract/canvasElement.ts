@@ -15,7 +15,8 @@ export interface CanvasElementConfiguration {
   showLabel?: boolean,
   name?: string,
   formula?: string,
-  editable?: boolean
+  editable?: boolean,
+  dashed?: boolean
 }
 
 export abstract class CanvasElement extends CanvasDrawer {

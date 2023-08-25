@@ -81,9 +81,9 @@ export default class LineElement extends AbstractLine {
       }
 
       if (ctx.selection.indexOf(this) !== -1) {
-        ctx.drawPath([pS, pE], this.lineWidth * LINE_WIDTH_SELECTED_RATIO, colorAsTransparent(this._color, TRANSPARENCY_RATIO));
+        ctx.drawPath([pS, pE], this.lineWidth * LINE_WIDTH_SELECTED_RATIO, colorAsTransparent(this._color, TRANSPARENCY_RATIO), undefined, this.configuration.dashed);
       }
-      ctx.drawPath([pS, pE], this.lineWidth, this.color);
+      ctx.drawPath([pS, pE], this.lineWidth, this.color, undefined, this.configuration.dashed);
     }
   }
 

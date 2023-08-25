@@ -6,5 +6,9 @@
   <p class="paragraph maths centered">
     <span>{{ this.abcForm }}</span>
   </p>
+  <div class="dashedDiv">
+    <input type="checkbox" id="dash" [(ngModel)]="this.dashed">
+    <label for="dash">Gestrichelt anzeigen</label>
+  </div>
   <button class="button floatRight close" (click)="this.dialog.close()" title="Dialog schließen">Schließen</button>
 </div>

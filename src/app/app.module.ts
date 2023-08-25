@@ -31,6 +31,7 @@ import { ScreenshotDialogComponent } from './screenshot-dialog/screenshot-dialog
 import { ViewPointElementComponent } from './formula-dialogs/view-point-element/view-point-element.component';
 import { ViewAbstractLineElementComponent } from './formula-dialogs/view-abstract-line-element/view-abstract-line-element.component';
 import { ViewCircleElementComponent } from './formula-dialogs/view-circle-element/view-circle-element.component';
+import { ViewAngleElementComponent } from './formula-dialogs/view-angle-element/view-angle-element.component';
 
 @NgModule({
   declarations: [
@@ -63,7 +64,8 @@ import { ViewCircleElementComponent } from './formula-dialogs/view-circle-elemen
     ScreenshotDialogComponent,
     ViewPointElementComponent,
     ViewAbstractLineElementComponent,
-    ViewCircleElementComponent
+    ViewCircleElementComponent,
+    ViewAngleElementComponent
   ],
   imports: [
     BrowserModule,

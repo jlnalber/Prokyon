@@ -12,6 +12,7 @@ import {DrawerService} from "../../services/drawer.service";
 import {Transformations} from "../interfaces/transformations";
 import VariableElement from "../classes/canvas-elements/variableElement";
 import {Point} from "../interfaces/point";
+import AngleElement from "../classes/canvas-elements/angleElement";
 
 export interface Style {
   color: Color,
@@ -75,6 +76,7 @@ const DYNAMIC_POINT_TYPE = 'dynamic_point';
 const POINT_TYPE = 'point';
 const LINE_TYPE = 'line';
 const VARIABLE_TYPE = 'variable';
+const ANGLE_TYPE = 'angle'
 const UNKNOWN_TYPE = 'undefined';
 
 function getType(cE: CanvasElement): string {
@@ -96,6 +98,8 @@ function getType(cE: CanvasElement): string {
     return POINT_TYPE;
   } else if (cE instanceof VariableElement) {
     return VARIABLE_TYPE;
+  } else if (cE instanceof AngleElement) {
+    return ANGLE_TYPE;
   }
   return UNKNOWN_TYPE;
 }
@@ -130,6 +134,8 @@ export function loadFrom(drawerService: DrawerService, serialized: Serialized): 
       canvasElement = LineElement.getDefaultInstance();
     } else if (c.type === VARIABLE_TYPE) {
       canvasElement = VariableElement.getDefaultInstance();
+    } else if (c.type === ANGLE_TYPE) {
+      canvasElement = AngleElement.getDefaultInstance();
     }
 
     if (canvasElement !== undefined) {

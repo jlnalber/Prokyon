@@ -281,3 +281,7 @@ export function getIntersectionPointCircles(center1: Point, radius1: number, cen
   }
   return res as [Point | undefined, Point | undefined];*/
 }
+
+export function getPointsDistance(p1: Point, p2: Point): number {
+  return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
+}

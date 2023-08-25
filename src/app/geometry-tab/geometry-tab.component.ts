@@ -17,6 +17,7 @@ import TangensMode from "../global/classes/modes/tangensMode";
 import ChangeVisibilityMode from "../global/classes/modes/changeVisibilityMode";
 import ShowLabelVisibilityMode from "../global/classes/modes/showLabelVisibilityMode";
 import MoveLabelsMode from "../global/classes/modes/moveLabelsMode";
+import AngleMode from '../global/classes/modes/angleMode';
 
 @Component({
   selector: 'app-geometry-tab',
@@ -80,6 +81,9 @@ export class GeometryTabComponent implements OnInit {
         new ModeElement<BisectionMode>(this.drawerService, () => {
           return new BisectionMode();
         }, 'Mittelsenk.', 'Mache die Mittelsenkrechte einer Strecke oder zwischen zwei Punkten', 'bisection'),
+        new ModeElement<AngleMode>(this.drawerService, () => {
+          return new AngleMode();
+        }, 'Winkel', 'Lege einen Winkel durch drei Punkte', 'angle'),
         new ModeElement<AngleBisectorMode>(this.drawerService, () => {
           return new AngleBisectorMode();
         }, 'Winkelhalb.', 'Mache die Winkelhalbierende von drei Punkten', 'angleBisector'),

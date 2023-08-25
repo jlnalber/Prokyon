@@ -41,4 +41,13 @@ export class ViewAbstractLineElementComponent extends FormulaDialogElement {
 
   public dialogData!: AbstractLine;
 
+  public get dashed(): boolean {
+    return this.dialogData.configuration.dashed === true;
+  }
+
+  public set dashed(value: boolean) {
+    this.dialogData.configuration.dashed = value;
+    this.dialogData.onChange.emit();
+  }
+
 }

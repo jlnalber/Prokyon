@@ -164,9 +164,9 @@ export class Graph extends CanvasElement {
 
     // Then, draw all paths.
     for (let path of paths) {
-      ctx.drawPath(path, this.lineWidth, this._color);
+      ctx.drawPath(path, this.lineWidth, this._color, undefined, this.configuration.dashed);
       if (selected) {
-        ctx.drawPath(path, lineWidthSelected, colorSelected);
+        ctx.drawPath(path, lineWidthSelected, colorSelected, undefined, this.configuration.dashed);
       }
     }
 

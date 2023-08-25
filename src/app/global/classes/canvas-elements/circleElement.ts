@@ -75,9 +75,9 @@ export default class CircleElement extends DynamicElement {
 
     if (point !== undefined && radius !== undefined) {
       if (ctx.selection.indexOf(this) !== -1) {
-        ctx.drawCircle(point, radius, TRANSPARENT, colorAsTransparent(this._color, TRANSPARENCY_RATIO), this.lineWidth * LINE_WIDTH_SELECTED_RATIO);
+        ctx.drawCircle(point, radius, TRANSPARENT, colorAsTransparent(this._color, TRANSPARENCY_RATIO), this.lineWidth * LINE_WIDTH_SELECTED_RATIO, this.configuration.dashed);
       }
-      ctx.drawCircle(point, radius, TRANSPARENT, this.color, this.lineWidth);
+      ctx.drawCircle(point, radius, TRANSPARENT, this.color, this.lineWidth, this.configuration.dashed);
     }
   }
 
