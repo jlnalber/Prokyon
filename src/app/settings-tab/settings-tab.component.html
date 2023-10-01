@@ -7,6 +7,10 @@
     <input type="checkbox" [(ngModel)]="drawerService.showGridNumbers" id="showGridNumbers" [disabled]="!drawerService.showGrid">
     <label for="showGridNumbers">Achsenbeschriftung anzeigen</label>
   </div>
+  <div class="drawPointsEqually settingsContainer">
+    <input type="checkbox" [(ngModel)]="drawerService.drawPointsEqually" id="drawPointsEqually">
+    <label for="drawPointsEqually">Punkte auf gleicher Ebene zeichnen</label>
+  </div>
   <div class="screenshotDiv settingsContainer">
     <button title="Mache ein Screenshot" class="button" (click)="this.screenshot()">Screenshot</button>
   </div>

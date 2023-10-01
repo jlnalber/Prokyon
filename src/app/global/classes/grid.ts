@@ -23,7 +23,8 @@ export class Grid extends CanvasDrawer {
       const alignBottom = yPos == range.y + offsetText;
       const xPos = clamp(range.x + offsetText, -offsetText, range.x + range.width - offsetText);
       const alignLeft = xPos == range.x + offsetText;
-      const font = '15px sans-serif';
+      const fontSize = 15;
+      const fontFamily = 'sans-serif';
 
       // then, draw the lines
       const stroke: Color = ctx.config?.gridColor ?? {
@@ -64,7 +65,7 @@ export class Grid extends CanvasDrawer {
           ctx.drawText(x.toLocaleString(), {
             x: x,
             y: yPos
-          }, font, 'center', alignBottom ? 'bottom' : 'top');
+          }, fontSize, fontFamily, 'center', alignBottom ? 'bottom' : 'top');
         }
       }
 
@@ -101,7 +102,7 @@ export class Grid extends CanvasDrawer {
           ctx.drawText(y.toLocaleString(), {
             x: xPos,
             y: y
-          }, font, alignLeft ? 'left' : 'right', 'middle');
+          }, fontSize, fontFamily, alignLeft ? 'left' : 'right', 'middle');
         }
       }
 
@@ -114,7 +115,7 @@ export class Grid extends CanvasDrawer {
         ctx.drawText('0', {
           x: -offsetText,
           y: -offsetText
-        }, font, 'right', 'top')
+        }, fontSize, fontFamily, 'right', 'top')
       }
     }
   }

@@ -1,0 +1,19 @@
+<div class="wrapper">
+    <p class="paragraph heading">Winkel:</p>
+    <p class="paragraph maths nameInput"><span></span>
+      <input [(ngModel)]="this.name" type="text" title="Name" class="input"> :
+    </p>
+    <p class="paragraph maths centered">
+      <span>{{ this.angle }}°</span>
+    </p>
+    <div class="dashedDiv">
+      <input type="checkbox" id="dash" [(ngModel)]="this.dashed">
+      <label for="dash">Gestrichelt anzeigen</label>
+    </div>
+    <div class="sizeDiv">
+      <label for="si">Darstellungsgröße:</label><br>
+      <input id="si" type="range" [(ngModel)]="this.dialogData.size">
+    </div>
+    <button class="button floatRight close" (click)="this.dialog.close()" title="Dialog schließen">Schließen</button>
+  </div>
+  

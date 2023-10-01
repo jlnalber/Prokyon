@@ -10,6 +10,7 @@ export interface Config {
   showGrid?: boolean,
   gridColor?: Color,
   showNumbers?: boolean,
+  drawPointsEqually?: boolean,
   transformColor?: (c: Color) => Color
 }
 
@@ -121,14 +122,16 @@ export class RenderingContext {
   }
 
   public drawText(text: string, p: Point,
-                  font: string = '10px sans-serif',
+                  fontSize: number = 10,
+                  fontFamily: string = 'sans-serif',
                   textAlign: CanvasTextAlign = 'start',
                   textBaseline: CanvasTextBaseline = 'alphabetic',
                   direction: CanvasDirection = 'inherit',
                   color: Color = { r: 0, g: 0, b: 0 },
                   stroke: Color = TRANSPARENT,
                   lineWidth: number = 3,
-                  maxWidth?: number, dashed?: boolean): void {
+                  dashed?: boolean,
+                  skipIndex?: boolean): void {
     let realP = this.transformPointFromFieldToCanvas(p);
 
     // set the ctx up
@@ -140,7 +143,24 @@ export class RenderingContext {
       this.ctx.setLineDash([])
     }
 
-    ctx.font = font;
+    // search for the underlined
+    let strs: string[] = [];
+    let lastStr = ''
+    for (let i = 0; i < text.length; i++) {
+      if (text.charAt(i) === '_' && i + 1 < text.length && !skipIndex) {
+        strs.push(lastStr);
+        lastStr = '';
+        strs.push(text.charAt(i + 1));
+        i++;
+      } else {
+        lastStr += text.charAt(i)
+      }
+    }
+    if (lastStr !== '') {
+      strs.push(lastStr);
+    }
+
+    // set global text properties
     ctx.textAlign = textAlign;
     ctx.textBaseline = textBaseline;
     ctx.direction = direction;
@@ -148,13 +168,34 @@ export class RenderingContext {
     ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
     ctx.lineWidth = lineWidth;
 
-    // draw the text
-    ctx.strokeText(text, realP.x, realP.y, maxWidth);
-    ctx.fillText(text, realP.x, realP.y, maxWidth);
+    const padding = 1;
+
+    // write the undersets and the normal text
+    let posX = realP.x;
+    for (let i = 0; i < strs.length; i++) {
+      const t = strs[i];
+      let y = realP.y;
+
+      if (i % 2 === 0) {
+        ctx.font = `${fontSize}px ${fontFamily}`;
+      } else {
+        ctx.font = `${3 * fontSize / 4}px ${fontFamily}`;
+        y += fontSize / 3;
+      }
+
+      // draw the text
+      ctx.strokeText(t, posX, y);
+      ctx.fillText(t, posX, y);
+
+      posX += ctx.measureText(t).width + padding;
+    }
   }
 
+
+  // TODO: skipping index
   public measureText(text: string,
-                  font: string = '10px sans-serif',
+                  fontSize: number = 10,
+                  fontFamily: string = 'sans-serif',
                   textAlign: CanvasTextAlign = 'start',
                   textBaseline: CanvasTextBaseline = 'alphabetic',
                   direction: CanvasDirection = 'inherit',
@@ -162,7 +203,7 @@ export class RenderingContext {
     // set the ctx up
     let ctx = this.ctx;
 
-    ctx.font = font;
+    ctx.font = `${fontSize}px ${fontFamily}`;
     ctx.textAlign = textAlign;
     ctx.textBaseline = textBaseline;
     ctx.direction = direction;

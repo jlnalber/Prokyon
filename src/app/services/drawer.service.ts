@@ -30,11 +30,12 @@ import {Mode} from "../global/classes/modes/mode";
 import MoveMode from "../global/classes/modes/moveMode";
 import {Rect} from "../global/interfaces/rect";
 import {loadFrom, serialize, Serialized} from "../global/essentials/serializer";
+import AngleElement from '../global/classes/canvas-elements/angleElement';
 
 export const STORAGE_CACHE = 'serialized'
 
 const LABEL_FONT_SIZE = 18;
-const LABEL_FONT = LABEL_FONT_SIZE + 'px "Cambria Math", Cambria, "CMU Serif", serif';
+const LABEL_FONT_FAMILY = '"Cambria Math", Cambria, "CMU Serif", serif';
 
 @Injectable({
   providedIn: 'root'
@@ -184,10 +185,19 @@ export class DrawerService {
     this._showGridNumbers = value;
     this.onCanvasConfigChanged.emit(this.canvasConfig);
   }
+  private _drawPointsEqually: boolean = false;
+  public get drawPointsEqually(): boolean | undefined {
+    return this._drawPointsEqually;
+  }
+  public set drawPointsEqually(value: boolean | undefined) {
+    this._drawPointsEqually = value === true;
+    this.onCanvasConfigChanged.emit(this.canvasConfig);
+  }
   private get canvasConfig(): CanvasConfig {
     return {
       showNumbers: this.showGridNumbers,
-      showGrid: this.showGrid
+      showGrid: this.showGrid,
+      drawPointsEqually: this.drawPointsEqually
     }
   }
   // #endregion
@@ -274,7 +284,17 @@ export class DrawerService {
     for (let metaDrawer of this._metaDrawers) {
       metaDrawer.draw(renderingContext);
     }
-    for (let canvasElement of this._canvasElements) {
+
+    let cs: CanvasElement[] = []
+    if (this.drawPointsEqually) {
+      cs = this._canvasElements;
+    } else {
+      const ps = this._canvasElements.filter(i => (i instanceof PointElement));
+      const as = this._canvasElements.filter(i => (i instanceof AngleElement))
+      const rest = this._canvasElements.filter(i => !(i instanceof PointElement || i instanceof AngleElement))
+      cs = as.concat(rest).concat(ps)
+    }
+    for (let canvasElement of cs) {
       if (renderingContext.config && withTransformColor) {
         if (!canvasElement.visible) {
           renderingContext.config.transformColor = this.mode?.transformInvisibleColor;
@@ -290,7 +310,7 @@ export class DrawerService {
         const labelPoint = this.getLabelPoint(canvasElement, renderingContext);
         if (labelPoint !== undefined && canvasElement.configuration.label !== undefined) {
           renderingContext.drawText(canvasElement.configuration.label, labelPoint,
-            LABEL_FONT, 'start', 'alphabetic', 'inherit',
+            LABEL_FONT_SIZE, LABEL_FONT_FAMILY, 'start', 'alphabetic', 'inherit',
             canvasElement.color,
             this.selection.contains(canvasElement) ? colorAsTransparent(canvasElement.color, 0.2) : WHITE, 3);
         }
@@ -469,7 +489,7 @@ export class DrawerService {
       if (canvasElement.configuration.label === undefined || labelPoint === undefined) {
         return undefined;
       }
-      const measureText = ctx.measureText(canvasElement.configuration.label, LABEL_FONT);
+      const measureText = ctx.measureText(canvasElement.configuration.label, LABEL_FONT_SIZE, LABEL_FONT_FAMILY);
       const fieldWidth = measureText.width / ctx.zoom;
       const fieldHeight = LABEL_FONT_SIZE / ctx.zoom;
       return getDistanceToRect(p, {

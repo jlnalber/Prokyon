@@ -40,7 +40,8 @@ export type Serialized = {
   transformations: Transformations,
   backgroundColor: Color,
   showGrid: boolean,
-  showGridNumbers: boolean
+  showGridNumbers: boolean,
+  drawPointsEqually?: boolean
 }
 
 export function serialize(drawerService: DrawerService): Serialized {
@@ -63,7 +64,8 @@ export function serialize(drawerService: DrawerService): Serialized {
     backgroundColor: drawerService.backgroundColor,
     transformations: drawerService.transformations,
     showGrid: drawerService.showGrid,
-    showGridNumbers: drawerService.showGridNumbers
+    showGridNumbers: drawerService.showGridNumbers,
+    drawPointsEqually: drawerService.drawPointsEqually
   };
 }
 
@@ -107,6 +109,7 @@ function getType(cE: CanvasElement): string {
 export function loadFrom(drawerService: DrawerService, serialized: Serialized): void {
   drawerService.showGridNumbers = serialized.showGridNumbers;
   drawerService.showGrid = serialized.showGrid;
+  drawerService.drawPointsEqually = serialized.drawPointsEqually;
   drawerService.transformations = serialized.transformations;
   drawerService.backgroundColor = serialized.backgroundColor;
 
