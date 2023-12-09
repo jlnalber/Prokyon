@@ -32,6 +32,9 @@ import { ViewPointElementComponent } from './formula-dialogs/view-point-element/
 import { ViewAbstractLineElementComponent } from './formula-dialogs/view-abstract-line-element/view-abstract-line-element.component';
 import { ViewCircleElementComponent } from './formula-dialogs/view-circle-element/view-circle-element.component';
 import { ViewAngleElementComponent } from './formula-dialogs/view-angle-element/view-angle-element.component';
+import { CompiledPointFormulaComponent } from './formula-tab/compiled-point-formula/compiled-point-formula.component';
+import { CurveFormulaComponent } from './formula-tab/curve-formula/curve-formula.component';
+import { ViewCurveElementComponent } from './formula-dialogs/view-curve-element/view-curve-element.component';
 
 @NgModule({
   declarations: [
@@ -65,7 +68,10 @@ import { ViewAngleElementComponent } from './formula-dialogs/view-angle-element/
     ViewPointElementComponent,
     ViewAbstractLineElementComponent,
     ViewCircleElementComponent,
-    ViewAngleElementComponent
+    ViewAngleElementComponent,
+    CompiledPointFormulaComponent,
+    CurveFormulaComponent,
+    ViewCurveElementComponent
   ],
   imports: [
     BrowserModule,

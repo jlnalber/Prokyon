@@ -17,7 +17,7 @@ export interface Config {
 export class RenderingContext {
   constructor (private readonly ctx: CanvasRenderingContext2D,
                private readonly transformations: Transformations,
-               public readonly variables: any,
+               private readonly _variables: any,
                public readonly selection: CanvasElement[],
                public readonly config?: Config) { }
 
@@ -70,6 +70,10 @@ export class RenderingContext {
       width: this.ctx.canvas.width,
       height: this.ctx.canvas.height
     })
+  }
+
+  public get variables(): any {
+    return { ... this._variables };
   }
 
   private getRightColor(c: Color): Color {
@@ -272,7 +276,7 @@ export class RenderingContext {
     } else {
       this.ctx.setLineDash([])
     }
-    
+
     this.ctx.closePath();
     this.ctx.beginPath();
     this.ctx.moveTo(realCenter.x, realCenter.y);
@@ -290,7 +294,7 @@ export class RenderingContext {
     } else {
       this.ctx.setLineDash([])
     }
-    
+
     this.ctx.lineWidth = strokeWidth;
     this.ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
     this.ctx.fillStyle = getColorAsRgbaFunction(this.getRightColor(fill));

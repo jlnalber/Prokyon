@@ -30,7 +30,7 @@ type SubTypeAndData = {
 } & Data
 
 export default class DynamicPointElement extends PointElement {
-  private _pointProvider: PointProvider;
+  protected _pointProvider: PointProvider;
 
   public override get x(): number | undefined {
     return this._pointProvider()?.x

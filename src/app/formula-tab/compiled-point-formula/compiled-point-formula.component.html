@@ -1,0 +1,10 @@
+<div class="wrapper">
+  <app-color-circle [(color)]="this.canvasElement.color" [(visible)]="this.canvasElement.visible"></app-color-circle>
+  <div>
+    <p class="paragraph"><span></span>
+      {{ this.name }}( <span><input [ngClass]="{ 'error': this.errorMessageX !== undefined }" [title]="this.errorMessageX ?? ''" autocomplete="off" type="text" step="any" class="input" [(ngModel)]="this.canvasElement.xText"></span> |
+      <span><input [ngClass]="{ 'error': this.errorMessageY !== undefined }" [title]="this.errorMessageY ?? ''" autocomplete="off" type="text" step="any" class="input" [(ngModel)]="this.canvasElement.yText"></span> )
+    </p>
+  </div>
+  <button class="iconButton depositionTop floatRight" (click)="this.threePointsClicked($event)"><span class="material-symbols-outlined">more_vert</span></button>
+</div>

@@ -1,0 +1,42 @@
+@import url("../../global/styles/_global.css");
+
+.wrapper {
+  --buttonSize: 46px;
+  --defaultMargin: 17.33px;
+  /*height: var(--buttonSize);*/
+}
+
+.input {
+  width: 150px;
+  display: unset;
+}
+
+.paragraph {
+  --margin: 16px;
+  --buttonSize: 46px;
+  margin-top: 0;
+  margin-left: calc(var(--buttonSize) + var(--margin));
+  font-size: 14pt;
+  font-family: "Cambria Math", Cambria, "CMU Serif", serif;
+  user-select: none;
+  margin-bottom: 0;
+}
+
+.alignEnd {
+  text-align: end;
+}
+
+.description {
+  margin-top: 0;
+  margin-bottom: var(--defaultMargin);
+  margin-left: calc(var(--buttonSize) + 16px);
+  line-height: var(--buttonSize);
+}
+
+input.error {
+  background: #ffcccc !important;
+}
+
+.depositionTop {
+  margin-top: calc(-1 * (var(--buttonSize) + var(--defaultMargin))) !important;
+}

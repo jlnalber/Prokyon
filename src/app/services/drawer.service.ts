@@ -19,7 +19,7 @@ import {
   containsVariable,
   countDerivatives,
   funcNameWithoutDerivative,
-  isRecursive
+  isRecursive, inspectOperation
 } from "../global/classes/func/funcInspector";
 import Cache from "../global/essentials/cache";
 import VariableElement from "../global/classes/canvas-elements/variableElement";
@@ -31,11 +31,19 @@ import MoveMode from "../global/classes/modes/moveMode";
 import {Rect} from "../global/interfaces/rect";
 import {loadFrom, serialize, Serialized} from "../global/essentials/serializer";
 import AngleElement from '../global/classes/canvas-elements/angleElement';
+import {Operation} from "../global/classes/func/operations/operation";
+import CompiledPointElement from "../global/classes/canvas-elements/compiledPointElement";
+import {OperationsParser} from "../global/classes/func/operations/operationsParser";
+import CurveElement from "../global/classes/canvas-elements/curveElement";
 
 export const STORAGE_CACHE = 'serialized'
 
 const LABEL_FONT_SIZE = 18;
 const LABEL_FONT_FAMILY = '"Cambria Math", Cambria, "CMU Serif", serif';
+
+const PARSER_ERROR = 'Ungültige Eingabe.';
+const UNKNOWN_FUNCTION = "Referenz einer unbekannten Funktion."
+const RECURSIVE_ERROR = 'Eine Funktion darf nicht auf sich selbst verweisen.'
 
 @Injectable({
   providedIn: 'root'
@@ -62,12 +70,14 @@ export class DrawerService {
   public get backgroundColor(): Color {
     return this._backgroundColor;
   }
+
   public set backgroundColor(value: Color) {
     this._backgroundColor = value;
     this.onBackgroundColorChanged.emit(value);
   }
 
   private _canvasElements: CanvasElement[] = [];
+
   public addCanvasElements(...canvasElements: CanvasElement[]): void {
     for (let canvasElement of canvasElements) {
       this._canvasElements.push(canvasElement);
@@ -75,6 +85,7 @@ export class DrawerService {
     }
     this.onCanvasElementChanged.emit(canvasElements);
   }
+
   public removeCanvasElements(...canvasElements: CanvasElement[]): boolean {
     // Remove all teh given canvas elements from the canvas.
     let worked = true;
@@ -93,6 +104,7 @@ export class DrawerService {
     this.onCanvasElementChanged.emit(canvasElements);
     return worked;
   }
+
   public emptyCanvasElements(): void {
     for (let canvasElement of this._canvasElements) {
       canvasElement.onChange.removeListener(this.canvasElementOnChangeListener);
@@ -101,15 +113,18 @@ export class DrawerService {
     this._canvasElements = [];
     this.onCanvasElementChanged.emit();
   }
+
   public get canvasElements(): CanvasElement[] {
     return this._canvasElements.slice();
   }
 
   private _metaDrawers: CanvasDrawer[] = [];
+
   public addMetaDrawer(canvasElement: CanvasDrawer): void {
     this._metaDrawers.push(canvasElement);
     this.onMetaDrawersChanged.emit(canvasElement);
   }
+
   public removeMetaDrawer(canvasElement: CanvasDrawer): boolean {
     const index = this._metaDrawers.indexOf(canvasElement);
     if (index >= 0) {
@@ -119,10 +134,12 @@ export class DrawerService {
     }
     return false;
   }
+
   public emptyMetaDrawers(): void {
     this._metaDrawers = [];
     this.onMetaDrawersChanged.emit();
   }
+
   public get metaDrawers(): CanvasDrawer[] {
     return this._metaDrawers.slice();
   }
@@ -132,24 +149,30 @@ export class DrawerService {
     translateY: -5,
     zoom: 100
   };
+
   public set translateX(value: number) {
     this._transformations.translateX = value;
     this.onTransformationsChanged.emit(value);
   }
+
   public get translateX(): number {
     return this._transformations.translateX;
   }
+
   public set translateY(value: number) {
     this._transformations.translateY = value;
     this.onTransformationsChanged.emit(value);
   }
+
   public get translateY(): number {
     return this._transformations.translateY;
   }
+
   public set zoom(value: number) {
     this._transformations.zoom = value;
     this.onTransformationsChanged.emit(value);
   }
+
   public get zoom(): number {
     return this._transformations.zoom;
   }
@@ -173,26 +196,32 @@ export class DrawerService {
   public get showGrid(): boolean {
     return this._showGrid;
   }
+
   public set showGrid(value: boolean) {
     this._showGrid = value;
     this.onCanvasConfigChanged.emit(this.canvasConfig);
   }
+
   private _showGridNumbers: boolean = true;
   public get showGridNumbers(): boolean {
     return this._showGridNumbers;
   }
+
   public set showGridNumbers(value: boolean) {
     this._showGridNumbers = value;
     this.onCanvasConfigChanged.emit(this.canvasConfig);
   }
+
   private _drawPointsEqually: boolean = false;
   public get drawPointsEqually(): boolean | undefined {
     return this._drawPointsEqually;
   }
+
   public set drawPointsEqually(value: boolean | undefined) {
     this._drawPointsEqually = value === true;
     this.onCanvasConfigChanged.emit(this.canvasConfig);
   }
+
   private get canvasConfig(): CanvasConfig {
     return {
       showNumbers: this.showGridNumbers,
@@ -200,6 +229,7 @@ export class DrawerService {
       drawPointsEqually: this.drawPointsEqually
     }
   }
+
   // #endregion
 
   // other properties
@@ -328,6 +358,7 @@ export class DrawerService {
     this._transformations.translateY -= vec.y;
     this.zoom *= factor;
   }
+
   // #endregion
 
   // #region fields for dealing with graphs/functions/points
@@ -371,12 +402,42 @@ export class DrawerService {
     return undefined;
   }
 
+  public parseAndValidateOperation(str: string, requestVariables: boolean = true, omitVariables: string[] = []): Operation | string {
+    // this function tries to parse a string to an operation
+    // if 'requestVariables' is true, the function tries to create a new variable
+    try {
+      // try to parse the function
+      let operation = new OperationsParser(str, this.funcProvider).parse();
+
+      try {
+        // analyse the operation, it is not just needed for checking for variables, but also for unknown functions
+        let analyserRes = inspectOperation(operation);
+
+        // find the variables
+        if (requestVariables) {
+          for (let variable of analyserRes.variableNames) {
+            if (omitVariables.indexOf(variable) === -1) {
+              // if the variable is unknown, add it
+              this.addVariable(variable);
+            }
+          }
+        }
+
+        // return function --> everything worked out fine
+        return operation;
+      } catch {
+        // return an unknown function error
+        return UNKNOWN_FUNCTION;
+      }
+    } catch {
+      // return a parser error
+      return PARSER_ERROR;
+    }
+  }
+
   public parseAndValidateFunc(str: string, requestVariables: boolean = true): Func | string {
     // this function tries to parse a string to a func
     // if 'requestVariables' is true, the function tries to create a new variable
-    const parserError = 'Ungültige Eingabe.';
-    const unknownFunction = "Diese Funktion referenziert eine unbekannte Funktion."
-    const recursiveError = 'Eine Funktion darf nicht auf sich selbst verweisen.'
     try {
       // try to parse the function
       let func = new FuncParser(str, this.funcProvider).parse();
@@ -384,7 +445,7 @@ export class DrawerService {
       try {
         // function can't be recursive, otherwise it would end up in an endless loop
         if (isRecursive(func)) {
-          return recursiveError;
+          return RECURSIVE_ERROR;
         }
 
         // analyse the function, it is not just needed for checking for variables, but also for unknown functions
@@ -394,48 +455,71 @@ export class DrawerService {
         if (requestVariables) {
           for (let variable of analyserRes.variableNames) {
             // if the variable is unknown, add it
-            if (variable !== func.variable && (func.variable !== undefined || variable !== 'x') && !this.hasVariable(variable)) {
-              const variableElement = new VariableElement(variable, 0);
-
-              // listen whether the variable is sill in use, if not remove
-              let checkForReferenceListener = () => {
-                let hasReference = false;
-                for (let graph of this.graphs) {
-                  hasReference = hasReference || (graph.func.variable !== variableElement.key
-                                              && (graph.func.variable !== undefined || variableElement.key !== 'x')
-                                              && containsVariable(graph.func, variableElement.key));
-                }
-                if (!hasReference) {
-                  this.onCanvasElementChanged.removeListener(checkForReferenceListener);
-                  this.removeCanvasElements(variableElement);
-                }
-              }
-
-              // add the variableElement
-              this.addCanvasElements(variableElement);
-              this.onCanvasElementChanged.addListener(checkForReferenceListener);
+            if (variable !== func.variable && (func.variable !== undefined || variable !== 'x')) {
+              this.addVariable(variable);
             }
           }
         }
 
         // return function --> everything worked out fine
         return func;
-      }
-      catch {
+      } catch {
         // return an unknown function error
-        return unknownFunction;
+        return UNKNOWN_FUNCTION;
       }
-    }
-    catch {
+    } catch {
       // return a parser error
-      return parserError;
+      return PARSER_ERROR;
     }
+  }
+
+  public addVariable(variable: string, installReferenceListeners: boolean = true): VariableElement | undefined {
+    // adds a new variable if not yet available
+    if (!this.hasVariable(variable)) {
+      const variableElement = new VariableElement(variable, 0);
+
+      // listen whether the variable is sill in use, if not remove
+      let checkForReferenceListener = () => {
+        let hasReference = false;
+        for (let cElement of this.canvasElements) {
+          if (cElement instanceof Graph) {
+            hasReference = hasReference || (cElement.func.variable !== variableElement.key
+              && (cElement.func.variable !== undefined || variableElement.key !== 'x')
+              && containsVariable(cElement.func, variableElement.key));
+          } else if (cElement instanceof CompiledPointElement) {
+            hasReference = hasReference || containsVariable(cElement.xOperation, variableElement.key) || containsVariable(cElement.yOperation, variableElement.key);
+          } else if (cElement instanceof CurveElement) {
+            hasReference = hasReference || containsVariable(cElement.topOperation, variableElement.key) || containsVariable(cElement.bottomOperation, variableElement.key);
+            hasReference = hasReference || (cElement.parameter !== variableElement.key && containsVariable(cElement.xOperation, variableElement.key));
+            hasReference = hasReference || (cElement.parameter !== variableElement.key && containsVariable(cElement.yOperation, variableElement.key));
+          }
+
+          if (hasReference) {
+            return;
+          }
+        }
+        if (!hasReference) {
+          this.onCanvasElementChanged.removeListener(checkForReferenceListener);
+          this.removeCanvasElements(variableElement);
+        }
+      }
+
+      // add the variableElement
+      this.addCanvasElements(variableElement);
+      this.onCanvasElementChanged.addListener(checkForReferenceListener);
+
+      return variableElement;
+    }
+
+    return undefined;
   }
 
   public getNewColor(): Color {
     return getNew(colors,
       this.canvasElements.map(c => c.color),
-      (c1, c2) => { return sameColors(c1, c2) })
+      (c1, c2) => {
+        return sameColors(c1, c2)
+      })
   }
 
   public getVariables(): any {
@@ -458,6 +542,7 @@ export class DrawerService {
     }
     return false;
   }
+
   // #endregion
 
   // #region further fields
@@ -528,11 +613,11 @@ export class DrawerService {
     // set the selection, or alternate the element, e.g. when ctrl is pressed
     if (empty) {
       this.selection.set(minCanvasElement);
-    }
-    else {
+    } else {
       this.selection.alternate(minCanvasElement);
     }
   }
+
   // #endregion
 
   public serialize(): Serialized {

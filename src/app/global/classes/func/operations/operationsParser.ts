@@ -35,6 +35,8 @@ import {EConstant} from "./constants/e";
 import {ExternalFunction, FuncProvider} from "./externalFunction";
 import {Absolute} from "./other-operations/Absolute";
 import {Signum} from "./other-operations/signum";
+import {SinusHyperbolicus} from "./trigonometry/sinusHyperbolicus";
+import {CosinusHyperbolicus} from "./trigonometry/cosinusHyperbolicus";
 
 const powerOperationsProviders: [string, (operation1: Operation, operation2: Operation) => Operation][] = [
   ['^', (op1, op2) => new Pow(op1, op2)]
@@ -71,7 +73,9 @@ const functionProviders: [string, (operation: Operation) => Operation][] = [
   ['ln', op => new NaturalLogarithm(op)],
   ['sqrt', op => new Root(op, new Constant(2))],
   ['abs', op => new Absolute(op)],
-  ['sgn', op => new Signum(op)]
+  ['sgn', op => new Signum(op)],
+  ['sinh', op => new SinusHyperbolicus(op)],
+  ['cosh', op => new CosinusHyperbolicus(op)]
 ]
 const constantProviders: [string, () => Operation][] = [
   ['pi', () => new PiConstant()],

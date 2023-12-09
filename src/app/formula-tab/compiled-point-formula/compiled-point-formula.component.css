@@ -1,0 +1,26 @@
+@import url("../../global/styles/_global.css");
+
+.wrapper {
+  --buttonSize: 46px;
+  height: var(--buttonSize);
+}
+
+.input {
+  width: 100px;
+  display: unset;
+}
+
+.paragraph {
+  --margin: 16px;
+  --buttonSize: 46px;
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: calc(var(--buttonSize) + var(--margin));
+  font-size: 14pt;
+  font-family: "Cambria Math", Cambria, "CMU Serif", serif;
+  user-select: none;
+}
+
+input.error {
+  background: #ffcccc !important;
+}

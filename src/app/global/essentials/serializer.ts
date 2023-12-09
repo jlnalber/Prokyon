@@ -13,6 +13,8 @@ import {Transformations} from "../interfaces/transformations";
 import VariableElement from "../classes/canvas-elements/variableElement";
 import {Point} from "../interfaces/point";
 import AngleElement from "../classes/canvas-elements/angleElement";
+import CompiledPointElement from "../classes/canvas-elements/compiledPointElement";
+import CurveElement from "../classes/canvas-elements/curveElement";
 
 export interface Style {
   color: Color,
@@ -75,10 +77,12 @@ const DEPENDENCY_POINTS_TYPE = 'dependency_points';
 const LINESEGMENT_TYPE = 'linesegment';
 const GRAPH_TYPE = 'graph';
 const DYNAMIC_POINT_TYPE = 'dynamic_point';
+const COMPILED_POINT_TYPE = 'compiled_point';
 const POINT_TYPE = 'point';
 const LINE_TYPE = 'line';
 const VARIABLE_TYPE = 'variable';
-const ANGLE_TYPE = 'angle'
+const ANGLE_TYPE = 'angle';
+const CURVE_TYPE = 'curve';
 const UNKNOWN_TYPE = 'undefined';
 
 function getType(cE: CanvasElement): string {
@@ -90,9 +94,11 @@ function getType(cE: CanvasElement): string {
     return CIRCLE_TYPE;
   } else if (cE instanceof DefiniteIntegral) {
     return DEFINITE_INTEGRAL_TYPE;
-  } else if (cE instanceof DependencyPointElements) {
+  } else if (cE instanceof CompiledPointElement) {
+    return COMPILED_POINT_TYPE;
+  }else if (cE instanceof DependencyPointElements) {
     return DEPENDENCY_POINTS_TYPE;
-  } else if (cE instanceof LineSegmentElement) {
+  }  else if (cE instanceof LineSegmentElement) {
     return LINESEGMENT_TYPE;
   } else if (cE instanceof DynamicPointElement) {
     return DYNAMIC_POINT_TYPE;
@@ -102,6 +108,8 @@ function getType(cE: CanvasElement): string {
     return VARIABLE_TYPE;
   } else if (cE instanceof AngleElement) {
     return ANGLE_TYPE;
+  } else if (cE instanceof CurveElement) {
+    return CURVE_TYPE;
   }
   return UNKNOWN_TYPE;
 }
@@ -123,6 +131,8 @@ export function loadFrom(drawerService: DrawerService, serialized: Serialized): 
       canvasElement = CircleElement.getDefaultInstance();
     } else if (c.type === DEFINITE_INTEGRAL_TYPE) {
       canvasElement = DefiniteIntegral.getDefaultInstance();
+    } else if (c.type === COMPILED_POINT_TYPE) {
+      canvasElement = CompiledPointElement.getDefaultInstanceWithDrawerService(drawerService);
     } else if (c.type === DEPENDENCY_POINTS_TYPE) {
       canvasElement = DependencyPointElements.getDefaultInstance(drawerService);
     } else if (c.type === LINESEGMENT_TYPE) {
@@ -139,6 +149,8 @@ export function loadFrom(drawerService: DrawerService, serialized: Serialized): 
       canvasElement = VariableElement.getDefaultInstance();
     } else if (c.type === ANGLE_TYPE) {
       canvasElement = AngleElement.getDefaultInstance();
+    } else if (c.type === CURVE_TYPE) {
+      canvasElement = CurveElement.getDefaultInstance(drawerService);
     }
 
     if (canvasElement !== undefined) {

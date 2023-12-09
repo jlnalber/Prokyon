@@ -66,8 +66,11 @@ export function containsFunc(funcOrOp: Func | Operation, func: Func, countDeriva
   }
 }
 
-export function containsVariable(funcOrOp: Func | Operation, varKey: string): boolean {
-  if (funcOrOp instanceof Func) {
+export function containsVariable(funcOrOp: Func | Operation | undefined, varKey: string): boolean {
+  if (funcOrOp === undefined) {
+    return false;
+  }
+  else if (funcOrOp instanceof Func) {
     return containsVariable(funcOrOp.operation, varKey);
   }
   else {

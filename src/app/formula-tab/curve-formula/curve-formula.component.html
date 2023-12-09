@@ -1,0 +1,47 @@
+<div class="wrapper">
+  <app-color-circle [(color)]="this.canvasElement.color" [(visible)]="this.canvasElement.visible"></app-color-circle>
+  <div>
+    <p class="paragraph description"><span></span>
+      Kurve{{ this.name }}:
+    </p>
+    <button class="iconButton depositionTop floatRight" (click)="this.threePointsClicked($event)"><span class="material-symbols-outlined">more_vert</span></button>
+    <table>
+      <tr>
+        <td><p class="alignEnd paragraph">x = </p></td>
+        <td>
+          <span><input [ngClass]="{ 'error': this.errorMessageX !== undefined }" [title]="this.errorMessageX ?? ''" autocomplete="off" type="text" step="any" class="input" [(ngModel)]="this.canvasElement.xText"></span>
+        </td>
+      </tr>
+      <tr>
+        <td><p class="alignEnd paragraph">y = </p></td>
+        <td>
+          <span><input [ngClass]="{ 'error': this.errorMessageY !== undefined }" [title]="this.errorMessageY ?? ''" autocomplete="off" type="text" step="any" class="input" [(ngModel)]="this.canvasElement.yText"></span>
+        </td>
+      </tr>
+      <tr>
+        <td><p class="alignEnd paragraph">Parameter: </p></td>
+        <td>
+          <span><input autocomplete="off" type="text" step="any" class="input parameter" [(ngModel)]="this.canvasElement.parameter"></span>
+        </td>
+      </tr>
+      <tr>
+        <td><p class="alignEnd paragraph">Schritte: </p></td>
+        <td>
+          <span><input autocomplete="off" type="number" step="any" class="input steps" [(ngModel)]="this.canvasElement.steps"></span>
+        </td>
+      </tr>
+      <tr>
+        <td><p class="alignEnd paragraph">Untere Grenze: </td>
+        <td>
+          <span><input [ngClass]="{ 'error': this.errorMessageBottom !== undefined }" [title]="this.errorMessageBottom ?? ''" autocomplete="off" type="text" step="any" class="input" [(ngModel)]="this.canvasElement.bottomText"></span>
+        </td>
+      </tr>
+      <tr>
+        <td><p class="alignEnd paragraph">Obere Grenze: </p></td>
+        <td>
+          <span><input [ngClass]="{ 'error': this.errorMessageTop !== undefined }" [title]="this.errorMessageTop ?? ''" autocomplete="off" type="text" step="any" class="input" [(ngModel)]="this.canvasElement.topText"></span>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
