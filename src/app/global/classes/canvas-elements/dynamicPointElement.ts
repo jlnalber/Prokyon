@@ -30,21 +30,20 @@ type SubTypeAndData = {
 } & Data
 
 export default class DynamicPointElement extends PointElement {
-  protected USE_TEMP_CACHING: boolean = true;
 
   protected _pointProvider: PointProvider;
 
   private _tempPoint: Point | undefined;
 
   public override get x(): number | undefined {
-    if (this._tempPoint === undefined || !this.USE_TEMP_CACHING) {
+    if (this._tempPoint === undefined) {
       this._tempPoint = this._pointProvider();
     }
     return this._tempPoint?.x;
   }
 
   public override get y(): number | undefined {
-    if (this._tempPoint === undefined || !this.USE_TEMP_CACHING) {
+    if (this._tempPoint === undefined) {
       this._tempPoint = this._pointProvider();
     }
     return this._tempPoint?.y;
