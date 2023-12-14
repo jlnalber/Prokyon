@@ -21,6 +21,8 @@ type Data = {
 
 export default class CompiledPointElement extends DynamicPointElement {
 
+  protected override USE_TEMP_CACHING = false;
+
   public override readonly componentType: Type<FormulaElement> = CompiledPointFormulaComponent;
 
   constructor(private readonly parseAndValidateProvider: ParseAndValidateProvider,

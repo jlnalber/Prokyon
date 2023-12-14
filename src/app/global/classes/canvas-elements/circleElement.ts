@@ -23,8 +23,13 @@ export default class CircleElement extends DynamicElement {
 
   private _pointProvider: PointProvider;
 
+  private _tempPoint: Point | undefined;
+
   public get point(): Point | undefined {
-    return this._pointProvider();
+    if (this._tempPoint === undefined) {
+      this._tempPoint = this._pointProvider();
+    }
+    return this._tempPoint;
   }
 
   public get pointProvider(): PointProvider {
@@ -38,8 +43,13 @@ export default class CircleElement extends DynamicElement {
 
   private _radiusProvider: RadiusProvider;
 
+  private _tempRadius: number | undefined;
+
   public get radius(): number | undefined {
-    return this._radiusProvider();
+    if (this._tempRadius === undefined) {
+      this._tempRadius = this._radiusProvider();
+    }
+    return this._tempRadius;
   }
 
   public get radiusProvider(): RadiusProvider {
@@ -148,6 +158,11 @@ export default class CircleElement extends DynamicElement {
       this.lineWidth = canvasElementSerialized.style.size ?? this.lineWidth;
       this.visible = canvasElementSerialized.style.visible;
     }
+  }
+
+  public override resetTempListener = () => {
+    this._tempPoint = undefined;
+    this._tempRadius = undefined;
   }
 }
 

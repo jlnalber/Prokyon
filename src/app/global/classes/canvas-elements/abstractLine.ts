@@ -19,12 +19,20 @@ export default abstract class AbstractLine extends DynamicElement {
 
   private _pointsProvider: PointsProvider;
 
+  private _tempPoints: [(Point | undefined), (Point | undefined)] | undefined;
+
   public get point1(): Point | undefined {
-    return this._pointsProvider()[0];
+    if (this._tempPoints === undefined) {
+      this._tempPoints = this._pointsProvider();
+    }
+    return this._tempPoints[0];
   }
 
   public get point2(): Point | undefined {
-    return this._pointsProvider()[1];
+    if (this._tempPoints == undefined) {
+      this._tempPoints = this._pointsProvider();
+    }
+    return this._tempPoints[1];
   }
 
   public get pointsProvider(): PointsProvider {
@@ -70,6 +78,10 @@ export default abstract class AbstractLine extends DynamicElement {
     }
     const abcOrthogonal = getOrthogonalToLineThroughPoint(abcThis, p);
     return getIntersectionPointLines(abcThis, abcOrthogonal);
+  }
+
+  protected override resetTempListener = () => {
+    this._tempPoints = undefined;
   }
 }
 

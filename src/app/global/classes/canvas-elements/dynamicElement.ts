@@ -5,6 +5,17 @@ export default abstract class DynamicElement extends CanvasElement {
   protected constructor(dependencies: CanvasElement[]) {
     super();
     this.addDependency(...dependencies);
+
+    this.onAdd.addListener((d) => {
+      if (d !== undefined && this.resetTempListener !== undefined) {
+        d.onAfterRedraw.addListener(this.resetTempListener);
+      }
+    })
+    this.onRemove.addListener((d) => {
+      if (d !== undefined && this.resetTempListener !== undefined) {
+        d.onAfterRedraw.removeListener(this.resetTempListener);
+      }
+    })
   }
 
   private readonly removeListener = (drawerService?: DrawerService) => {
@@ -18,4 +29,6 @@ export default abstract class DynamicElement extends CanvasElement {
       i.onRemove.addListener(this.removeListener);
     }
   }
+
+  protected resetTempListener: (() => void) | undefined;
 }

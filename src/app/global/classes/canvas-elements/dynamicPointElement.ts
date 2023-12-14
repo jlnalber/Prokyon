@@ -30,14 +30,24 @@ type SubTypeAndData = {
 } & Data
 
 export default class DynamicPointElement extends PointElement {
+  protected USE_TEMP_CACHING: boolean = true;
+
   protected _pointProvider: PointProvider;
 
+  private _tempPoint: Point | undefined;
+
   public override get x(): number | undefined {
-    return this._pointProvider()?.x
+    if (this._tempPoint === undefined || !this.USE_TEMP_CACHING) {
+      this._tempPoint = this._pointProvider();
+    }
+    return this._tempPoint?.x;
   }
 
   public override get y(): number | undefined {
-    return this._pointProvider()?.y;
+    if (this._tempPoint === undefined || !this.USE_TEMP_CACHING) {
+      this._tempPoint = this._pointProvider();
+    }
+    return this._tempPoint?.y;
   }
 
   public get pointProvider(): PointProvider {
@@ -268,6 +278,10 @@ export default class DynamicPointElement extends PointElement {
       this.pointProvider = d.pointProvider;
       this.subTypeAndDataProvider = d.subTypeAndDataProvider;
     }
+  }
+
+  protected override resetTempListener = () => {
+    this._tempPoint = undefined;
   }
 }
 

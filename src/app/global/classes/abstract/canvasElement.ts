@@ -24,6 +24,7 @@ export abstract class CanvasElement extends CanvasDrawer {
 
   public readonly onChange: Event<any> = new Event<any>();
   public readonly onRemove: Event<DrawerService> = new Event<DrawerService>();
+  public readonly onAdd: Event<DrawerService> = new Event<DrawerService>();
 
   public abstract readonly componentType: Type<FormulaElement>;
   public abstract readonly formulaDialogType: Type<FormulaDialogElement> | undefined;

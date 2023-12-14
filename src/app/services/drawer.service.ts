@@ -82,6 +82,7 @@ export class DrawerService {
     for (let canvasElement of canvasElements) {
       this._canvasElements.push(canvasElement);
       canvasElement.onChange.addListener(this.canvasElementOnChangeListener);
+      canvasElement.onAdd.emit(this);
     }
     this.onCanvasElementChanged.emit(canvasElements);
   }
