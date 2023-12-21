@@ -235,15 +235,18 @@ export class Graph extends CanvasElement {
     this.lineWidth = canvasElementSerialized.style.size ?? this.lineWidth;
 
     const data: Data = canvasElementSerialized.data as Data;
-    if (data.formula !== undefined) {
-      const res = drawerService.parseAndValidateFunc(data.formula, false);
-      if (res instanceof Func) {
-        this.func = res;
-        this.func.stopEvaluation = false;
-      } else {
-        this.func.stopEvaluation = true;
+    try {
+      if (data.formula !== undefined) {
+        const res = drawerService.parseAndValidateFunc(data.formula, false);
+        if (res instanceof Func) {
+          this.func = res;
+          this.func.stopEvaluation = false;
+        } else {
+          this.func.stopEvaluation = true;
+        }
       }
-    }
+    } // here may be an exception for when the order of the functions has a cycle for example
+    catch { }
   }
 
   public override getPositionForLabel(rtx: RenderingContext): Point | undefined {

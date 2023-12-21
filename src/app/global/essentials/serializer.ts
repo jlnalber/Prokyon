@@ -167,4 +167,5 @@ export function loadFrom(drawerService: DrawerService, serialized: Serialized): 
     }
   }
   drawerService.addCanvasElements(...(Object.values(canvasElements).filter(c => c !== undefined) as CanvasElement[]));
+  drawerService.redraw();
 }

@@ -40,7 +40,9 @@ export class SettingsTabComponent implements OnInit {
       file?.text().then(t => {
         try {
           this.drawerService.loadFrom(JSON.parse(t) as Serialized);
-        } catch {}
+        } catch (e) {
+          console.error(e);
+        }
       })
     }
   }
