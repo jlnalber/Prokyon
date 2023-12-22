@@ -120,7 +120,7 @@ const parseErrorMessage = 'syntax error';
 
 export class OperationsParser {
 
-  constructor(private readonly str: string, private readonly funcProvider: FuncProvider) { }
+  constructor(private readonly str: string, private readonly funcProvider: FuncProvider, private readonly changingVariables: (string | undefined)[] = []) { }
 
   private formattedString: string | undefined;
   private stringSplit: string[] | undefined;
@@ -359,6 +359,14 @@ export class OperationsParser {
             // Here, we are dealing with numbers, constants or Variables.
             if (isNumber(tree.value)) {
               return new Constant(tryParseNumber(tree.value)!);
+            }
+
+            // Check for changing variables
+            for (let i = 0; i < this.changingVariables.length; i++) {
+              const c = this.changingVariables[i];
+              if (c === tree.value) {
+                return new Variable(tree.value, i);
+              }
             }
 
             // constants

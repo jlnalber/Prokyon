@@ -138,7 +138,7 @@ export function loadFrom(drawerService: DrawerService, serialized: Serialized): 
     } else if (c.type === LINESEGMENT_TYPE) {
       canvasElement = LineSegmentElement.getDefaultInstance();
     } else if (c.type === GRAPH_TYPE) {
-      canvasElement = Graph.getDefaultInstance();
+      canvasElement = Graph.getDefaultInstance(drawerService);
     } else if (c.type === DYNAMIC_POINT_TYPE) {
       canvasElement = DynamicPointElement.getDefaultInstance();
     } else if (c.type === POINT_TYPE) {
@@ -167,5 +167,11 @@ export function loadFrom(drawerService: DrawerService, serialized: Serialized): 
     }
   }
   drawerService.addCanvasElements(...(Object.values(canvasElements).filter(c => c !== undefined) as CanvasElement[]));
+
+  // Yes, this is really necessary and it es for when there is a graph which is invisible
+  for (let g of drawerService.graphs) {
+    g.reparseIfNecessary();
+  }
+
   drawerService.redraw();
 }

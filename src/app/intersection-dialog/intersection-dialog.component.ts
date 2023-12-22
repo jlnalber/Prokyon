@@ -43,7 +43,7 @@ export class IntersectionDialogComponent {
   }
 
   getFuncName(graph: Graph | undefined): string {
-    if (graph && graph.func.name) {
+    if (graph && graph.func !== undefined && graph.func.name) {
       return ` ${graph.func.name}`;
     }
     return '';

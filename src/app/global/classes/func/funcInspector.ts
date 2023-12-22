@@ -23,7 +23,10 @@ export function inspectOperation(operation: Operation): InspectorResult {
     variableNames.push(operation.key);
   }
   if (operation instanceof ExternalFunction) {
-    externalFuncNames.push(operation.func.name!);
+    const name = operation.func?.name;
+    if (name !== undefined) {
+      externalFuncNames.push(name);
+    }
   }
 
   operation.childOperations.forEach(child => {
@@ -60,7 +63,10 @@ export function containsFunc(funcOrOp: Func | Operation, func: Func, countDeriva
       res = res || containsFunc(item, func);
     })
     if (funcOrOp instanceof ExternalFunction) {
-      res = res || containsFunc(funcOrOp.func, func);
+      const f = funcOrOp.func;
+      if (f !== undefined) {
+        res = res || containsFunc(f, func);
+      }
     }
     return res;
   }

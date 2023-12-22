@@ -1,4 +1,5 @@
 import {Operation} from "./operations/operation";
+import {CHANGING_VARIABLE_KEY} from "./operations/variable";
 
 export class Func {
   constructor(public readonly operation: Operation, public readonly name?: string, public readonly variable: string = 'x') { }
@@ -8,7 +9,7 @@ export class Func {
       throw 'evaluation stopped'
     }
     dict = dict ?? {};
-    dict[this.variable] = x;
+    dict[CHANGING_VARIABLE_KEY + 0] = x;
     return this.operation.evaluate(dict);
   }
 

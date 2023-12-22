@@ -19,76 +19,11 @@ import DefiniteIntegral from "../../global/classes/canvas-elements/definiteInteg
 })
 export class GraphFormulaComponent extends FormulaElement {
 
-  public errorMessage: string | undefined = undefined;
-
-  private _canvasElement: Graph;
-  @Input() set canvasElement(value: Graph) {
-    if (!value.configuration.formula) {
-      value.configuration.formula = '';
-    }
-    this.errorMessage = undefined;
-    this._canvasElement = value;
-  }
-  get canvasElement(): Graph {
-    return this._canvasElement;
-  }
+  public override canvasElement: Graph;
 
   constructor(private readonly drawerService: DrawerService, private readonly dialogService: DialogService) {
     super();
-    this._canvasElement = new Graph(new Func(new Constant(0)));
-    this._canvasElement.configuration.formula = '0';
-  }
-
-  onChange(value: string) {
-    if (value !== this.canvasElement.configuration.formula || this.canvasElement.func.stopEvaluation) {
-      // on change, try to parse the function, otherwise "crash" --> show error message, don't render graph
-      let res = this.drawerService.parseAndValidateFunc(value);
-      if (res instanceof Func) {
-        this.errorMessage = undefined;
-        this.canvasElement.func = res;
-        this.canvasElement.func.stopEvaluation = false;
-        this.canvasElement.configuration.formula = value;
-      } else {
-        this.errorMessage = res;
-        this.canvasElement.func.stopEvaluation = true;
-        this.canvasElement.onChange.emit();
-      }
-    }
-  }
-
-  derive() {
-    try {
-      let derivedGraph = new Graph(this.canvasElement.func.derive(), this.drawerService.getNewColor());
-      derivedGraph.configuration.editable = true;
-      derivedGraph.configuration.formula = derivedGraph.func.operationAsString;
-      this.drawerService.addCanvasElements(derivedGraph);
-    }
-    catch { }
-  }
-
-  duplicate() {
-    try {
-      let formula = this.canvasElement.configuration.formula;
-      if (formula) {
-        let newFunc = new FuncParser(formula, this.drawerService.funcProvider).parse();
-        let newGraph = new Graph(newFunc, this.canvasElement.color, this.canvasElement.visible, this.canvasElement.lineWidth);
-        newGraph.configuration = {
-          formula: formula,
-          editable: this.canvasElement.configuration.editable ?? false
-        }
-        this.drawerService.addCanvasElements(newGraph);
-      }
-    } catch { }
-  }
-
-  canDerive(): boolean {
-    try {
-      this.canvasElement.func.derive();
-      return true;
-    }
-    catch {
-      return false;
-    }
+    this.canvasElement = Graph.getDefaultInstance(drawerService);
   }
 
   public override get contextMenu(): ContextMenu {
@@ -103,17 +38,22 @@ export class GraphFormulaComponent extends FormulaElement {
         const elements: ContextMenuElement[] = [{
           header: 'Ableiten',
           click: () => {
-            this.derive();
+            const d = this.canvasElement.derive(this.drawerService.getNewColor());
+            if (d !== undefined) {
+              this.drawerService.addCanvasElements(d);
+            }
           },
-          disabled: !this.canDerive() || this.errorMessage !== undefined,
+          disabled: !this.canvasElement.canDerive() || this.canvasElement.funcError,
           icon: 'south_east',
           title: 'Diese Funktion ableiten.'
         }, {
           header: 'Duplizieren',
           icon: 'content_copy',
-          disabled: this.errorMessage !== undefined,
+          disabled: this.canvasElement.funcError,
           click: () => {
-            this.duplicate();
+            try {
+              this.drawerService.addCanvasElements(this.canvasElement.clone());
+            } catch {}
           },
           title: 'Diese Funktion duplizieren.'
         }, {

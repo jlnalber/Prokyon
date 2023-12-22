@@ -17,18 +17,18 @@ export class ExternalFunction extends GeneralFunction {
   }
 
   evaluate(dict: any): number {
-    return this.func.evaluate(this.operation.evaluate(dict), clone(dict))
+    const func = this.func;
+    if (func === undefined) {
+      throw 'Func doesn\'t exist!';
+    }
+    return func.evaluate(this.operation.evaluate(dict), clone(dict))
   }
 
   constructor(public readonly funcKey: string, private readonly funcProvider: FuncProvider, operation: Operation) {
     super(operation, funcKey);
   }
 
-  public get func(): Func {
-    let res = this.funcProvider(this.funcKey);
-    if (!res) {
-      throw 'Func doesn\'t exist!';
-    }
-    return res;
+  public get func(): Func | undefined {
+    return this.funcProvider(this.funcKey);
   }
 }

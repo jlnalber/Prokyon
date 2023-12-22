@@ -8,7 +8,7 @@ import {Transformations} from "../global/interfaces/transformations";
 import {Point, Vector} from "../global/interfaces/point";
 import { CanvasDrawer } from '../global/classes/abstract/canvasDrawer';
 import {Grid} from "../global/classes/grid";
-import {Graph} from "../global/classes/canvas-elements/graph";
+import {Graph, ParseAndValidateProviderGraph} from "../global/classes/canvas-elements/graph";
 import {getDistanceToRect, getMinUndef, getNew, isIn, sameColors} from "../global/essentials/utils";
 import {Config as CanvasConfig} from "../global/classes/renderingContext";
 import {FuncProvider} from "../global/classes/func/operations/externalFunction";
@@ -382,7 +382,7 @@ export class DrawerService {
 
     // then look up in the graphs
     for (let graph of this.graphs) {
-      if (funcNameWithoutDerivative(key) === funcNameWithoutDerivative(graph.func.name)) {
+      if (graph.func !== undefined && funcNameWithoutDerivative(key) === funcNameWithoutDerivative(graph.func.name)) {
         let func = graph.func
 
         // derive to the requested level
@@ -474,6 +474,10 @@ export class DrawerService {
     }
   }
 
+  public get parseAndValidateProviderGraph(): ParseAndValidateProviderGraph {
+    return (t: string) => this.parseAndValidateFunc(t)
+  }
+
   public addVariable(variable: string, installReferenceListeners: boolean = true): VariableElement | undefined {
     // adds a new variable if not yet available
     if (!this.hasVariable(variable)) {
@@ -484,7 +488,7 @@ export class DrawerService {
         let hasReference = false;
         for (let cElement of this.canvasElements) {
           if (cElement instanceof Graph) {
-            hasReference = hasReference || (cElement.func.variable !== variableElement.key
+            hasReference = hasReference || (cElement.func !== undefined && cElement.func.variable !== variableElement.key
               && (cElement.func.variable !== undefined || variableElement.key !== 'x')
               && containsVariable(cElement.func, variableElement.key));
           } else if (cElement instanceof CompiledPointElement) {

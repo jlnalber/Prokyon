@@ -72,7 +72,9 @@ export class FuncParser {
       else {
         // this case is when there is no
         this.funcOperation = this.str;
-        this.funcMetaData = {};
+        this.funcMetaData = {
+          variable: 'x'
+        };
       }
     }
     return [ this.funcMetaData, this.funcOperation ];
@@ -82,7 +84,7 @@ export class FuncParser {
     // parse the operation, then put it in a func and return it
     if (this.funcOperation && this.funcMetaData) {
       if (!this.func) {
-        let opParser = new OperationsParser(this.funcOperation, this.funcProvider);
+        let opParser = new OperationsParser(this.funcOperation, this.funcProvider, [ this.funcMetaData.variable ]);
         let operation = opParser.parse();
         this.func = new Func(operation, this.funcMetaData.name, this.funcMetaData.variable);
       }

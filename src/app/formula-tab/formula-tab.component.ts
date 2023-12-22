@@ -69,7 +69,7 @@ export class FormulaTabComponent implements OnInit {
   }
 
   addGraph(): void {
-    const graph = new Graph(new Func(new Constant(0)), this.drawerService.getNewColor());
+    const graph = new Graph(this.drawerService.parseAndValidateProviderGraph, undefined, this.drawerService.getNewColor());
     graph.configuration.formula = '0';
     graph.configuration.editable = true;
     this.drawerService.addCanvasElements(graph);

@@ -38,5 +38,5 @@ export function getDependencyStillActiveListenerForGraphDependency(drawerService
 }
 
 export function getLabelForGraphDependency(name: string, graph: Graph): [string, () => string | undefined] {
-  return [name, () => graph.func.name]
+  return [name, () => graph.func?.name]
 }

@@ -33,11 +33,13 @@ export default class CurveElement extends CanvasElement {
               color: Color = BLACK,
               lineWidth: number = 3,
               name?: string,
-              visible: boolean = true) {
+              visible: boolean = true,
+              showLabel: boolean = true) {
     super();
     this._color = color;
     this._lineWidth = lineWidth;
     this.configuration.name = name;
+    this.configuration.showLabel = showLabel;
     this._visible = visible;
   }
 

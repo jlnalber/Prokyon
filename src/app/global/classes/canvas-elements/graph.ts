@@ -9,6 +9,9 @@ import {getDistanceToStraightLine} from "../../essentials/straightLineUtils";
 import {CanvasElementSerialized} from "../../essentials/serializer";
 import {DrawerService} from "../../../services/drawer.service";
 
+
+export type ParseAndValidateProviderGraph = (t: string) => Func | string;
+
 type Data = {
   formula?: string
 }
@@ -21,26 +24,58 @@ export class Graph extends CanvasElement {
   public readonly componentType = GraphFormulaComponent;
   public override formulaDialogType = undefined;
 
-  private _func: Func;
-  public get func(): Func {
+  private _funcText: string = "0";
+  private _funcErrorText: undefined | string;
+  private _func: Func | undefined;
+  public get func(): Func | undefined {
     return this._func;
   }
-  public set func(value: Func) {
-    this._func = value;
-    this.configuration.label = value.name;
+
+  public get funcText(): string {
+    return this._funcText;
+  }
+  public set funcText(value: string) {
+    this._funcText = value;
+    this.reparse();
     this.onChange.emit(value);
   }
 
-  constructor(func: Func, color: Color = { r: 0, g: 0, b: 0 }, visible: boolean = true, public lineWidth: number = 3, showLabel: boolean = true) {
+  public get funcErrorText(): string | undefined {
+    return this._funcErrorText;
+  }
+
+  public get funcError(): boolean {
+    return this.funcErrorText !== undefined;
+  }
+
+  constructor(private readonly parseAndValidateProvider: ParseAndValidateProviderGraph,
+              func?: Func | string | undefined,
+              color: Color = { r: 0, g: 0, b: 0 },
+              visible: boolean = true,
+              public lineWidth: number = 3,
+              showLabel: boolean = true) {
     super();
-    this._func = func;
-    this.configuration.label = func?.name;
+    if (func instanceof Func) {
+      this._func = func;
+      this.configuration.label = func?.name;
+      this._funcText = func.operationAsString;
+    } else if (typeof func === 'string') {
+      this._funcText = func;
+    }
     this.configuration.showLabel = showLabel;
     this._color = color;
     this._visible = visible;
   }
 
   public override draw(ctx: RenderingContext) {
+    if (this.funcError || this.func === undefined) {
+      this.reparse();
+    }
+
+    if (this.funcError || this.func === undefined) {
+      return;
+    }
+
     // draw the graph
 
     // for that purpose, sometimes more than one path has to be drawn
@@ -74,7 +109,7 @@ export class Graph extends CanvasElement {
     }
     const tryGetPoint = (x: number): Point | undefined => {
       try {
-        const y = this._func.evaluate(x, ctx.variables);
+        const y = this._func!.evaluate(x, ctx.variables);
         if (isFinite(y)) {
           return {
             x,
@@ -181,15 +216,15 @@ export class Graph extends CanvasElement {
 
       const p1: Point = {
         x: x1,
-        y: this.func.evaluate(x1, ctx.variables)
+        y: this.func!.evaluate(x1, ctx.variables)
       }
       const p2: Point = {
         x: x2,
-        y: this.func.evaluate(x2, ctx.variables)
+        y: this.func!.evaluate(x2, ctx.variables)
       }
       const p3: Point = {
         x: x3,
-        y: this.func.evaluate(x3, ctx.variables)
+        y: this.func!.evaluate(x3, ctx.variables)
       }
 
       let dist1 = getDistanceToStraightLine(p, p1, p2);
@@ -204,18 +239,18 @@ export class Graph extends CanvasElement {
 
     // Try an easier way:
     try {
-      return Math.abs(p.y - this.func.evaluate(p.x, ctx.variables));
+      return Math.abs(p.y - this.func!.evaluate(p.x, ctx.variables));
     } catch { }
     return undefined;
   }
 
-  public static getDefaultInstance(): Graph {
-    return new Graph(undefined!);
+  public static getDefaultInstance(drawerService: DrawerService): Graph {
+    return new Graph(drawerService.parseAndValidateProviderGraph);
   }
 
   public override serialize(): CanvasElementSerialized {
     const data: Data = {
-      formula: this.configuration.formula
+      formula: this.funcText
     }
     return {
       data,
@@ -237,16 +272,33 @@ export class Graph extends CanvasElement {
     const data: Data = canvasElementSerialized.data as Data;
     try {
       if (data.formula !== undefined) {
-        const res = drawerService.parseAndValidateFunc(data.formula, false);
-        if (res instanceof Func) {
-          this.func = res;
-          this.func.stopEvaluation = false;
-        } else {
-          this.func.stopEvaluation = true;
-        }
+        this._funcText = data.formula;
       }
     } // here may be an exception for when the order of the functions has a cycle for example
     catch { }
+  }
+
+  public reparse() {
+    const res = this.parseAndValidateProvider(this._funcText);
+    if (res instanceof Func) {
+      this._func = res;
+      this._funcErrorText = undefined;
+      this.configuration.label = res.name;
+      return true;
+    }
+    else {
+      this._func = undefined;
+      this._funcErrorText = res;
+      this.configuration.label = undefined;
+      return false;
+    }
+  }
+
+  public reparseIfNecessary(): boolean {
+    if (this.funcError || this.func === undefined) {
+      return this.reparse();
+    }
+    return true;
   }
 
   public override getPositionForLabel(rtx: RenderingContext): Point | undefined {
@@ -254,14 +306,43 @@ export class Graph extends CanvasElement {
     try {
       const distX = 0.1;
       const distY = 0.05;
-      const x = rect.x + rect.width - rect.width * distX;
-      const y = this.func.evaluate(x) + rect.height * distY;
+      const x = rect.x + rect.width * (0.5 + distX);
+      const y = this.func!.evaluate(x) + rect.height * distY;
       return {
         x,
         y
       }
     } catch {
       return undefined;
+    }
+  }
+
+  public clone(): Graph {
+    const c = new Graph(this.parseAndValidateProvider, this.funcText, this.color, this.visible, this.lineWidth, this.configuration.showLabel);
+    c.configuration = { ...this.configuration };
+
+    return c;
+  }
+
+  public derive(color?: Color): Graph | undefined {
+    try {
+      let derivedGraph = new Graph(this.parseAndValidateProvider, this.func?.derive(), color ?? this.color);
+      derivedGraph.configuration.editable = true;
+      return derivedGraph
+    }
+    catch {
+      return undefined;
+    }
+  }
+
+  public canDerive(): boolean {
+    try {
+      if (this.func === undefined) return false;
+      this.func.derive();
+      return true;
+    }
+    catch {
+      return false;
     }
   }
 

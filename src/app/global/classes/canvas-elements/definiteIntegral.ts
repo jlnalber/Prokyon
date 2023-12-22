@@ -128,10 +128,10 @@ export default class DefiniteIntegral extends CanvasElement {
 
     // Helper function for handling a step.
     const handleStep = (x: number, h: number) => {
-      if (h !== 0) {
+      if (h !== 0 && this.graph.func !== undefined) {
         try {
           const y = this.graph.func.evaluate(x, variables);
-          const y2 = this.secondGraph?.func.evaluate(x, variables) ?? 0;
+          const y2 = this.secondGraph?.func?.evaluate(x, variables) ?? 0;
 
           if (isFinite(y) && isFinite(y2)) {
             // Calculate the surface and the rect.

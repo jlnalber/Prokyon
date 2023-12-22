@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, isDevMode } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
@@ -35,6 +35,7 @@ import { ViewAngleElementComponent } from './formula-dialogs/view-angle-element/
 import { CompiledPointFormulaComponent } from './formula-tab/compiled-point-formula/compiled-point-formula.component';
 import { CurveFormulaComponent } from './formula-tab/curve-formula/curve-formula.component';
 import { ViewCurveElementComponent } from './formula-dialogs/view-curve-element/view-curve-element.component';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [
@@ -75,7 +76,13 @@ import { ViewCurveElementComponent } from './formula-dialogs/view-curve-element/
   ],
   imports: [
     BrowserModule,
-    FormsModule
+    FormsModule,
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: !isDevMode(),
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]

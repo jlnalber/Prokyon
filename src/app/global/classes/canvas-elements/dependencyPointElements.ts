@@ -25,7 +25,7 @@ import {countDerivatives} from "../func/funcInspector";
 import {Func} from "../func/func";
 import {Subtraction} from "../func/operations/elementary-operations/subtraction";
 import {ExternalFunction} from "../func/operations/externalFunction";
-import {Variable} from "../func/operations/variable";
+import {CHANGING_VARIABLE_KEY, Variable} from "../func/operations/variable";
 import {
   ViewDependencyPointElementsDialogComponent
 } from "../../../formula-dialogs/view-dependency-point-elements-dialog/view-dependency-point-elements-dialog.component";
@@ -251,12 +251,20 @@ export default class DependencyPointElements extends CanvasElement {
                                          addElement: boolean = true): DependencyPointElements {
     // Collect the data.
     color = color ?? drawerService.getNewColor();
-    const variableKey = 'x';
+    const variableKey = CHANGING_VARIABLE_KEY + 0;
 
     return new DependencyPointElements(drawerService, (from: number, to: number, depth: number) => {
+      if (graph.func === undefined) {
+        return [];
+      }
+
       // Helper function:
       const getFuncProviderFor: (graph: Graph) => ((key: string) => Func) = (graph: Graph) => {
         return (key: string) => {
+          if (graph.func === undefined) {
+            throw 'can\'t use bad function'
+          }
+
           let f = graph.func;
 
           // Try to count how often the function needs to be derived.
@@ -275,16 +283,16 @@ export default class DependencyPointElements extends CanvasElement {
       }
 
       // First, prepare a difference function.
-      const diffFunc = new Func(new Subtraction(new ExternalFunction(graph.func.name ?? '', getFuncProviderFor(graph), new Variable(variableKey)),
-        new ExternalFunction(secondGraph.func.name ?? '', getFuncProviderFor(secondGraph), new Variable(variableKey)),
-      ), undefined, variableKey);
+      const diffFunc = new Func(new Subtraction(new ExternalFunction(graph.func?.name ?? '', getFuncProviderFor(graph), new Variable(variableKey)),
+        new ExternalFunction(secondGraph.func?.name ?? '', getFuncProviderFor(secondGraph), new Variable(variableKey)),
+      ), undefined, 'x');
 
       // Then, calculate the zeros.
       const variables = drawerService.getVariables();
       return zerosInInterval(diffFunc, variables, from, to, depth).map(x => {
         return {
           x,
-          y: graph.func.evaluate(x, variables)
+          y: graph.func!.evaluate(x, variables)
         }
       })
     }, from, to, depth, () => {
@@ -298,7 +306,7 @@ export default class DependencyPointElements extends CanvasElement {
       return graph1Found && graph2Found;
     }, ['Schnittpunkte', () => {
       // Provide a label for the component in the panel.
-      return graph.func.name && secondGraph.func.name ? `${graph.func.name}, ${secondGraph.func.name}` : undefined
+      return graph.func !== undefined && graph.func.name && secondGraph.func?.name ? `${graph.func.name}, ${secondGraph.func.name}` : undefined
     }], () => {
       return {
         graph: graph.id,
@@ -319,6 +327,9 @@ export default class DependencyPointElements extends CanvasElement {
     return DependencyPointElements.createDependencyPointElements(drawerService,
       graph,
       (from: number, to: number, depth: number) => {
+        if (graph.func === undefined) {
+          return [];
+        }
         return zeroPointsInInterval(graph.func, drawerService.getVariables(), from, to, depth);
       },
       from,
@@ -337,12 +348,15 @@ export default class DependencyPointElements extends CanvasElement {
                                  firstInit?: (points: Point[]) => void,
                                  addElement: boolean = true): DependencyPointElements {
     // try to derive (throws an error, when derivation doesn't work) --> opens error snackbar
-    graph.func.derive();
+    graph.func!.derive();
 
     // create dependency point for zero points
     return DependencyPointElements.createDependencyPointElements(drawerService,
       graph,
       (from: number, to: number, depth: number) => {
+        if (graph.func === undefined) {
+          return [];
+        }
         return extremumPointsInInterval(graph.func, drawerService.getVariables(), from, to, depth);
       },
       from,
@@ -361,12 +375,15 @@ export default class DependencyPointElements extends CanvasElement {
                                  firstInit?: (points: Point[]) => void,
                                  addElement: boolean = true): DependencyPointElements {
     // try to derive (throws an error, when derivation doesn't work) --> opens error snackbar
-    graph.func.derive();
+    graph.func!.derive();
 
     // create dependency point for zero points
     return DependencyPointElements.createDependencyPointElements(drawerService,
       graph,
       (from: number, to: number, depth: number) => {
+        if (graph.func === undefined) {
+          return [];
+        }
         return inflectionPointsInInterval(graph.func, drawerService.getVariables(), from, to, depth);
       },
       from,
@@ -407,7 +424,7 @@ export default class DependencyPointElements extends CanvasElement {
         subType: '',
         graph: -1
       }
-    }, BLACK, true, undefined, false);
+    }, BLACK, true, undefined, true);
   }
 
   public override serialize(): CanvasElementSerialized {
@@ -474,6 +491,7 @@ export default class DependencyPointElements extends CanvasElement {
     this.dependencyStillActive = d.dependencyStillActive;
     this.description = d.description;
     this.subTypeAndGraphsProvider = d.subTypeAndGraphsProvider;
+    this.draw = d.draw;
   }
 
 }
