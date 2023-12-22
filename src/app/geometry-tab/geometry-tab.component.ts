@@ -26,7 +26,8 @@ import AngleMode from '../global/classes/modes/angleMode';
 })
 export class GeometryTabComponent implements OnInit {
 
-  constructor(private drawerService: DrawerService) { }
+  constructor(private drawerService: DrawerService) {
+  }
 
   ngOnInit(): void {
   }
@@ -35,19 +36,19 @@ export class GeometryTabComponent implements OnInit {
     {
       name: 'Bewegungen und Sichtbarkeiten',
       modes: [
-        new ModeElement<MoveMode>(this.drawerService, () => {
+        new ModeElement<MoveMode>(() => this.drawerService, () => {
           return new MoveMode();
         }, 'Bewegen', 'Bewege den Canvas und wähle Elemente aus', 'move'),
-        new ModeElement<MovePointsMode>(this.drawerService, () => {
+        new ModeElement<MovePointsMode>(() => this.drawerService, () => {
           return new MovePointsMode();
         }, 'Verschieben', 'Verschiebe Punkte', 'movePoints'),
-        new ModeElement<ChangeVisibilityMode>(this.drawerService, () => {
+        new ModeElement<ChangeVisibilityMode>(() => this.drawerService, () => {
           return new ChangeVisibilityMode();
         }, 'Anzeigen', 'Mache Elemente (un-)sichtbar', 'changeVisibility'),
-        new ModeElement<ShowLabelVisibilityMode>(this.drawerService, () => {
+        new ModeElement<ShowLabelVisibilityMode>(() => this.drawerService, () => {
           return new ShowLabelVisibilityMode();
         }, 'Label anzeigen', 'Mache Labels (un-)sichtbar', 'showLabelVisibility'),
-        new ModeElement<MoveLabelsMode>(this.drawerService, () => {
+        new ModeElement<MoveLabelsMode>(() => this.drawerService, () => {
           return new MoveLabelsMode();
         }, 'Label bewegen', 'Verschiebe Labels', 'moveLabels')
       ]
@@ -55,16 +56,16 @@ export class GeometryTabComponent implements OnInit {
     {
       name: 'Einfache Konstruktionen',
       modes: [
-        new ModeElement<PointsMode>(this.drawerService, () => {
+        new ModeElement<PointsMode>(() => this.drawerService, () => {
           return new PointsMode();
         }, 'Punkte', 'Erstelle neue Punkte', 'points'),
-        new ModeElement<LinesMode>(this.drawerService, () => {
+        new ModeElement<LinesMode>(() => this.drawerService, () => {
           return new LinesMode();
         }, 'Gerade', 'Erstelle eine neue Gerade mit zwei Punkten', 'line'),
-        new ModeElement<LineSegmentsMode>(this.drawerService, () => {
+        new ModeElement<LineSegmentsMode>(() => this.drawerService, () => {
           return new LineSegmentsMode();
         }, 'Strecke', 'Erstelle eine neue Strecke zwischen zwei Punkten', 'lineSegment'),
-        new ModeElement<CircleMode>(this.drawerService, () => {
+        new ModeElement<CircleMode>(() => this.drawerService, () => {
           return new CircleMode();
         }, 'Kreis', 'Erstelle einen neuen Kreis mit zwei Punkten', 'circle')
       ]
@@ -72,28 +73,28 @@ export class GeometryTabComponent implements OnInit {
     {
       name: 'Weiter Konstruktionen',
       modes: [
-        new ModeElement<IntersectionMode>(this.drawerService, () => {
+        new ModeElement<IntersectionMode>(() => this.drawerService, () => {
           return new IntersectionMode();
         }, 'Schnittpunkt', 'Mache den Schnittpunkt zwischen Geraden, Strecken und Kreisen', 'intersection'),
-        new ModeElement<MiddlePointMode>(this.drawerService, () => {
+        new ModeElement<MiddlePointMode>(() => this.drawerService, () => {
           return new MiddlePointMode();
         }, 'Mittelpunkt', 'Mache den Mittelpunkt einer Strecke oder zwischen zwei Punkten', 'middlePoint'),
-        new ModeElement<BisectionMode>(this.drawerService, () => {
+        new ModeElement<BisectionMode>(() => this.drawerService, () => {
           return new BisectionMode();
         }, 'Mittelsenk.', 'Mache die Mittelsenkrechte einer Strecke oder zwischen zwei Punkten', 'bisection'),
-        new ModeElement<AngleMode>(this.drawerService, () => {
+        new ModeElement<AngleMode>(() => this.drawerService, () => {
           return new AngleMode();
         }, 'Winkel', 'Lege einen Winkel durch drei Punkte', 'angle'),
-        new ModeElement<AngleBisectorMode>(this.drawerService, () => {
+        new ModeElement<AngleBisectorMode>(() => this.drawerService, () => {
           return new AngleBisectorMode();
         }, 'Winkelhalb.', 'Mache die Winkelhalbierende von drei Punkten', 'angleBisector'),
-        new ModeElement<ParallelMode>(this.drawerService, () => {
+        new ModeElement<ParallelMode>(() => this.drawerService, () => {
           return new ParallelMode();
         }, 'Parallel', 'Mache die Parallele zu einer Geraden durch einen Punkt', 'parallel'),
-        new ModeElement<OrthogonalMode>(this.drawerService, () => {
+        new ModeElement<OrthogonalMode>(() => this.drawerService, () => {
           return new OrthogonalMode();
         }, 'Lot', 'Mache den Lot zu eine Geraden durch einen Punkt', 'orthogonal'),
-        new ModeElement<TangensMode>(this.drawerService, () => {
+        new ModeElement<TangensMode>(() => this.drawerService, () => {
           return new TangensMode();
         }, 'Tangente', 'Mache die Tangente an einen Kreis durch einen Punkt', 'tangens')
       ]
@@ -103,14 +104,15 @@ export class GeometryTabComponent implements OnInit {
 }
 
 class ModeElement<T extends Mode> {
-  public constructor(private drawerService: DrawerService, public getInstance: (create: boolean) => T, public title: string, public tooltip: string, public icon: string) {}
+  public constructor(private drawerServiceProvider: () => DrawerService, public getInstance: (create: boolean) => T, public title: string, public tooltip: string, public icon: string) { }
 
   public click(): void {
-    this.drawerService.mode = this.getInstance(true);
+    this.drawerServiceProvider().mode = this.getInstance(true);
   }
 
   public isActivated(): boolean {
-    return this.drawerService.mode?.constructor === this.getInstance(false).constructor;
+    const mode = this.drawerServiceProvider().mode;
+    return  mode !== undefined && mode.constructor === this.getInstance(false).constructor;
   }
 }
 
