@@ -9,7 +9,7 @@ import {Point, Vector} from "../global/interfaces/point";
 import { CanvasDrawer } from '../global/classes/abstract/canvasDrawer';
 import {Grid} from "../global/classes/grid";
 import {Graph, ParseAndValidateProviderGraph} from "../global/classes/canvas-elements/graph";
-import {getDistanceToRect, getMinUndef, getNew, isIn, sameColors} from "../global/essentials/utils";
+import {getDistanceToRect, getMinUndef, getNew, sameColors} from "../global/essentials/utils";
 import {Config as CanvasConfig} from "../global/classes/renderingContext";
 import {FuncProvider} from "../global/classes/func/operations/externalFunction";
 import {Func} from "../global/classes/func/func";
@@ -244,6 +244,7 @@ export class DrawerService {
   public readonly onTransformationsChanged: Event<number | Transformations> = new Event<number | Transformations>();
   public readonly onCanvasConfigChanged: Event<CanvasConfig> = new Event<CanvasConfig>();
   public readonly onBeforeRedraw: Event<undefined> = new Event<undefined>();
+  public readonly onBeforeElementsDraw: Event<RenderingContext> = new Event<RenderingContext>();
   public readonly onAfterRedraw: Event<undefined> = new Event<undefined>();
   public readonly onModeChanged: Event<Mode> = new Event<Mode>();
 
@@ -312,11 +313,12 @@ export class DrawerService {
 
     // then: draw the elements (first metaDrawers, then canvasElements)
     let renderingContext = this.getRenderingContextFor(ctx, transformations);
+    this.onBeforeElementsDraw.emit(renderingContext);
     for (let metaDrawer of this._metaDrawers) {
       metaDrawer.draw(renderingContext);
     }
 
-    let cs: CanvasElement[] = []
+    let cs: CanvasElement[];
     if (this.drawPointsEqually) {
       cs = this._canvasElements;
     } else {
@@ -511,7 +513,7 @@ export class DrawerService {
 
       // add the variableElement
       this.addCanvasElements(variableElement);
-      this.onCanvasElementChanged.addListener(checkForReferenceListener);
+      if (installReferenceListeners) this.onCanvasElementChanged.addListener(checkForReferenceListener);
 
       return variableElement;
     }

@@ -33,7 +33,7 @@ export default class DynamicPointElement extends PointElement {
 
   protected _pointProvider: PointProvider;
 
-  private _tempPoint: Point | undefined;
+  protected _tempPoint: Point | undefined;
 
   public override get x(): number | undefined {
     if (this._tempPoint === undefined) {

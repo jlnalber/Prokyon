@@ -176,8 +176,15 @@ export default class CompiledPointElement extends DynamicPointElement {
 
 
   public override draw(ctx: RenderingContext) {
-    this._tempVariables = ctx.variables ?? {};
+    //this._tempVariables = ctx.variables ?? {};
     super.draw(ctx);
+  }
+
+  protected override resetTempListener = (ctx?: RenderingContext) => {
+    this._tempPoint = undefined;
+    if (ctx !== undefined) {
+      this._tempVariables = ctx.variables ?? {};
+    }
   }
 
 }

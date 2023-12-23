@@ -1,5 +1,6 @@
 import {CanvasElement} from "../abstract/canvasElement";
 import {DrawerService} from "../../../services/drawer.service";
+import {RenderingContext} from "../renderingContext";
 
 export default abstract class DynamicElement extends CanvasElement {
   protected constructor(dependencies: CanvasElement[]) {
@@ -8,12 +9,14 @@ export default abstract class DynamicElement extends CanvasElement {
 
     this.onAdd.addListener((d) => {
       if (d !== undefined && this.resetTempListener !== undefined) {
-        d.onAfterRedraw.addListener(this.resetTempListener);
+        d.onBeforeElementsDraw.addListener(this.resetTempListener);
+        //d.onAfterRedraw.addListener(this.resetTempListener);
       }
     })
     this.onRemove.addListener((d) => {
       if (d !== undefined && this.resetTempListener !== undefined) {
-        d.onAfterRedraw.removeListener(this.resetTempListener);
+        d.onBeforeElementsDraw.removeListener(this.resetTempListener);
+        //d.onAfterRedraw.removeListener(this.resetTempListener);
       }
     })
   }
@@ -30,5 +33,5 @@ export default abstract class DynamicElement extends CanvasElement {
     }
   }
 
-  protected resetTempListener: (() => void) | undefined;
+  protected resetTempListener: ((ctx?: RenderingContext) => void) | undefined;
 }
