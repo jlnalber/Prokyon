@@ -2,7 +2,8 @@
 
 .wrapper {
   --buttonSize: 46px;
-  height: var(--buttonSize);
+  /*height: var(--buttonSize);*/
+  display: inline;
 }
 
 .input {

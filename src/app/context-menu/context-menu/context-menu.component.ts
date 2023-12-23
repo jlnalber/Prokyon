@@ -39,6 +39,7 @@ export class ContextMenuComponent implements AfterViewInit {
         height: window.innerHeight
       }
       const rectContextMenu = this.wrapperElement.getBoundingClientRect();
+      // console.log(rectContextMenu);
       return {
         x: Math.min(this._position.x, viewportSize.width - rectContextMenu.width),
         y: Math.min(this._position.y, viewportSize.height - rectContextMenu.height)
