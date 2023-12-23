@@ -109,7 +109,6 @@
       }
     }
   },
-  "defaultProject": "Prokyon",
   "cli": {
     "analytics": false
   }

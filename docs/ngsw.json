@@ -1,0 +1,115 @@
+{
+  "configVersion": 1,
+  "timestamp": 1703326032222,
+  "index": "https://jlnalber.github.io/Prokyon/index.html",
+  "assetGroups": [
+    {
+      "name": "Prokyon",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "https://jlnalber.github.io/Prokyon/index.html",
+        "https://jlnalber.github.io/Prokyon/main.31e9c36cddad5569.js",
+        "https://jlnalber.github.io/Prokyon/manifest.webmanifest",
+        "https://jlnalber.github.io/Prokyon/polyfills.4b3f802a7fa2cb80.js",
+        "https://jlnalber.github.io/Prokyon/runtime.6cb9e3361939e0fd.js",
+        "https://jlnalber.github.io/Prokyon/styles.19be983b52fb983d.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "https://jlnalber.github.io/Prokyon/assets/angle.svg",
+        "https://jlnalber.github.io/Prokyon/assets/angleBisector.svg",
+        "https://jlnalber.github.io/Prokyon/assets/bisection.svg",
+        "https://jlnalber.github.io/Prokyon/assets/changeVisibility.svg",
+        "https://jlnalber.github.io/Prokyon/assets/circle.svg",
+        "https://jlnalber.github.io/Prokyon/assets/icons/icon-128x128.png",
+        "https://jlnalber.github.io/Prokyon/assets/icons/icon-144x144.png",
+        "https://jlnalber.github.io/Prokyon/assets/icons/icon-152x152.png",
+        "https://jlnalber.github.io/Prokyon/assets/icons/icon-192x192.png",
+        "https://jlnalber.github.io/Prokyon/assets/icons/icon-384x384.png",
+        "https://jlnalber.github.io/Prokyon/assets/icons/icon-512x512.png",
+        "https://jlnalber.github.io/Prokyon/assets/icons/icon-72x72.png",
+        "https://jlnalber.github.io/Prokyon/assets/icons/icon-96x96.png",
+        "https://jlnalber.github.io/Prokyon/assets/intersection.svg",
+        "https://jlnalber.github.io/Prokyon/assets/line.svg",
+        "https://jlnalber.github.io/Prokyon/assets/lineSegment.svg",
+        "https://jlnalber.github.io/Prokyon/assets/middlePoint.svg",
+        "https://jlnalber.github.io/Prokyon/assets/move.svg",
+        "https://jlnalber.github.io/Prokyon/assets/moveLabels.svg",
+        "https://jlnalber.github.io/Prokyon/assets/movePoints.svg",
+        "https://jlnalber.github.io/Prokyon/assets/orthogonal.svg",
+        "https://jlnalber.github.io/Prokyon/assets/parallel.svg",
+        "https://jlnalber.github.io/Prokyon/assets/points.svg",
+        "https://jlnalber.github.io/Prokyon/assets/showLabelVisibility.svg",
+        "https://jlnalber.github.io/Prokyon/assets/tangens.svg",
+        "https://jlnalber.github.io/Prokyon/icon.svg"
+      ],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [],
+  "hashTable": {
+    "https://jlnalber.github.io/Prokyon/assets/angle.svg": "e34df9f2ca27e060d1633b5663b4ad92cb5f6a93",
+    "https://jlnalber.github.io/Prokyon/assets/angleBisector.svg": "d421c34a0372c2213de27f5012fa6298658ded2d",
+    "https://jlnalber.github.io/Prokyon/assets/bisection.svg": "bcaa493ab7e347745c03fc6961193db04443c81e",
+    "https://jlnalber.github.io/Prokyon/assets/changeVisibility.svg": "7ede7c064749cbf7ef8c8d184cea7664fc8d1396",
+    "https://jlnalber.github.io/Prokyon/assets/circle.svg": "eedbe8bf5439ec4c46d186771bd7e2ee93d525b1",
+    "https://jlnalber.github.io/Prokyon/assets/icons/icon-128x128.png": "f912963bdc6d5a38d8f1dd0afbaab2ce8d657acb",
+    "https://jlnalber.github.io/Prokyon/assets/icons/icon-144x144.png": "b155fd5f2fd5d2ea7760721063003c4cd95fd783",
+    "https://jlnalber.github.io/Prokyon/assets/icons/icon-152x152.png": "eae6e0f0c8afb8aaae339e2a569b43e9238e5e6c",
+    "https://jlnalber.github.io/Prokyon/assets/icons/icon-192x192.png": "15c4180454633880d98674aa7394656196c91584",
+    "https://jlnalber.github.io/Prokyon/assets/icons/icon-384x384.png": "94a915751ef6c9282df9aea405ad679230631814",
+    "https://jlnalber.github.io/Prokyon/assets/icons/icon-512x512.png": "1de182f76f7329dfa8f9fcdd1fdcdd695bea6a99",
+    "https://jlnalber.github.io/Prokyon/assets/icons/icon-72x72.png": "aa88a6096bd973be7f6d7a5489bfa6bc2463f8c4",
+    "https://jlnalber.github.io/Prokyon/assets/icons/icon-96x96.png": "7fb8f59c30ce2ff12c700321a0b39e14b3dc8f95",
+    "https://jlnalber.github.io/Prokyon/assets/intersection.svg": "08ecd25ea94fd5f3cd7568059e0962713129c5d8",
+    "https://jlnalber.github.io/Prokyon/assets/line.svg": "42e496bd5c63cc40ea50e8b7d5c4e56a83486f46",
+    "https://jlnalber.github.io/Prokyon/assets/lineSegment.svg": "ff7c5a32cabba1feecfaa29fb12f6f32f6b6f0bb",
+    "https://jlnalber.github.io/Prokyon/assets/middlePoint.svg": "5690b776a05cc90b25fcdbd1c646f9c9a3f0b15e",
+    "https://jlnalber.github.io/Prokyon/assets/move.svg": "10d17553be8cb7f4ed81fe25b34b17768e4066c0",
+    "https://jlnalber.github.io/Prokyon/assets/moveLabels.svg": "89caad7049774dc9d71ed28fd68f4e07308a3a56",
+    "https://jlnalber.github.io/Prokyon/assets/movePoints.svg": "1de5bfff9a6c51045f0e52a7f37775cf36c78fe5",
+    "https://jlnalber.github.io/Prokyon/assets/orthogonal.svg": "084d493c63aff8775deb761c6bd2544259c9e93b",
+    "https://jlnalber.github.io/Prokyon/assets/parallel.svg": "f24a2b306d760c8f4a70cd597d35c65615135190",
+    "https://jlnalber.github.io/Prokyon/assets/points.svg": "d36f3360a848b2c63c195f4504c22a966aef2753",
+    "https://jlnalber.github.io/Prokyon/assets/showLabelVisibility.svg": "928865c670e10233970b855553a86b367af6ec7d",
+    "https://jlnalber.github.io/Prokyon/assets/tangens.svg": "9159480bc4e410f92951797c949456ec17a52ea4",
+    "https://jlnalber.github.io/Prokyon/icon.svg": "c69ae442b29d1e49433a18ecd63846e5fb087ea3",
+    "https://jlnalber.github.io/Prokyon/index.html": "8e1f2d20399e5a47f55d38168de854af989792b8",
+    "https://jlnalber.github.io/Prokyon/main.31e9c36cddad5569.js": "84e0dd053608cf10789af8daeeb02ee897d49643",
+    "https://jlnalber.github.io/Prokyon/manifest.webmanifest": "52410ffff841a790c9fc14a8f2d06c24b02bdfaf",
+    "https://jlnalber.github.io/Prokyon/polyfills.4b3f802a7fa2cb80.js": "e1821c2ff088c615e54dddb9a2b24872ad5b47b6",
+    "https://jlnalber.github.io/Prokyon/runtime.6cb9e3361939e0fd.js": "0e15e1f40de6e4f4c5d73b2a8b875d8fd920aa4b",
+    "https://jlnalber.github.io/Prokyon/styles.19be983b52fb983d.css": "57ffc96a5eabc00beda3e1ed57330123dacd963d"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}
