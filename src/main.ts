@@ -4,6 +4,10 @@ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 
+declare const MathJax: any;
+
+console.log(MathJax)
+
 if (environment.production) {
   enableProdMode();
 }
