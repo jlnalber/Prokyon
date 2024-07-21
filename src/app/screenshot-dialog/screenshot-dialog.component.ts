@@ -117,8 +117,18 @@ export class ScreenshotDialogComponent implements OnInit, AfterViewInit {
   }
 
   private load() {
-    this._range = JSON.parse(sessionStorage[SESSION_RANGE]) as Rect ?? this.drawerService.renderingContext.range;
-    this._zoom = JSON.parse(sessionStorage[SESSION_ZOOM]) as number ?? this.drawerService.zoom;
+    if (sessionStorage[SESSION_RANGE]) {
+      this._range = JSON.parse(sessionStorage[SESSION_RANGE]) as Rect ?? this.drawerService.renderingContext.range;
+    }
+    else {
+      this._range = this.drawerService.renderingContext.range;
+    }
+    if (sessionStorage[SESSION_ZOOM]) {
+      this._zoom = JSON.parse(sessionStorage[SESSION_ZOOM]) as number ?? this.drawerService.zoom;
+    }
+    else {
+      this._zoom = this.drawerService.zoom;
+    }
     this.reload();
   }
 
