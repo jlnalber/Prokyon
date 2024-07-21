@@ -3,12 +3,16 @@ import {Dialog} from "../dialog/dialog";
 import {DrawerService} from "../services/drawer.service";
 import {Rect} from "../global/interfaces/rect";
 
+const SESSION_RANGE = 'screenshot_range';
+const SESSION_ZOOM = 'screenshot_zoom';
+
 @Component({
   selector: 'app-screenshot-dialog',
   templateUrl: './screenshot-dialog.component.html',
   styleUrls: ['./screenshot-dialog.component.css']
 })
 export class ScreenshotDialogComponent implements OnInit, AfterViewInit {
+
 
   @ViewChild('canvas') canvas!: ElementRef;
   canvasEl?: HTMLCanvasElement;
@@ -18,7 +22,12 @@ export class ScreenshotDialogComponent implements OnInit, AfterViewInit {
 
   public dialog!: Dialog<ScreenshotDialogComponent>;
 
-  private _range: Rect;
+  private _range: Rect = {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0
+  };
 
   public get x(): number {
     return this._range.x;
@@ -26,6 +35,7 @@ export class ScreenshotDialogComponent implements OnInit, AfterViewInit {
 
   public set x(value: number) {
     this._range.x = value;
+    this.save();
     this.reload();
   }
 
@@ -35,6 +45,7 @@ export class ScreenshotDialogComponent implements OnInit, AfterViewInit {
 
   public set y(value: number) {
     this._range.y = value;
+    this.save();
     this.reload();
   }
 
@@ -44,6 +55,7 @@ export class ScreenshotDialogComponent implements OnInit, AfterViewInit {
 
   public set width(value: number) {
     this._range.width = Math.abs(value);
+    this.save();
     this.reload();
   }
 
@@ -53,10 +65,11 @@ export class ScreenshotDialogComponent implements OnInit, AfterViewInit {
 
   public set height(value: number) {
     this._range.height = Math.abs(value);
+    this.save();
     this.reload();
   }
 
-  private _zoom: number;
+  private _zoom: number = 1;
 
   public get zoom(): number {
     return this._zoom;
@@ -65,13 +78,13 @@ export class ScreenshotDialogComponent implements OnInit, AfterViewInit {
   public set zoom(value: number) {
     if (value > 0) {
       this._zoom = value;
+      this.save();
       this.reload();
     }
   }
 
   constructor(private readonly drawerService: DrawerService) {
-    this._range = drawerService.renderingContext.range;
-    this._zoom = drawerService.zoom;
+    this.load();
   }
 
   ngOnInit(): void {
@@ -95,6 +108,23 @@ export class ScreenshotDialogComponent implements OnInit, AfterViewInit {
     link.click();
 
     this.dialog.close();
+  }
+  
+  reset() {
+    sessionStorage.removeItem(SESSION_RANGE);
+    sessionStorage.removeItem(SESSION_ZOOM);
+    this.load();
+  }
+
+  private load() {
+    this._range = JSON.parse(sessionStorage[SESSION_RANGE]) as Rect ?? this.drawerService.renderingContext.range;
+    this._zoom = JSON.parse(sessionStorage[SESSION_ZOOM]) as number ?? this.drawerService.zoom;
+    this.reload();
+  }
+
+  private save() {
+    sessionStorage[SESSION_RANGE] = JSON.stringify(this._range);
+    sessionStorage[SESSION_ZOOM] = JSON.stringify(this._zoom);
   }
 
   private drawToCanvas(canvas: HTMLCanvasElement): void {
