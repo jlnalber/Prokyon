@@ -642,9 +642,21 @@ export class DrawerService {
       if (canvasElement.configuration.label === undefined || labelPoint === undefined) {
         return undefined;
       }
-      const measureText = ctx.measureText(canvasElement.configuration.label, LABEL_FONT_SIZE, LABEL_FONT_FAMILY);
-      const fieldWidth = measureText.width / ctx.zoom;
-      const fieldHeight = LABEL_FONT_SIZE / ctx.zoom;
+      
+      let fieldWidth = 0;
+      let fieldHeight = 0;
+      if (canvasElement.configuration.dontUseLaTeX || canvasElement.svgLabel === undefined) {
+        // Bei einem regulären Label
+        const measureText = ctx.measureText(canvasElement.configuration.label, LABEL_FONT_SIZE, LABEL_FONT_FAMILY);
+        fieldWidth = measureText.width / ctx.zoom;
+        fieldHeight = LABEL_FONT_SIZE / ctx.zoom;
+      }
+      else {
+        // ansonsten wäre es ein LaTeX Label
+        fieldWidth = canvasElement.svgLabel.width / ctx.zoom;
+        fieldHeight = canvasElement.svgLabel.height / ctx.zoom;
+      }
+
       return getDistanceToRect(p, {
         ...labelPoint,
         width: fieldWidth,
