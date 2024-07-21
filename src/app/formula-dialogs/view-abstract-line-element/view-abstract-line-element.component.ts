@@ -70,4 +70,13 @@ export class ViewAbstractLineElementComponent extends FormulaDialogElement {
     this.dialogData.onChange.emit();
   }
 
+  public get labelSize(): number {
+    return this.dialogData.configuration.labelSizeFactor ?? 1;
+  }
+
+  public set labelSize(value: number) {
+    this.dialogData.configuration.labelSizeFactor = value;
+    this.dialogData.onChange.emit();
+  }
+
 }

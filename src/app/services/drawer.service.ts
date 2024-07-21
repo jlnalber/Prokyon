@@ -354,23 +354,24 @@ export class DrawerService {
         // draw label
         const labelPoint = this.getLabelPoint(canvasElement, renderingContext);
         const label = canvasElement.configuration.label;
-        if (labelPoint !== undefined && label !== undefined) {
+        if (labelPoint !== undefined && label !== undefined && label !== '') {
           const color = canvasElement.configuration.displayBlackLabel ? BLACK : canvasElement.color;
           const useLaTeX = !canvasElement.configuration.dontUseLaTeX ?? true;
+          const labelFactor = canvasElement.configuration.labelSizeFactor ?? 1;
+
           const drawRegularLabel = () => {
             // draw a regular label
               renderingContext.drawText(label, labelPoint,
-                LABEL_FONT_SIZE, LABEL_FONT_FAMILY, 'start', 'alphabetic', 'inherit',
+                LABEL_FONT_SIZE * labelFactor, LABEL_FONT_FAMILY, 'start', 'alphabetic', 'inherit',
                 color,
                 this.selection.contains(canvasElement) ? colorAsTransparent(color, 0.2) : WHITE, 3);
           }
           if (MathJax && useLaTeX) {
             try {
               // draw a LaTeX label
-              const factor = 1;
               const drawImage = (img: HTMLImageElement) => {
-                let tempWidth = img.naturalWidth * factor;
-                let tempHeight = img.naturalHeight * factor;
+                let tempWidth = img.naturalWidth * labelFactor;
+                let tempHeight = img.naturalHeight * labelFactor;
                 renderingContext.drawImage(img, labelPoint, tempWidth, tempHeight)
               }
 
@@ -642,19 +643,20 @@ export class DrawerService {
       if (canvasElement.configuration.label === undefined || labelPoint === undefined) {
         return undefined;
       }
+      const labelFactor = canvasElement.configuration.labelSizeFactor ?? 1;
       
       let fieldWidth = 0;
       let fieldHeight = 0;
       if (canvasElement.configuration.dontUseLaTeX || canvasElement.svgLabel === undefined) {
         // Bei einem regulären Label
         const measureText = ctx.measureText(canvasElement.configuration.label, LABEL_FONT_SIZE, LABEL_FONT_FAMILY);
-        fieldWidth = measureText.width / ctx.zoom;
-        fieldHeight = LABEL_FONT_SIZE / ctx.zoom;
+        fieldWidth = measureText.width / ctx.zoom * labelFactor;
+        fieldHeight = LABEL_FONT_SIZE / ctx.zoom * labelFactor;
       }
       else {
         // ansonsten wäre es ein LaTeX Label
-        fieldWidth = canvasElement.svgLabel.width / ctx.zoom;
-        fieldHeight = canvasElement.svgLabel.height / ctx.zoom;
+        fieldWidth = canvasElement.svgLabel.width / ctx.zoom * labelFactor;
+        fieldHeight = -canvasElement.svgLabel.height / ctx.zoom * labelFactor; // Weil sich das Rechteck ja in negative y-Richtung streckt, bedarf es ein Minus
       }
 
       return getDistanceToRect(p, {

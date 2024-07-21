@@ -15,6 +15,7 @@ export interface CanvasElementConfiguration {
   showLabel?: boolean,
   dontUseLaTeX?: boolean,
   displayBlackLabel?: boolean,
+  labelSizeFactor?: number
   name?: string,
   formula?: string,
   editable?: boolean,
@@ -46,6 +47,7 @@ export abstract class CanvasElement extends CanvasDrawer {
   }
   public set color(value: Color) {
     this._color = value;
+    this.svgLabel = undefined;
     this.onChange.emit(value);
   }
 

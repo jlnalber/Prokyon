@@ -31,12 +31,20 @@ td {
   padding-top: 7px;
 }
 
-.checkboxDiv {
+.checkboxDiv, .rangeDiv {
   font-family: 'Segoe UI', Calibri, 'sans-serif';
   padding: 8px;
   user-select: none;
 }
 
-.checkboxDiv label {
+.checkboxDiv label, .rangeDiv label {
   padding-left: 6px;
+}
+
+#lsi {
+  margin-top: 6px;
+}
+
+#lsi {
+  width: 100%;
 }
