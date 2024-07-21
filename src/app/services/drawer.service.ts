@@ -355,13 +355,14 @@ export class DrawerService {
         const labelPoint = this.getLabelPoint(canvasElement, renderingContext);
         const label = canvasElement.configuration.label;
         if (labelPoint !== undefined && label !== undefined) {
+          const color = canvasElement.configuration.displayBlackLabel ? BLACK : canvasElement.color;
           const useLaTeX = !canvasElement.configuration.dontUseLaTeX ?? true;
           const drawRegularLabel = () => {
             // draw a regular label
               renderingContext.drawText(label, labelPoint,
                 LABEL_FONT_SIZE, LABEL_FONT_FAMILY, 'start', 'alphabetic', 'inherit',
-                canvasElement.color,
-                this.selection.contains(canvasElement) ? colorAsTransparent(canvasElement.color, 0.2) : WHITE, 3);
+                color,
+                this.selection.contains(canvasElement) ? colorAsTransparent(color, 0.2) : WHITE, 3);
           }
           if (MathJax && useLaTeX) {
             try {
@@ -375,7 +376,6 @@ export class DrawerService {
 
               // do I have to reload?
               if (canvasElement.svgLabel === undefined) {
-                const color = canvasElement.configuration.displayBlackLabel ? BLACK : canvasElement.color;
                 const svg = this.tex2svg(label, color);
 
                 // Erstelle das Bild
