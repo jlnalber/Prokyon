@@ -40,6 +40,7 @@ export default class CurveElement extends CanvasElement {
     this._lineWidth = lineWidth;
     this.configuration.name = name;
     this.configuration.showLabel = showLabel;
+    this.svgLabel = undefined;
     this._visible = visible;
   }
 

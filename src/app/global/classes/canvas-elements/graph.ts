@@ -63,6 +63,7 @@ export class Graph extends CanvasElement {
       this._funcText = func;
     }
     this.configuration.showLabel = showLabel;
+    this.svgLabel = undefined;
     this._color = color;
     this._visible = visible;
   }
@@ -284,12 +285,14 @@ export class Graph extends CanvasElement {
       this._func = res;
       this._funcErrorText = undefined;
       this.configuration.label = res.name;
+      this.svgLabel = undefined;
       return true;
     }
     else {
       this._func = undefined;
       this._funcErrorText = res;
       this.configuration.label = undefined;
+      this.svgLabel = undefined;
       return false;
     }
   }
@@ -320,6 +323,7 @@ export class Graph extends CanvasElement {
   public clone(): Graph {
     const c = new Graph(this.parseAndValidateProvider, this.funcText, this.color, this.visible, this.lineWidth, this.configuration.showLabel);
     c.configuration = { ...this.configuration };
+    c.svgLabel = undefined;
 
     return c;
   }

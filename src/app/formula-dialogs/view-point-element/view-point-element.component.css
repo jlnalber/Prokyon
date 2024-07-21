@@ -22,3 +22,13 @@
 .close {
   margin-top: 16px;
 }
+
+.checkboxDiv {
+  font-family: 'Segoe UI', Calibri, 'sans-serif';
+  padding: 8px;
+  user-select: none;
+}
+
+.checkboxDiv label {
+  padding-left: 6px;
+}

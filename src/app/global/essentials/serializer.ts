@@ -156,6 +156,7 @@ export function loadFrom(drawerService: DrawerService, serialized: Serialized): 
     if (canvasElement !== undefined) {
       canvasElement.configuration = c.configuration;
       canvasElement.labelTranslate = c.translateLabel;
+      canvasElement.svgLabel = undefined;
       canvasElements[c.id] = canvasElement;
     }
   }

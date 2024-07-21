@@ -27,13 +27,13 @@
   margin-bottom: 16px;
 }
 
-.dashedDiv, .sizeDiv {
+.checkboxDiv, .sizeDiv {
   font-family: 'Segoe UI', Calibri, 'sans-serif';
   padding: 8px;
   user-select: none;
 }
 
-.dashedDiv label, .sizeDiv label {
+.checkboxDiv label, .sizeDiv label {
   padding-left: 6px;
 }
 

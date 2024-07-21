@@ -301,4 +301,13 @@ export class RenderingContext {
     const realRect = this.transformRectFromFieldToCanvas(rect);
     this.ctx.fillRect(realRect.x, realRect.y, realRect.width, realRect.height);
   }
+
+  public drawImage(image: CanvasImageSource, p: Point, dw: number, dh: number) {
+    let realP = this.transformPointFromFieldToCanvas(p);
+
+    // set the ctx up
+    let ctx = this.ctx;
+    
+    ctx.drawImage(image, realP.x, realP.y, dw, dh)
+  }
 }

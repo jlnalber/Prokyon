@@ -13,6 +13,8 @@ import FormulaDialogElement from "./formulaDialogElement";
 export interface CanvasElementConfiguration {
   label?: string,
   showLabel?: boolean,
+  dontUseLaTeX?: boolean,
+  displayBlackLabel?: boolean,
   name?: string,
   formula?: string,
   editable?: boolean,
@@ -55,6 +57,8 @@ export abstract class CanvasElement extends CanvasDrawer {
     this._visible = value;
     this.onChange.emit(value);
   }
+
+  public svgLabel: undefined | HTMLImageElement;
 
   private _labelTranslate: Point = {
     x: 0,

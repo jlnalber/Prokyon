@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {CanvasComponent} from "../canvas/canvas.component";
 import {CanvasElement} from "../global/classes/abstract/canvasElement";
-import {Color, colorAsTransparent, getColorAsRgbaFunction, WHITE} from "../global/interfaces/color";
+import {BLACK, Color, colorAsTransparent, getColorAsRgbaFunction, WHITE} from "../global/interfaces/color";
 import {Event} from "../global/essentials/event";
 import {RenderingContext} from "../global/classes/renderingContext";
 import {Transformations} from "../global/interfaces/transformations";
@@ -36,7 +36,11 @@ import CompiledPointElement from "../global/classes/canvas-elements/compiledPoin
 import {OperationsParser} from "../global/classes/func/operations/operationsParser";
 import CurveElement from "../global/classes/canvas-elements/curveElement";
 
+export type MJ = any;
+
 export const STORAGE_CACHE = 'serialized'
+
+declare const MathJax: MJ;
 
 const LABEL_FONT_SIZE = 18;
 const LABEL_FONT_FAMILY = '"Cambria Math", Cambria, "CMU Serif", serif';
@@ -300,9 +304,16 @@ export class DrawerService {
     }
   }
 
-  public drawToCanvas(canvas: HTMLCanvasElement, boundingRect: Rect, transformations: Transformations, withTransformColor: boolean = false): void {
-    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+  public tex2svg(tex: string, color: Color = BLACK): SVGElement {
+    const svg = MathJax.tex2svg(tex).firstElementChild as SVGElement;
+    svg.setAttributeNS(null, 'color', getColorAsRgbaFunction(color))
+    return svg;
+  }
 
+  public drawToCanvas(canvas: HTMLCanvasElement, boundingRect: Rect, transformations: Transformations, withTransformColor: boolean = false): void {
+    
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    
     // resize canvas
     ctx.canvas.width = boundingRect.width;
     ctx.canvas.height = boundingRect.height;
@@ -337,15 +348,65 @@ export class DrawerService {
       }
 
       if (canvasElement.visible || renderingContext.config?.transformColor) {
+        // draw canvasElement
         canvasElement.draw(renderingContext);
 
         // draw label
         const labelPoint = this.getLabelPoint(canvasElement, renderingContext);
-        if (labelPoint !== undefined && canvasElement.configuration.label !== undefined) {
-          renderingContext.drawText(canvasElement.configuration.label, labelPoint,
-            LABEL_FONT_SIZE, LABEL_FONT_FAMILY, 'start', 'alphabetic', 'inherit',
-            canvasElement.color,
-            this.selection.contains(canvasElement) ? colorAsTransparent(canvasElement.color, 0.2) : WHITE, 3);
+        const label = canvasElement.configuration.label;
+        if (labelPoint !== undefined && label !== undefined) {
+          const useLaTeX = !canvasElement.configuration.dontUseLaTeX ?? true;
+          const drawRegularLabel = () => {
+            // draw a regular label
+              renderingContext.drawText(label, labelPoint,
+                LABEL_FONT_SIZE, LABEL_FONT_FAMILY, 'start', 'alphabetic', 'inherit',
+                canvasElement.color,
+                this.selection.contains(canvasElement) ? colorAsTransparent(canvasElement.color, 0.2) : WHITE, 3);
+          }
+          if (MathJax && useLaTeX) {
+            try {
+              // draw a LaTeX label
+              const factor = 1;
+              const drawImage = (img: HTMLImageElement) => {
+                let tempWidth = img.naturalWidth * factor;
+                let tempHeight = img.naturalHeight * factor;
+                renderingContext.drawImage(img, labelPoint, tempWidth, tempHeight)
+              }
+
+              // do I have to reload?
+              if (canvasElement.svgLabel === undefined) {
+                const color = canvasElement.configuration.displayBlackLabel ? BLACK : canvasElement.color;
+                const svg = this.tex2svg(label, color);
+
+                // Erstelle das Bild
+                let img = document.createElement('img');
+                img.src = 'data:image/svg+xml;base64,' + btoa('<?xml version="1.0" encoding="UTF-8" standalone="no" ?>\n' + svg.outerHTML);
+                img.onload = (e:any) => {
+                  canvasElement.svgLabel = e.target as HTMLImageElement | null ?? undefined;
+                  if (canvasElement.svgLabel) {
+                    drawImage(canvasElement.svgLabel);
+                  }
+                  else {
+                    drawRegularLabel();
+                  }
+                }
+              }
+              else {
+                // then, draw the label:
+                drawImage(canvasElement.svgLabel);
+              }
+
+            }
+            catch {
+              // Falls was schiefläuft, dann nochmal neu, aber mit einem regulären Bild
+              canvasElement.svgLabel = undefined;
+              console.log('nenenenenene')
+              drawRegularLabel();
+            }
+          }
+          else {
+            drawRegularLabel();
+          }
         }
       }
     }

@@ -6,9 +6,17 @@
     <p class="paragraph maths centered">
       <span>{{ this.angle }}°</span>
     </p>
-    <div class="dashedDiv">
+    <div class="checkboxDiv dashedDiv">
       <input type="checkbox" id="dash" [(ngModel)]="this.dashed">
       <label for="dash">Gestrichelt anzeigen</label>
+    </div>
+    <div class="checkboxDiv latexDiv">
+      <input type="checkbox" id="latex" [(ngModel)]="this.latex">
+      <label for="latex">Label als LaTeX rendern</label>
+    </div>
+    <div class="checkboxDiv blackDiv">
+      <input type="checkbox" id="black" [(ngModel)]="this.displayBlack">
+      <label for="black">Label schwarz anzeigen</label>
     </div>
     <div class="sizeDiv">
       <label for="si">Darstellungsgröße:</label><br>
