@@ -52,7 +52,7 @@ export default abstract class TwoElementsSelectMode<T1 extends CanvasElement, T2
 
 
 export type Constructor<T> = new (...args: any[]) => T;
-function ofType<TElement, TFilter extends TElement>(el: TElement, ...filterTypes: Constructor<TFilter>[]): boolean {
+export function ofType<TElement, TFilter extends TElement>(el: TElement, ...filterTypes: Constructor<TFilter>[]): boolean {
   for (let filterType of filterTypes) {
     if (el instanceof filterType) {
       return true;

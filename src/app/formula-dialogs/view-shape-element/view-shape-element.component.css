@@ -1,0 +1,47 @@
+@import "../../global/styles/_global.css";
+
+.input {
+  width: 50px;
+  display: unset;
+}
+
+.paragraph {
+  --margin: 16px;
+  --buttonSize: 46px;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-size: 14pt;
+  /*font-family: "Cambria Math", Cambria, "CMU Serif", serif;*/
+  user-select: none;
+}
+
+.heading {
+  margin-bottom: 16px;
+}
+
+.close {
+  margin-top: 16px;
+}
+
+.nameInput {
+  margin-bottom: 16px;
+}
+
+.checkboxDiv, .rangeDiv {
+  font-family: 'Segoe UI', Calibri, 'sans-serif';
+  padding: 8px;
+  user-select: none;
+}
+
+.checkboxDiv label, .rangeDiv label {
+  padding-left: 6px;
+}
+
+#lsi, #si {
+  margin-top: 6px;
+}
+
+#lsi, #si {
+  width: 100%;
+}
+

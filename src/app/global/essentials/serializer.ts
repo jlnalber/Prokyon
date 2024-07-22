@@ -15,13 +15,15 @@ import {Point} from "../interfaces/point";
 import AngleElement from "../classes/canvas-elements/angleElement";
 import CompiledPointElement from "../classes/canvas-elements/compiledPointElement";
 import CurveElement from "../classes/canvas-elements/curveElement";
+import ShapeElement from "../classes/canvas-elements/shapeElement";
 
 export interface Style {
   color: Color,
   visible: boolean,
   size?: number,
   stroke?: Color,
-  strokeWidth?: number
+  strokeWidth?: number,
+  fill?: Color
 }
 
 export interface CanvasElementSerialized {
@@ -83,6 +85,7 @@ const LINE_TYPE = 'line';
 const VARIABLE_TYPE = 'variable';
 const ANGLE_TYPE = 'angle';
 const CURVE_TYPE = 'curve';
+const SHAPE_TYPE = 'polygon'
 const UNKNOWN_TYPE = 'undefined';
 
 function getType(cE: CanvasElement): string {
@@ -110,6 +113,8 @@ function getType(cE: CanvasElement): string {
     return ANGLE_TYPE;
   } else if (cE instanceof CurveElement) {
     return CURVE_TYPE;
+  } else if (cE instanceof ShapeElement) {
+    return SHAPE_TYPE;
   }
   return UNKNOWN_TYPE;
 }
@@ -151,6 +156,8 @@ export function loadFrom(drawerService: DrawerService, serialized: Serialized): 
       canvasElement = AngleElement.getDefaultInstance();
     } else if (c.type === CURVE_TYPE) {
       canvasElement = CurveElement.getDefaultInstance(drawerService);
+    } else if (c.type === SHAPE_TYPE) {
+      canvasElement = ShapeElement.getDefaultInstance();
     }
 
     if (canvasElement !== undefined) {

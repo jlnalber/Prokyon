@@ -10,9 +10,8 @@ import { getPointsDistance } from "../../essentials/geometryUtils";
 import { GeometricFormulaComponent } from 'src/app/formula-tab/geometric-formula/geometric-formula.component';
 import { ViewAngleElementComponent } from 'src/app/formula-dialogs/view-angle-element/view-angle-element.component';
 import { Point } from '../../interfaces/point';
+import { LINE_WIDTH_SELECTED_RATIO } from './graph';
 
-
-export const LINE_WIDTH_SELECTED_RATIO = 2.5;
 
 interface Data {
     points: number[]
@@ -42,8 +41,17 @@ export default class AngleElement extends CanvasElement {
         this.onChange.emit(value);
     }
 
+    public get lineWidth(): number {
+        return this._lineWidth;
+    }
+
+    public set lineWidth(value: number) {
+        this._lineWidth = value;
+        this.onChange.emit(value);
+    }
+
     
-    public constructor(points: PointElement[], color: Color = BLACK, visible: boolean = true, private _size: number = 50, public lineWidth: number = 3, showLabel: boolean = true) {
+    public constructor(points: PointElement[], color: Color = BLACK, visible: boolean = true, private _size: number = 50, private _lineWidth: number = 3, showLabel: boolean = true) {
         super();
         this._color = color;
         this._visible = visible;

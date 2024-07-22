@@ -1,13 +1,18 @@
 import { Component } from '@angular/core';
 import FormulaDialogElement from 'src/app/global/classes/abstract/formulaDialogElement';
-import AngleElement from 'src/app/global/classes/canvas-elements/angleElement';
+import ShapeElement from 'src/app/global/classes/canvas-elements/shapeElement';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-view-angle-element',
-  templateUrl: './view-angle-element.component.html',
-  styleUrls: ['./view-angle-element.component.css']
+  selector: 'app-view-shape-element',
+  standalone: true,
+  imports: [
+    FormsModule
+  ],
+  templateUrl: './view-shape-element.component.html',
+  styleUrl: './view-shape-element.component.css'
 })
-export class ViewAngleElementComponent extends FormulaDialogElement {
+export class ViewShapeElementComponent extends FormulaDialogElement {
 
   constructor() {
     super();
@@ -26,11 +31,7 @@ export class ViewAngleElementComponent extends FormulaDialogElement {
     this.dialogData.onChange.emit(value);
   }
 
-  public get angle(): string {
-    return (Math.floor(1000 * this.dialogData.angle) / 1000).toLocaleString();
-  }
-
-  public dialogData!: AngleElement;
+  public dialogData!: ShapeElement;
 
   public get dashed(): boolean {
     return this.dialogData.configuration.dashed === true;
@@ -68,5 +69,4 @@ export class ViewAngleElementComponent extends FormulaDialogElement {
     this.dialogData.configuration.labelSizeFactor = value;
     this.dialogData.onChange.emit();
   }
-
 }

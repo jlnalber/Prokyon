@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     version="1.1" baseProfile="full"
+     width="100px" height="100px">
+
+  <polygon points="15,75 75,80 85,15 30,25" style="fill:lightgrey;stroke:black;stroke-width:4" />
+  <circle r="10" cx="15" cy="75"></circle>
+  <circle r="10" cx="75" cy="80"></circle>
+  <circle r="10" cx="85" cy="15"></circle>
+  <circle r="10" cx="30" cy="25"></circle>
+
+</svg>

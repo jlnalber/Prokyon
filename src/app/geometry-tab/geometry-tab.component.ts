@@ -18,6 +18,7 @@ import ChangeVisibilityMode from "../global/classes/modes/changeVisibilityMode";
 import ShowLabelVisibilityMode from "../global/classes/modes/showLabelVisibilityMode";
 import MoveLabelsMode from "../global/classes/modes/moveLabelsMode";
 import AngleMode from '../global/classes/modes/angleMode';
+import ShapeMode from '../global/classes/modes/shapeMode';
 
 @Component({
   selector: 'app-geometry-tab',
@@ -67,7 +68,10 @@ export class GeometryTabComponent implements OnInit {
         }, 'Strecke', 'Erstelle eine neue Strecke zwischen zwei Punkten', 'lineSegment'),
         new ModeElement<CircleMode>(() => this.drawerService, () => {
           return new CircleMode();
-        }, 'Kreis', 'Erstelle einen neuen Kreis mit zwei Punkten', 'circle')
+        }, 'Kreis', 'Erstelle einen neuen Kreis mit zwei Punkten', 'circle'),
+        new ModeElement<ShapeMode>(() => this.drawerService, () => {
+          return new ShapeMode();
+        }, 'Polygon', 'Erstelle ein neues Polygon mit mindestens drei Punkten', 'polygon')
       ]
     },
     {

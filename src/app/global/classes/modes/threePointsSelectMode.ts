@@ -6,8 +6,6 @@ import {PointerContext} from "../pointerController";
 import PointElement from "../canvas-elements/pointElement";
 
 export default abstract class ThreePointsSelectMode extends MoveMode {
-
-  // should add the canvas element between two points
   protected abstract addCanvasElement(drawerService: DrawerService, p1: PointElement, center: PointElement, p2: PointElement): void;
 
   private clickedElement1: PointElement | undefined;
@@ -45,6 +43,8 @@ export default abstract class ThreePointsSelectMode extends MoveMode {
         const center = this.clickedElement2;
         const p1 = this.clickedElement1;
         const p2 = clickedElement;
+        this.clickedElement1 = undefined;
+        this.clickedElement2 = undefined;
         this.addCanvasElement(drawerService, p1, center, p2);
       }
     } else {

@@ -1,0 +1,24 @@
+<div class="wrapper">
+    <p class="paragraph heading">Polygon:</p>
+    <p class="paragraph maths nameInput"><span></span>
+      <input [(ngModel)]="this.name" type="text" title="Name" class="input"> :
+    </p>
+    <div class="checkboxDiv dashedDiv">
+      <input type="checkbox" id="dash" [(ngModel)]="this.dashed">
+      <label for="dash">Gestrichelt anzeigen</label>
+    </div>
+    <div class="checkboxDiv latexDiv">
+      <input type="checkbox" id="latex" [(ngModel)]="this.latex">
+      <label for="latex">Label als LaTeX rendern</label>
+    </div>
+    <div class="checkboxDiv blackDiv">
+      <input type="checkbox" id="black" [(ngModel)]="this.displayBlack">
+      <label for="black">Label schwarz anzeigen</label>
+    </div>
+    <div class="rangeDiv labelSizeDiv">
+      <label for="lsi">Labelgröße:</label><br>
+      <input min="0" max="5" step="any" id="lsi" type="range" [(ngModel)]="this.labelSize">
+    </div>
+    <button class="button floatRight close" (click)="this.dialog.close()" title="Dialog schließen">Schließen</button>
+  </div>
+  
