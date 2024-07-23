@@ -123,11 +123,15 @@ export default class ShapeElement extends DynamicElement {
             }
         }
         ps.push(ps[0])
+
+        // Check whether this element is selected.
+        const selected = ctx.selection.indexOf(this) !== -1;
+        const fillColor = colorAsTransparent(this.color, selected ? 0.5 : 0.3)
         
         ctx.drawPath(ps as Point[], 
             this.lineWidth,
             this.color,
-            colorAsTransparent(this.color, 0.3),
+            fillColor,
             this.configuration.dashed)
 
         if (ctx.selection.indexOf(this) !== -1) {
