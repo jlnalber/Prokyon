@@ -311,12 +311,13 @@ export class DrawerService {
   }
 
   public drawToCanvas(canvas: HTMLCanvasElement, boundingRect: Rect, transformations: Transformations, withTransformColor: boolean = false): void {
+    const resolution = transformations.resolutionFactor ?? 1;
     
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     
     // resize canvas
-    ctx.canvas.width = boundingRect.width;
-    ctx.canvas.height = boundingRect.height;
+    ctx.canvas.width = boundingRect.width * resolution;
+    ctx.canvas.height = boundingRect.height * resolution;
 
     // first: draw the background
     ctx.fillStyle = getColorAsRgbaFunction(this.backgroundColor);
@@ -336,7 +337,7 @@ export class DrawerService {
       const ps = this._canvasElements.filter(i => (i instanceof PointElement));
       const as = this._canvasElements.filter(i => (i instanceof AngleElement))
       const rest = this._canvasElements.filter(i => !(i instanceof PointElement || i instanceof AngleElement))
-      cs = as.concat(rest).concat(ps)
+      cs = as.concat(rest as any[]).concat(ps as any[])
     }
     for (let canvasElement of cs) {
       if (renderingContext.config && withTransformColor) {
@@ -665,6 +666,8 @@ export class DrawerService {
         height: fieldHeight
       })
     }
+
+    // TODO: test with resolution factor
 
     // find out the element with the minimal distance
     for (let canvasElement of this.canvasElements) {

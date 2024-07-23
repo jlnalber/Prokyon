@@ -21,6 +21,7 @@ export class RenderingContext {
                public readonly selection: CanvasElement[],
                public readonly config?: Config) { }
 
+  // TODO: Test when there is a resolution factor in the regular canvas
   public transformPointFromCanvasToField(p: Point): Point {
     return {
       x: p.x / this.transformations.zoom - this.transformations.translateX,
@@ -28,10 +29,25 @@ export class RenderingContext {
     }
   }
 
+  public transformPointFromCanvasToFieldWithResolutionFactor(p: Point): Point {
+    return this.transformPointFromCanvasToField({
+      x: p.x / this.resolutionFactor,
+      y: p.y / this.resolutionFactor
+    });
+  }
+
   public transformPointFromFieldToCanvas(p: Point): Point {
     return {
       x: (p.x + this.transformations.translateX) * this.transformations.zoom,
       y: -(p.y + this.transformations.translateY) * this.transformations.zoom
+    }
+  }
+
+  public transformPointFromFieldToCanvasWithResolutionFactor(p: Point): Point {
+    const q = this.transformPointFromFieldToCanvas(p);
+    return {
+      x: q.x * this.resolutionFactor,
+      y: q.y * this.resolutionFactor
     }
   }
 
@@ -45,6 +61,15 @@ export class RenderingContext {
     }
   }
 
+  public transformRectFromCanvasToFieldWithResolutionFactor(rect: Rect): Rect {
+    return this.transformRectFromCanvasToField({
+      x: rect.x / this.resolutionFactor,
+      y: rect.y / this.resolutionFactor,
+      width: rect.width / this.resolutionFactor,
+      height: rect.height / this.resolutionFactor
+    });
+  }
+
   public transformRectFromFieldToCanvas(rect: Rect): Rect {
     let p = this.transformPointFromFieldToCanvas(rect);
     return {
@@ -52,6 +77,16 @@ export class RenderingContext {
       y: p.y,
       width: rect.width * this.transformations.zoom,
       height: -rect.height * this.transformations.zoom
+    }
+  }
+
+  public transformRectFromFieldToCanvasWithResolutionFactor(rect: Rect): Rect {
+    let r = this.transformRectFromFieldToCanvas(rect);
+    return {
+      x: r.x * this.resolutionFactor,
+      y: r.y * this.resolutionFactor,
+      width: r.width * this.resolutionFactor,
+      height: r.height * this.resolutionFactor
     }
   }
 
@@ -64,12 +99,21 @@ export class RenderingContext {
   }
 
   public get range(): Rect {
-    return this.transformRectFromCanvasToField({
+    return this.transformRectFromCanvasToFieldWithResolutionFactor({
       x: 0,
       y: 0,
       width: this.ctx.canvas.width,
       height: this.ctx.canvas.height
     })
+  }
+
+  public get resolutionFactor(): number {
+    return this.transformations.resolutionFactor ?? 1;
+  }
+
+  public get lineDash(): number[] {
+    const f = this.resolutionFactor;
+    return LINE_DASH.map(i => i * f);
   }
 
   public get variables(): any {
@@ -83,7 +127,7 @@ export class RenderingContext {
 
   public drawPath(points: Point[], lineWidth: number, stroke: Color, fill?: Color, dashed?: boolean): void {
     let realPoints = points.map(p => {
-      return this.transformPointFromFieldToCanvas(p);
+      return this.transformPointFromFieldToCanvasWithResolutionFactor(p);
     });
 
     /*for (let p of realPoints) {
@@ -92,11 +136,11 @@ export class RenderingContext {
     }*/
 
     this.ctx.beginPath();
-    this.ctx.lineWidth = lineWidth;
+    this.ctx.lineWidth = lineWidth * this.resolutionFactor;
     this.ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
 
     if (dashed) {
-      this.ctx.setLineDash(LINE_DASH)
+      this.ctx.setLineDash(this.lineDash)
     } else {
       this.ctx.setLineDash([])
     }
@@ -136,13 +180,14 @@ export class RenderingContext {
                   lineWidth: number = 3,
                   dashed?: boolean,
                   skipIndex?: boolean): void {
-    let realP = this.transformPointFromFieldToCanvas(p);
+    let realP = this.transformPointFromFieldToCanvasWithResolutionFactor(p);
+    const resFactor = this.resolutionFactor;
 
     // set the ctx up
     let ctx = this.ctx;
 
     if (dashed) {
-      this.ctx.setLineDash(LINE_DASH)
+      this.ctx.setLineDash(this.lineDash)
     } else {
       this.ctx.setLineDash([])
     }
@@ -170,7 +215,7 @@ export class RenderingContext {
     ctx.direction = direction;
     ctx.fillStyle = getColorAsRgbaFunction(this.getRightColor(color));
     ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
-    ctx.lineWidth = lineWidth;
+    ctx.lineWidth = lineWidth * resFactor;
 
     const padding = 1;
 
@@ -181,10 +226,10 @@ export class RenderingContext {
       let y = realP.y;
 
       if (i % 2 === 0) {
-        ctx.font = `${fontSize}px ${fontFamily}`;
+        ctx.font = `${fontSize * resFactor}px ${fontFamily}`;
       } else {
-        ctx.font = `${3 * fontSize / 4}px ${fontFamily}`;
-        y += fontSize / 3;
+        ctx.font = `${3 * fontSize / 4 * resFactor}px ${fontFamily}`;
+        y += fontSize / 3 * resFactor;
       }
 
       // draw the text
@@ -226,19 +271,20 @@ export class RenderingContext {
                      strokeWidth: number = 0,
                      dashed? : boolean): void {
     // draw an ellipse around the center point
+    const resFactor = this.resolutionFactor;
 
     if (dashed) {
-      this.ctx.setLineDash(LINE_DASH)
+      this.ctx.setLineDash(this.lineDash)
     } else {
       this.ctx.setLineDash([])
     }
 
-    this.ctx.lineWidth = strokeWidth;
+    this.ctx.lineWidth = strokeWidth * resFactor;
     this.ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
     this.ctx.fillStyle = getColorAsRgbaFunction(this.getRightColor(fill));
-    const realCenter = this.transformPointFromFieldToCanvas(center)
-    const realRadiusX = radiusX * this.zoom;
-    const realRadiusY = radiusY * this.zoom;
+    const realCenter = this.transformPointFromFieldToCanvasWithResolutionFactor(center)
+    const realRadiusX = radiusX * this.zoom * resFactor;
+    const realRadiusY = radiusY * this.zoom * resFactor;
 
     this.ctx.beginPath();
     this.ctx.ellipse(realCenter.x, realCenter.y, realRadiusX, realRadiusY, rotation, 0, 2 * Math.PI);
@@ -265,14 +311,16 @@ export class RenderingContext {
                     endAngle: number,
                     dashed?: boolean): void {
     // draw an ellipse around the center point
-    this.ctx.lineWidth = strokeWidth;
+    const resFactor = this.resolutionFactor;
+
+    this.ctx.lineWidth = strokeWidth * resFactor;
     this.ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
     this.ctx.fillStyle = getColorAsRgbaFunction(this.getRightColor(fill));
-    const realCenter = this.transformPointFromFieldToCanvas(center)
-    const realRadius = radius * this.zoom;
+    const realCenter = this.transformPointFromFieldToCanvasWithResolutionFactor(center)
+    const realRadius = radius * this.zoom * resFactor;
 
     if (dashed) {
-      this.ctx.setLineDash(LINE_DASH)
+      this.ctx.setLineDash(this.lineDash)
     } else {
       this.ctx.setLineDash([])
     }
@@ -288,26 +336,28 @@ export class RenderingContext {
   }
 
   public drawRect(rect: Rect, fill: Color = BLACK, stroke: Color = TRANSPARENT, strokeWidth: number = 0, dashed?: boolean): void {
+    const resFactor = this.resolutionFactor;
 
     if (dashed) {
-      this.ctx.setLineDash(LINE_DASH)
+      this.ctx.setLineDash(this.lineDash)
     } else {
       this.ctx.setLineDash([])
     }
 
-    this.ctx.lineWidth = strokeWidth;
+    this.ctx.lineWidth = strokeWidth * resFactor;
     this.ctx.strokeStyle = getColorAsRgbaFunction(this.getRightColor(stroke));
     this.ctx.fillStyle = getColorAsRgbaFunction(this.getRightColor(fill));
-    const realRect = this.transformRectFromFieldToCanvas(rect);
+    const realRect = this.transformRectFromFieldToCanvasWithResolutionFactor(rect);
     this.ctx.fillRect(realRect.x, realRect.y, realRect.width, realRect.height);
   }
 
   public drawImage(image: CanvasImageSource, p: Point, dw: number, dh: number) {
-    let realP = this.transformPointFromFieldToCanvas(p);
+    let realP = this.transformPointFromFieldToCanvasWithResolutionFactor(p);
 
     // set the ctx up
     let ctx = this.ctx;
-    
-    ctx.drawImage(image, realP.x, realP.y, dw, dh)
+    const resFactor = this.resolutionFactor;
+
+    ctx.drawImage(image, realP.x, realP.y, dw * resFactor, dh * resFactor)
   }
 }

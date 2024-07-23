@@ -14,6 +14,10 @@
   <p class="centered maths">
     <input class="input" type="number" [(ngModel)]="this.zoom" title="Zoom">
   </p>
+  <p class="paragraph">Auflösungsfaktor:</p>
+  <p class="centered maths">
+    <input class="input" type="number" [(ngModel)]="this.resolution" title="Hohe Werte erhöhen die Auflösung">
+  </p>
   <div #wrapper class="canvasWrapper"><canvas #canvas class="canvas" id="canvas"></canvas></div>
   <button class="button floatRight close" (click)="this.dialog.close()" title="Dialog schließen">Schließen</button>
   <button class="button floatRight" (click)="this.download()" title="Download">Download</button>

@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1721662810848,
+  "timestamp": 1721729484391,
   "index": "https://jlnalber.github.io/Prokyon/index.html",
   "assetGroups": [
     {
@@ -12,7 +12,7 @@
       },
       "urls": [
         "https://jlnalber.github.io/Prokyon/index.html",
-        "https://jlnalber.github.io/Prokyon/main.666ac3f01bdb28a6.js",
+        "https://jlnalber.github.io/Prokyon/main.a4dab3553912fdae.js",
         "https://jlnalber.github.io/Prokyon/manifest.webmanifest",
         "https://jlnalber.github.io/Prokyon/polyfills.4170eccf4cc1f139.js",
         "https://jlnalber.github.io/Prokyon/runtime.329ea3d183a88d60.js",
@@ -74,8 +74,8 @@
     "https://jlnalber.github.io/Prokyon/assets/tangens.svg": "9159480bc4e410f92951797c949456ec17a52ea4",
     "https://jlnalber.github.io/Prokyon/assets/tex-svg.js": "cfb8e18acf40a77004f8925491402f7c9d08e536",
     "https://jlnalber.github.io/Prokyon/icon.svg": "c69ae442b29d1e49433a18ecd63846e5fb087ea3",
-    "https://jlnalber.github.io/Prokyon/index.html": "63cdd1403346ba596563897d4411180f253c809e",
-    "https://jlnalber.github.io/Prokyon/main.666ac3f01bdb28a6.js": "f1d10e1decfdcbc1564a28cf225e6d91a99c26f5",
+    "https://jlnalber.github.io/Prokyon/index.html": "19004715913aade36d3d1e9be2fe83b764eb91c3",
+    "https://jlnalber.github.io/Prokyon/main.a4dab3553912fdae.js": "9ef25b65846981ffc8020633ffd409f8af9834db",
     "https://jlnalber.github.io/Prokyon/manifest.webmanifest": "8a9d4e99276acbf43464e3282690b03e7330c16d",
     "https://jlnalber.github.io/Prokyon/polyfills.4170eccf4cc1f139.js": "4166e158e0043e5e5179493c78b75dfe8ac8869d",
     "https://jlnalber.github.io/Prokyon/runtime.329ea3d183a88d60.js": "01db4631f51eaa4b83956b9b03971f785a5f7d55",

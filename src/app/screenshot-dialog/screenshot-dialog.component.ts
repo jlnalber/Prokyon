@@ -5,6 +5,7 @@ import {Rect} from "../global/interfaces/rect";
 
 const SESSION_RANGE = 'screenshot_range';
 const SESSION_ZOOM = 'screenshot_zoom';
+const SESSION_RESOLUTION = 'screenshot_resolution';
 
 @Component({
   selector: 'app-screenshot-dialog',
@@ -83,6 +84,20 @@ export class ScreenshotDialogComponent implements OnInit, AfterViewInit {
     }
   }
 
+  private _resolution: number = 1;
+
+  public get resolution(): number {
+    return this._resolution;
+  }
+
+  public set resolution(value: number) {
+    if (value > 0) {
+      this._resolution = value;
+      this.save();
+      this.reload();
+    }
+  }
+
   constructor(private readonly drawerService: DrawerService) {
     this.load();
   }
@@ -113,6 +128,7 @@ export class ScreenshotDialogComponent implements OnInit, AfterViewInit {
   reset() {
     sessionStorage.removeItem(SESSION_RANGE);
     sessionStorage.removeItem(SESSION_ZOOM);
+    sessionStorage.removeItem(SESSION_RESOLUTION);
     this.load();
   }
 
@@ -129,12 +145,19 @@ export class ScreenshotDialogComponent implements OnInit, AfterViewInit {
     else {
       this._zoom = this.drawerService.zoom;
     }
+    if (sessionStorage[SESSION_RESOLUTION]) {
+      this._resolution = JSON.parse(sessionStorage[SESSION_RESOLUTION]) as number ?? 1;
+    }
+    else {
+      this._resolution = 1;
+    }
     this.reload();
   }
 
   private save() {
     sessionStorage[SESSION_RANGE] = JSON.stringify(this._range);
     sessionStorage[SESSION_ZOOM] = JSON.stringify(this._zoom);
+    sessionStorage[SESSION_RESOLUTION] = JSON.stringify(this._resolution);
   }
 
   private drawToCanvas(canvas: HTMLCanvasElement): void {
@@ -146,7 +169,8 @@ export class ScreenshotDialogComponent implements OnInit, AfterViewInit {
     }, {
       translateX: -this.x,
       translateY: -this.y,
-      zoom: this.zoom
+      zoom: this.zoom,
+      resolutionFactor: this.resolution
     });
   }
 
