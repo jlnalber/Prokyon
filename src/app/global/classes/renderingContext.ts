@@ -11,6 +11,7 @@ export interface Config {
   gridColor?: Color,
   showNumbers?: boolean,
   drawPointsEqually?: boolean,
+  drawNewLabels?: boolean,
   transformColor?: (c: Color) => Color
 }
 

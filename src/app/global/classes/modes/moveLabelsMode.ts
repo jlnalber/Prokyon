@@ -15,11 +15,20 @@ export default class MoveLabelsMode extends MoveMode {
     else {
       for (let c of drawerService.selection.toArray()) {
         if (c.configuration.showLabel && c.configuration.label) {
-          const range = renderingContext.range;
-          const dx = (to.x - from.x) / Math.abs(range.width);
-          const dy = (to.y - from.y) / Math.abs(range.height);
-          c.labelTranslateX += dx;
-          c.labelTranslateY += dy;
+          if (renderingContext.config?.drawNewLabels) {
+            const zoom = renderingContext.zoom;
+            const dx = (to.x - from.x) * zoom;
+            const dy = (to.y - from.y) * zoom;
+            c.labelTranslateX += dx;
+            c.labelTranslateY += dy;
+          }
+          else {
+            const range = renderingContext.range;
+            const dx = (to.x - from.x) / Math.abs(range.width);
+            const dy = (to.y - from.y) / Math.abs(range.height);
+            c.labelTranslateX += dx;
+            c.labelTranslateY += dy;
+          }
         }
       }
     }

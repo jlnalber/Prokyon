@@ -54,7 +54,8 @@ export class SettingsTabComponent implements OnInit {
         "backgroundColor": {"r": 255, "g": 255, "b": 255},
         "transformations": {"translateX": 7, "translateY": -5, "zoom": 100},
         "showGrid": true,
-        "showGridNumbers": true
+        "showGridNumbers": true,
+        "drawNewLabels": true
       });
     } catch {
     }

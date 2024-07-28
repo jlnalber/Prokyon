@@ -5,7 +5,7 @@ import {PointFormulaComponent} from "../../../formula-tab/point-formula/point-fo
 import {Point} from "../../interfaces/point";
 import {FormulaElement} from "../abstract/formulaElement";
 import {BLACK, Color, colorAsTransparent} from "../../interfaces/color";
-import {correctRect, isIn} from "../../essentials/utils";
+import {isIn} from "../../essentials/utils";
 import DynamicElement from "./dynamicElement";
 import {CanvasElementSerialized, Style} from "../../essentials/serializer";
 import {DrawerService} from "../../../services/drawer.service";

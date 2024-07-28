@@ -227,11 +227,22 @@ export class DrawerService {
     this.onCanvasConfigChanged.emit(this.canvasConfig);
   }
 
+  private _drawNewLabels: boolean = true;
+  public get drawNewLabels(): boolean | undefined {
+    return this._drawNewLabels;
+  }
+
+  public set drawNewLabels(value: boolean) {
+    this._drawNewLabels = value;
+    this.onCanvasConfigChanged.emit(this.canvasConfig);
+  }
+
   private get canvasConfig(): CanvasConfig {
     return {
       showNumbers: this.showGridNumbers,
       showGrid: this.showGrid,
-      drawPointsEqually: this.drawPointsEqually
+      drawPointsEqually: this.drawPointsEqually,
+      drawNewLabels: this.drawNewLabels
     }
   }
 
@@ -619,16 +630,30 @@ export class DrawerService {
   private getLabelPoint(canvasElement: CanvasElement, ctx: RenderingContext): Point | undefined {
     const labelPoint = canvasElement.getPositionForLabel(ctx);
     if (labelPoint !== undefined && canvasElement.configuration.label !== undefined && canvasElement.configuration.showLabel) {
-      const range = ctx.range;
-      const realTranslate = {
-        x: Math.abs(range.width) * canvasElement.labelTranslate.x,
-        y: Math.abs(range.height) * canvasElement.labelTranslate.y
-      }
+      if (ctx.config?.drawNewLabels) {
+        const zoom = ctx.zoom;
+        const realTranslate: Point = {
+          x: canvasElement.labelTranslate.x / zoom,
+          y: canvasElement.labelTranslate.y / zoom
+        }
 
-      return {
-        x: labelPoint.x + realTranslate.x,
-        y: labelPoint.y + realTranslate.y
-      };
+        return {
+          x: labelPoint.x + realTranslate.x,
+          y: labelPoint.y + realTranslate.y
+        };
+      }
+      else {
+        const range = ctx.range;
+        const realTranslate = {
+          x: Math.abs(range.width) * canvasElement.labelTranslate.x,
+          y: Math.abs(range.height) * canvasElement.labelTranslate.y
+        }
+
+        return {
+          x: labelPoint.x + realTranslate.x,
+          y: labelPoint.y + realTranslate.y
+        };
+      }
     }
 
     return undefined;

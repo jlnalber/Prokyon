@@ -45,7 +45,8 @@ export type Serialized = {
   backgroundColor: Color,
   showGrid: boolean,
   showGridNumbers: boolean,
-  drawPointsEqually?: boolean
+  drawPointsEqually?: boolean,
+  drawNewLabels?: boolean
 }
 
 export function serialize(drawerService: DrawerService): Serialized {
@@ -69,7 +70,8 @@ export function serialize(drawerService: DrawerService): Serialized {
     transformations: drawerService.transformations,
     showGrid: drawerService.showGrid,
     showGridNumbers: drawerService.showGridNumbers,
-    drawPointsEqually: drawerService.drawPointsEqually
+    drawPointsEqually: drawerService.drawPointsEqually,
+    drawNewLabels: drawerService.drawNewLabels
   };
 }
 
@@ -125,6 +127,7 @@ export function loadFrom(drawerService: DrawerService, serialized: Serialized): 
   drawerService.drawPointsEqually = serialized.drawPointsEqually;
   drawerService.transformations = serialized.transformations;
   drawerService.backgroundColor = serialized.backgroundColor;
+  drawerService.drawNewLabels = serialized.drawNewLabels ?? false;
 
   drawerService.emptyCanvasElements();
 
