@@ -42,7 +42,7 @@ export class AppComponent {
 
   tabs: Tab[] = [
     {
-      title: 'Formeln',
+      title: 'Funktionen',
       icon: 'functions',
       componentType: FormulaTabComponent
     },
