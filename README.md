@@ -69,6 +69,6 @@ Hier können u.a. Dateien gespeichert und geöffnet werden. Die aktuell geöffne
 
 ## Bug gefunden? Feedback? Verbesserungsvorschläge?
 
-Gerne einfach ein Issue erstellen!
+Gerne einfach ein [Issue](https://github.com/jlnalber/Prokyon/issues/new/choose) erstellen!
 
 [^1]: Prokyon: https://de.wikipedia.org/wiki/Prokyon
